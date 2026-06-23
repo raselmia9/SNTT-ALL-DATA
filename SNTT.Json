@@ -96,7 +96,365 @@
     },
     {
         "Ship Name": "SNTT Version Code",
-        "Tank C": 3.9,
-        "C Link": "3.9"
+        "Tank C": 4.0,
+        "C Link": "4.0"
+    },
+    {
+        "Ship Name": "Category and Playlist Code",
+        "Tank C": <!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { background-color: #0d1117; color: #fff; font-family: sans-serif; margin: 0; padding: 5px; box-sizing: border-box; }
+        
+        /* গ্রিড লেআউট ফিক্সড করা হয়েছে যাতে দুই পাশের কার্ড সবসময় সমান থাকে */
+        .category-container { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); /* দুই কলাম সমান জায়গা নেবে */
+            gap: 10px; 
+            width: 100%; 
+        }
+        
+        .cat-card { 
+            background: #161b22; 
+            border: 2px solid #10b981; 
+            border-radius: 15px; 
+            padding: 12px; 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            width: 100%; 
+            box-sizing: border-box; 
+            height: 65px; /* হাইট ফিক্সড করে দেওয়া হয়েছে যাতে সব কার্ড সমান দেখায় */
+        }
+
+        .cat-icon { 
+            width: 40px; height: 40px; border-radius: 50%; background: #fff; margin-right: 12px; 
+            display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+        }
+        .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-name { font-size: 16px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+
+.cat-card { 
+    background: #161b22; 
+    /* বর্ডারটি স্বচ্ছ রাখা হয়েছে যাতে ব্যাকগ্রাউন্ডের ওপর এনিমেশন দেখা যায় */
+    border: 0.5px solid transparent; 
+    border-radius: 15px; 
+    padding: 12px; 
+    display: flex; 
+    align-items: center; 
+    cursor: pointer; 
+    width: 100%; 
+    box-sizing: border-box; 
+    height: 65px;
+    
+    /* RGB এনিমেশন সেটআপ */
+    background-image: linear-gradient(#161b22, #161b22), linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-size: 200% 100%;
+    animation: rgb-border 10s linear infinite;
+}
+
+/* এনিমেশন ফ্রেম */
+@keyframes rgb-border {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+
+
+
+
+    <div class="category-container">
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/raselmia9/playlist.m3u/refs/heads/main/Playlist.m3u')">
+            <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/3176/3176366.png"></div><div class="cat-name">Sports</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://gist.githubusercontent.com/raselmia9/ce695a58a20c0b6ee4eba408e4a56077/raw/10d3a32f040371a3a45d2a849cc5756f4c8c6d69/Playlist.m3u')">
+            <div class="cat-icon"><img src="https://flagcdn.com/in.svg"></div><div class="cat-name">India</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://gist.githubusercontent.com/raselmia9/1a004236752daa3c3d42feaf148edda1/raw/fbb2e6e0033b3ecb845a888ee8245694dacc6509/Playlist1.m3u')">
+            <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/21/21601.png"></div><div class="cat-name">News</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8')">
+            <div class="cat-icon"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Kolkata_TV_Logo.png"></div><div class="cat-name">Kolkata</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+            <div class="cat-icon"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Discovery_Channel_logo.svg/1200px-Discovery_Channel_logo.svg.png"></div><div class="cat-name">Discovery</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+            <div class="cat-icon"><img src="https://flagcdn.com/pk.svg"></div><div class="cat-name">Pakistan</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+            <div class="cat-icon"><img src="https://flagcdn.com/bd.svg"></div><div class="cat-name">Bangla</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+            <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/2921/2921226.png"></div><div class="cat-name">Kids</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+            <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/651/651717.png"></div><div class="cat-name">Musics</div>
+        </div>
+
+
+        <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_OTT_Navigator.m3u')">
+            <div class="cat-icon"><img src="https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_logo.jpeg"></div><div class="cat-name">Toffee Live</div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        function filterMatches(query) {
+            let cards = document.querySelectorAll('.cat-card');
+            query = query.toLowerCase().trim();
+            cards.forEach(card => {
+                let text = card.innerText.toLowerCase();
+                card.style.display = (query === "" || text.includes(query)) ? "flex" : "none";
+            });
+        }
+        function sendData(url) {
+            if (window.AppInventor) window.AppInventor.setWebViewString(url);
+            else if (window.CustomWebView) window.CustomWebView.setWebViewString(url);
+            else window.WebViewString = url;
+        }
+
+
+
+
+
+
+
+// ইমেজ লোড হওয়ার সময় ডিফল্ট লোগো সেট করা
+document.querySelectorAll('.cat-icon img').forEach(img => {
+    // ইমেজ লোড না হলে বা এরর হলে এই লোগোটি দেখাবে
+    img.onerror = function() {
+        this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkC1LwR663VtQyQXKcpCfB3S-DDsaeuu63if6RkMXcZKNQeKdcyrCWvN65SjzjeMR2yDJnwuCoFavj5ncjkLPc6XKQ2GIK-UTfa8GGmc6SA58eKAHWAnmyDp64dCN8l6Qmrl2YnaorFuSmZqfSO8Hr9v_UQdeSS7QVnDXJTPOiEpMIMqsbD6zIIgUg5Ww/s1254/file_00000000ffb071fa84c1f07f7b4079e7.png';
+    };
+});
+
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>,
+        "C Link": "<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Player</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { background-color: #0d1117; color: #fff; font-family: sans-serif; margin: 0; padding: 5px; width: 100%; overflow-x: hidden; }
+        .search-box { display: none; }
+        .category-bar { display: flex; overflow-x: auto; gap: 8px; padding: 10px 5px; white-space: nowrap; margin-bottom: 10px; position: sticky; top: 0; background-color: #0d1117; z-index: 999; }
+        .category-bar::-webkit-scrollbar { display: none; }
+        .cat-btn { background: #374151; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; flex-shrink: 0; }
+        .cat-btn:hover { background: #58a6ff; }
+        .container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 100%; }
+        .card { background: #161b22; border: 1px solid #374151; padding: 5px; border-radius: 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px; overflow: hidden; }
+        .card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background-color: #2b313b; }
+        .name { font-size: 8px; margin-top: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 90%; }
+        .loader-wrapper { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #374151; border-top: 4px solid #58a6ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+
+
+
+/* কার্ডের RGB বর্ডার এনিমেশন */
+.card { 
+    background: #161b22; 
+    border: 0.3px solid transparent; 
+    border-radius: 8px; 
+    padding: 5px; 
+    text-align: center; 
+    cursor: pointer; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100px; 
+    overflow: hidden;
+    
+    /* RGB বর্ডার এনিমেশন */
+    background-image: linear-gradient(#161b22, #161b22), linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #ff00c8, #ff0000);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-size: 200% 100%;
+    animation: rgb-border 15s linear infinite;
+}
+
+@keyframes rgb-border {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+/* লোগো লোড না হওয়া পর্যন্ত পালস ইফেক্ট */
+.card img { 
+    width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background-color: #2b313b; 
+    animation: logo-pulse 10.5s infinite ease-in-out;
+}
+
+@keyframes logo-pulse {
+    0% { opacity: 2.2; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <div id="status" class="loader-wrapper"><div class="spinner"></div></div>
+    
+    <input type="text" id="search" class="search-box" oninput="filterMatches(this.value)">
+    
+    <div id="cat-container" class="category-bar"></div>
+    <div class="container" id="main"></div>
+
+    <script>
+
+        // আপনার দেওয়া সেই আগের ফরম্যাটের ইউআরএলটি এখানে বসান
+        const targetUrl = 'INPUT URL';
+        const defaultLogo = "https://cdn-icons-png.flaticon.com/512/2305/2305896.png"; 
+
+        let allChannels = [];
+        let categories = new Set();
+        let currentActiveCategory = "All";
+
+        async function loadChannels() {
+            try {
+                const response = await fetch(targetUrl);
+                const data = await response.text();
+                parseM3U(data);
+            } catch (error) { document.getElementById('status').innerHTML = "নেটওয়ার্ক এরর!"; }
+        }
+
+        function parseM3U(data) {
+            const lines = data.split('\n');
+            document.getElementById('status').style.display = 'none';
+            let masterCookie = "";
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (line.includes("Edge-Cache-Cookie=")) {
+                    masterCookie = line.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
+                }
+                if (line.startsWith("#EXTINF")) {
+                    const name = line.split(',').pop().trim();
+                    const group = line.includes('group-title="') ? line.split('group-title="')[1].split('"')[0] : "Others";
+                    const logo = line.match(/tvg-logo="(.*?)"/)?.[1] || '';
+                    let url = "", channelCookie = "";
+                    let j = i + 1;
+                    while (j < lines.length && !lines[j].trim().startsWith("#EXTINF")) {
+                        let nLine = lines[j].trim();
+                        if (nLine.includes("Edge-Cache-Cookie=")) channelCookie = nLine.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
+                        if (nLine.startsWith("http")) url = nLine.split('|')[0].trim();
+                        j++;
+                    }
+                    if (url) {
+                        allChannels.push({ name, url, logo, group, cookie: channelCookie || masterCookie });
+                        categories.add(group);
+                    }
+                    i = j - 1;
+                }
+            }
+            renderCategories();
+            renderChannels(allChannels);
+        }
+
+        function renderCategories() {
+            const bar = document.getElementById('cat-container');
+            bar.innerHTML = `<button class="cat-btn" onclick="filterByCategory('All')">All</button>`;
+            Array.from(categories).sort().forEach(cat => bar.innerHTML += `<button class="cat-btn" onclick="filterByCategory('${cat}')">${cat}</button>`);
+        }
+
+        function filterByCategory(cat) {
+            currentActiveCategory = cat;
+            filterMatches('');
+        }
+
+        function filterMatches(query) {
+            const filtered = allChannels.filter(ch => 
+                (currentActiveCategory === 'All' || ch.group === currentActiveCategory) && 
+                ch.name.toLowerCase().includes(query.toLowerCase())
+            );
+            renderChannels(filtered);
+        }
+
+
+
+        function renderChannels(channels) {
+            const main = document.getElementById('main');
+            main.innerHTML = '';
+            channels.forEach((ch) => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                
+                // ইমেজ এলিমেন্ট তৈরি
+                const img = document.createElement('img');
+                img.src = ch.logo || defaultLogo;
+                
+                // এরর হ্যান্ডলিং: ইমেজ না পেলে আপনার দেওয়া লোগো দেখাবে
+                img.onerror = function() {
+                    this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkC1LwR663VtQyQXKcpCfB3S-DDsaeuu63if6RkMXcZKNQeKdcyrCWvN65SjzjeMR2yDJnwuCoFavj5ncjkLPc6XKQ2GIK-UTfa8GGmc6SA58eKAHWAnmyDp64dCN8l6Qmrl2YnaorFuSmZqfSO8Hr9v_UQdeSS7QVnDXJTPOiEpMIMqsbD6zIIgUg5Ww/s1254/file_00000000ffb071fa84c1f07f7b4079e7.png';
+                };
+
+                div.appendChild(img);
+                div.innerHTML += `<div class="name">${ch.name}</div>`;
+                
+                div.onclick = () => {
+                    const finalString = ch.cookie ? `${ch.url}|Cookie=Edge-Cache-Cookie=${ch.cookie}` : ch.url;
+                    if (window.AppInventor) window.AppInventor.setWebViewString(finalString);
+                    else alert(finalString);
+                };
+                main.appendChild(div);
+            });
+        }
+
+
+
+        loadChannels();
+    </script>
+</body>
+</html>"
     }
 ]
