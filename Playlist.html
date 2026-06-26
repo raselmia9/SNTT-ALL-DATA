@@ -91,145 +91,102 @@
     <div id="cat-container" class="category-bar"></div>
     <div class="container" id="main"></div>
 
-    <script>
 
-        // আপনার দেওয়া সেই আগের ফরম্যাটের ইউআরএলটি এখানে বসান
-        const targetUrl = "INPUT URL";
-        const defaultLogo = "https://cdn-icons-png.flaticon.com/512/2305/2305896.png"; 
+<script>
+    const targetUrl = "INPUT URL";
+    let allChannels = [];
+    let categories = new Set();
+    let currentActiveCategory = "All";
 
-        let allChannels = [];
-        let categories = new Set();
-        let currentActiveCategory = "All";
-
-        async function loadChannels() {
-            try {
-                const response = await fetch(targetUrl);
-                const data = await response.text();
-                parseM3U(data);
-            } catch (error) { document.getElementById('status').innerHTML = "নেটওয়ার্ক এরর!"; }
-        }
-
-        function parseM3U(data) {
-    const lines = data.split('\n');
-    document.getElementById('status').style.display = 'none';
-    let masterCookie = "";
-    
-    for (let i = 0; i < lines.length; i++) {
-        let line = lines[i].trim();
-        if (line.includes("Edge-Cache-Cookie=")) masterCookie = line.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
-        
-        if (line.startsWith("#EXTINF")) {
-            const name = line.split(',').pop().trim();
-            const group = line.includes('group-title="') ? line.split('group-title="')[1].split('"')[0] : "Others";
-            const logo = line.match(/tvg-logo="(.*?)"/)?.[1] || '';
-            
-            let url = "", channelCookie = "", channelReferer = "";
-            let j = i + 1;
-            
-            // পরবর্তী লাইনগুলো চেক করছি
-            while (j < lines.length && !lines[j].trim().startsWith("#EXTINF")) {
-                let nLine = lines[j].trim();
-                
-                // কুকি সংগ্রহ
-                if (nLine.includes("Edge-Cache-Cookie=")) channelCookie = nLine.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
-                
-                // রেফারার ট্যাগ থেকে রেফারার সংগ্রহ (#EXTVLCOPT:http-referrer=...)
-                if (nLine.includes("http-referrer=")) {
-                    channelReferer = nLine.split("http-referrer=")[1].split(/[ "']/)[0];
-                }
-                
-                // ইউআরএল সংগ্রহ
-                if (nLine.startsWith("http")) {
-                    url = nLine;
-                }
-                j++;
-            }
-            
-            if (url) {
-                // রেফারার থাকলে লিংকের সাথে যোগ করে দিচ্ছি
-                let finalUrl = url;
-                if (channelReferer) {
-                    finalUrl += `|Referer=${channelReferer}`;
-                }
-                
-                allChannels.push({ 
-                    name, 
-                    url: finalUrl, 
-                    logo, 
-                    group, 
-                    cookie: channelCookie || masterCookie 
-                });
-                categories.add(group);
-            }
-            i = j - 1;
+    async function loadChannels() {
+        try {
+            const response = await fetch(targetUrl);
+            const data = await response.text();
+            parseM3U(data);
+        } catch (error) { 
+            document.getElementById('status').innerText = "নেটওয়ার্ক এরর!"; 
         }
     }
-    renderCategories();
-    renderChannels(allChannels);
-}
+
+    function parseM3U(data) {
+        const lines = data.split('\n');
+        
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith("#EXTINF")) {
+                let name = lines[i].split(',').pop().trim();
+                let group = lines[i].includes('group-title="') ? lines[i].split('group-title="')[1].split('"')[0] : "Others";
+                let logo = lines[i].match(/tvg-logo="(.*?)"/)?.[1] || '';
+                
+                let j = i + 1;
+                let url = "", licenseKey = "", cookie = "", referer = "";
+
+                while (j < lines.length && !lines[j].startsWith("#EXTINF")) {
+                    let line = lines[j].trim();
+                    if (line.startsWith("http")) url = line;
+                    if (line.includes("license_key=")) licenseKey = line.split("license_key=")[1].trim();
+                    if (line.includes("Edge-Cache-Cookie=")) cookie = line.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
+                    if (line.includes("http-referrer=")) referer = line.split("http-referrer=")[1].split(/[ "']/)[0];
+                    j++;
+                }
+
+                let finalOutput = url;
+                if (cookie) finalOutput += `|Cookie=Edge-Cache-Cookie=${cookie}`;
+                if (referer) finalOutput += `|Referer=${referer}`;
+                if (licenseKey) finalOutput += `|drmScheme=clearkey&drmLicense=${licenseKey}`;
+
+                if (url) {
+                    allChannels.push({ name, url: finalOutput, logo, group });
+                    categories.add(group);
+                }
+                i = j - 1;
+            }
+        }
+        // সব কাজ শেষে লোডার বন্ধ করা
+        document.getElementById('status').style.display = 'none';
+        
+        renderCategories();
+        renderChannels(allChannels);
+    }
 
     function renderCategories() {
-    const bar = document.getElementById('cat-container');
-    bar.innerHTML = `<button class="cat-btn" onclick="filterByCategory('All')">All (${allChannels.length})</button>`;
-    
-    Array.from(categories).sort().forEach(cat => {
-        const count = allChannels.filter(ch => ch.group === cat).length;
-        bar.innerHTML += `<button class="cat-btn" onclick="filterByCategory('${cat}')">${cat} (${count})</button>`;
-    });
-}
+        const bar = document.getElementById('cat-container');
+        bar.innerHTML = `<button class="cat-btn" onclick="filterByCategory('All')">All (${allChannels.length})</button>`;
+        Array.from(categories).sort().forEach(cat => {
+            const count = allChannels.filter(ch => ch.group === cat).length;
+            bar.innerHTML += `<button class="cat-btn" onclick="filterByCategory('${cat}')">${cat} (${count})</button>`;
+        });
+    }
 
+    function filterByCategory(cat) {
+        currentActiveCategory = cat;
+        filterMatches(document.getElementById('search').value);
+    }
 
-        function filterByCategory(cat) {
-            currentActiveCategory = cat;
-            filterMatches('');
-        }
+    function filterMatches(query) {
+        const filtered = allChannels.filter(ch => 
+            (currentActiveCategory === 'All' || ch.group === currentActiveCategory) && 
+            ch.name.toLowerCase().includes(query.toLowerCase())
+        );
+        renderChannels(filtered);
+    }
 
-        function filterMatches(query) {
-            const filtered = allChannels.filter(ch => 
-                (currentActiveCategory === 'All' || ch.group === currentActiveCategory) && 
-                ch.name.toLowerCase().includes(query.toLowerCase())
-            );
-            renderChannels(filtered);
-        }
+    function renderChannels(channels) {
+        const main = document.getElementById('main');
+        main.innerHTML = '';
+        channels.forEach((ch) => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `<img src="${ch.logo || 'https://via.placeholder.com/60'}"><div class="name">${ch.name}</div>`;
+            div.onclick = () => {
+                if (window.AppInventor) window.AppInventor.setWebViewString(ch.url);
+                else alert("আউটপুট: " + ch.url);
+            };
+            main.appendChild(div);
+        });
+    }
 
-
-
-        function renderChannels(channels) {
-    const main = document.getElementById('main');
-    main.innerHTML = '';
-    channels.forEach((ch) => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        
-        // ইমেজ এলিমেন্ট তৈরি
-        const img = document.createElement('img');
-        img.src = ch.logo || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkC1LwR663VtQyQXKcpCfB3S-DDsaeuu63if6RkMXcZKNQeKdcyrCWvN65SjzjeMR2yDJnwuCoFavj5ncjkLPc6XKQ2GIK-UTfa8GGmc6SA58eKAHWAnmyDp64dCN8l6Qmrl2YnaorFuSmZqfSO8Hr9v_UQdeSS7QVnDXJTPOiEpMIMqsbD6zIIgUg5Ww/s1254/file_00000000ffb071fa84c1f07f7b4079e7.png';
-        
-        // এরর হ্যান্ডলিং
-        img.onerror = function() {
-            this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkC1LwR663VtQyQXKcpCfB3S-DDsaeuu63if6RkMXcZKNQeKdcyrCWvN65SjzjeMR2yDJnwuCoFavj5ncjkLPc6XKQ2GIK-UTfa8GGmc6SA58eKAHWAnmyDp64dCN8l6Qmrl2YnaorFuSmZqfSO8Hr9v_UQdeSS7QVnDXJTPOiEpMIMqsbD6zIIgUg5Ww/s1254/file_00000000ffb071fa84c1f07f7b4079e7.png';
-        };
-
-        // নাম যোগ করার জন্য নতুন এলিমেন্ট
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'name';
-        nameDiv.innerText = ch.name;
-
-        div.appendChild(img);
-        div.appendChild(nameDiv); // innerHTML এর বদলে appendChild ব্যবহার করুন
-        
-        div.onclick = () => {
-            const finalString = ch.cookie ? `${ch.url}|Cookie=Edge-Cache-Cookie=${ch.cookie}` : ch.url;
-            if (window.AppInventor) window.AppInventor.setWebViewString(finalString);
-            else alert(finalString);
-        };
-        main.appendChild(div);
-    });
-}
-
-
-
-        loadChannels();
-    </script>
+    loadChannels();
+</script>
 </body>
-</html>
+    </html>
+    
