@@ -32,6 +32,83 @@
 
 
 
+
+<pre>
+
+
+
+</pre>
+ 
+
+
+
+<style>
+    .profile-container {
+        background: #161b22;
+        /* বর্ডার ট্রান্সপারেন্ট করে অ্যানিমেটেড ব্যাকগ্রাউন্ড বসানো হয়েছে */
+        border: 2px solid transparent;
+        border-radius: 25px;
+        padding: 20px;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin: 0 auto;
+        color: #fff;
+        font-family: sans-serif;
+        text-align: center;
+        
+        /* আরজিবি বর্ডার অ্যানিমেশন কোড */
+        background-clip: padding-box, border-box;
+        background-origin: border-box;
+        background-image: linear-gradient(#161b22, #161b22), linear-gradient(45deg, #f43f5e, #10b981, #3b82f6, #f43f5e);
+        background-size: 100% 100%, 400% 400%;
+        animation: gradient-animation 3s ease infinite;
+    }
+
+    @keyframes gradient-animation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 3px solid #30363d;
+        object-fit: cover;
+    }
+
+    .name { 
+        font-size: 20px; 
+        font-weight: bold; 
+        margin: 0; 
+        white-space: nowrap;
+    }
+    
+    .title { 
+        font-size: 14px; 
+        color: #a0a0a0; 
+        text-transform: uppercase; 
+        letter-spacing: 1px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="profile-container">
+    <img src="https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/IMG_20260514_224144.jpg" 
+         alt="Profile Picture" 
+         class="profile-img">
+    
+    <div class="text-content">
+        <div class="name">MD. RASEL RANA</div>
+        <div class="title">SOFTWARE ENGINEER | WEB DEVELOPER</div>
+    </div>
+</div>
+ 
  
    
    
