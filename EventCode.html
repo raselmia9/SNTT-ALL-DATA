@@ -337,7 +337,7 @@ function loadMoreMovies() {
     let nextBatch = filteredList.slice(displayedMoviesCount, displayedMoviesCount + batchSize);
     
     if (nextBatch.length === 0 && displayedMoviesCount === 0) {
-        container.innerHTML = '<div class="loading-text">No movies found</div>';
+        container.innerHTML = '<div class="loading-text">No movies and Live Match found</div>';
         return;
     }
 
