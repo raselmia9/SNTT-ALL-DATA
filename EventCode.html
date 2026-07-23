@@ -210,26 +210,16 @@
 </style>
 
 <script>    
-// ডেমো ডেটা অ্যারে (এখানে আপনার ১০০০+ আইটেম থাকলেও অ্যাপ স্লো হবে না)
-const allMovies = [
-    {
-        title: "Rockstar (2026)",
-        details: "N/A | Music, Musical, Romance | 28 May 2026 \n IMDb Ratings : (N/A) \n Storyline : A rock musician, writes his own songs and composes them himself. \n Director : Azman Rusho \n Cast(s) : Sami Doha, Shakib Khan, Tariq Anam Khan \n Language : Bengali \n Quality : WEB-DL \n Resolution : 480P | 720P | 1080P \n Size : 1GB | 1.2GB | 2.3GB",
-        img: "https://mlsbd-image.com/images/2026/07/23/17847769336a6188e5252a2.webp",
-        date: "2026-07-15 10:00:00",
-        link: "আপনার_ভিডিও_লিংক"
-    },
-    {
-        title: "Action Movie 2",
-        details: "Action, Thriller | 10 June 2026 \n IMDb Ratings : 7.5 \n Quality : WEB-DL \n Resolution : 720P | 1080P",
-        img: "https://mlsbd-image.com/images/2026/07/23/17847769336a6188e5252a2.webp",
-        date: "2026-07-14 10:00:00",
-        link: "আপনার_ভিডিও_লিংক"
-    }
-    // আপনার বাকি হাজার হাজার আইটেম এখানে যোগ করতে পারেন...
-];
+
+
+
 
 const liveMatches = [
+
+
+
+
+
     {
         league: "FOOTBALL | INTERNATIONAL FRIENDLY",
         team1Name: "Colombia", team1Flag: "https://flagcdn.com/co.svg",
@@ -237,6 +227,8 @@ const liveMatches = [
         startTime: "2026-06-11 19:00:00",
         link: "https://livecdn.rockstreamer.com/main/Iscreen_fifa_main/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
+
+
     {
         league: "CRICKET | TEST SERIES",
         team1Name: "India", team1Flag: "https://flagcdn.com/in.svg",
@@ -244,9 +236,49 @@ const liveMatches = [
         startTime: "2026-06-16 07:15:00",
         isHot: true,
         link: "http://str2.v3v3v.xyz:2082/live/rokhsi25_951396/POm6KqnW/1949446.m3u8"
-    }
-    // অন্যান্য লাইভ ম্যাচগুলো এখানে থাকবে...
+    },
+    
+
+
+
+
+
+
+// অন্যান্য লাইভ ম্যাচগুলো এখানে থাকবে...
 ];
+
+
+
+
+
+
+// ডেমো ডেটা অ্যারে (এখানে আপনার ১০০০+ আইটেম থাকলেও অ্যাপ স্লো হবে না)
+const allMovies = 
+
+
+[
+    {
+        title: "Rockstar (2026)",
+        details: "N/A | Music, Musical, Romance | 28 May 2026 \n IMDb Ratings : (N/A) \n Storyline : A rock musician, writes his own songs and composes them himself. \n Director : Azman Rusho \n Cast(s) : Sami Doha, Shakib Khan, Tariq Anam Khan \n Language : Bengali \n Quality : WEB-DL \n Resolution : 480P | 720P | 1080P \n Size : 1GB | 1.2GB | 2.3GB",
+        img: "https://mlsbd-image.com/images/2026/07/23/17847769336a6188e5252a2.webp",
+        date: "2026-07-15 10:00:00",
+        link: "480P,,https://pub-7e14080129214e2588485953a3301a62.r2.dev/a0b0009bc0b3250d4f3e045477049d74?token=1784826438,)720P,,https://pub-2d03da1cc1fd4f9181bd7323727ca91f.r2.dev/dfe70b1f0ef46aea96bdb3f4e3dd3897?token=1784827840,)1080P,,https://pub-f526a4f18ba644488f7f0c45bc26466b.r2.dev/2e78402226627e38d4f1608dda905d3a?token=1784827890,)"
+    },
+    
+
+
+
+
+
+
+
+
+    // আপনার বাকি হাজার হাজার আইটেম এখানে যোগ করতে পারেন...
+];
+
+
+
+
 
 let displayedMoviesCount = 0;
 const batchSize = 5; // একবারে কয়টি করে মুভি লোড হবে
