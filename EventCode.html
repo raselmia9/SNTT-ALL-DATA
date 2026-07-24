@@ -10,30 +10,119 @@
     <div class="loader"></div>
 </div>
 
-<!-- লাইভ স্লাইডার কন্টেইনার (যেখানে ডেটা ডায়নামিকালি লোড হবে) -->
+<!-- ১. লাইভ স্লাইডার কন্টেইনার -->
 <div class="live-slider-container" id="liveSliderContainer">
-  <!-- আইটেমগুলো জাভাস্ক্রিপ্ট দিয়ে ডেমো বা রিয়েল ডাটা থেকে লোড হবে -->
+  <!-- আইটেমগুলো জাভাস্ক্রিপ্ট দিয়ে লোড হবে -->
 </div> 
 
 <!-- স্লাইডার ডট ইনডিকেটর -->
 <div class="slider-dots" id="sliderDots"></div>
 
-<!-- সেকশন হেডিং -->
+
+<!-- ২. হরিজন্টাল ক্যাটাগরি স্লাইডার -->
+<div style="font-size: 13px; font-weight: bold; margin: 15px 0 10px 5px; color: #10b981;">CATEGORIES</div>
+
+<div class="category-container">
+   
+
+
+
+
+
+
+
+    <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_OTT_Navigator.m3u')">
+        <div class="cat-icon"><img src="https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_logo.jpeg"></div><div class="cat-name">Toffee</div>
+    </div>
+
+
+
+
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/Fancode-bd/refs/heads/main/main_playlist.m3u')">
+    <div class="cat-icon"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6c/FanCode_logo.svg/500px-FanCode_logo.svg.png"></div><div class="cat-name">Fancode</div>
+</div>
+
+
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u')">
+    <div class="cat-icon"><img src="https://www.freelogovectors.net/wp-content/uploads/2021/12/sonyliv-logo-freelogovectors.net_.png"></div><div class="cat-name">SonyLiv</div>
+</div>
+
+
+
+
+
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u')">
+    <div class="cat-icon"><img src="https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/tapmad%20icon.png"></div><div class="cat-name">Tapmad</div>
+</div>
+
+
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.m3u')">
+    <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/2921/2921226.png"></div><div class="cat-name">Willow Event</div>
+</div>
+
+
+
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/sm-monirulislam/CricHD-Auto-Update-Playlist/refs/heads/main/crichd.m3u')">
+    <div class="cat-icon"><img src="https://m.media-amazon.com/images/I/21h60OobgjL.jpg"></div><div class="cat-name">CricHD</div>
+</div>
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u')">
+    <div class="cat-icon"><img src="https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/image/Picsart_25-11-23_23-36-41-742.png"></div><div class="cat-name">Mrgify</div>
+</div>
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/raselmia9/My-all-Playlist/refs/heads/main/iScreen-Live-channel.m3u')">
+    <div class="cat-icon"><img src="https://static.wikia.nocookie.net/etv-gspn-bangla/images/1/18/IScreen_logo.png/revision/latest/scale-to-width-down/837?cb=20231207080112"></div><div class="cat-name">iScreen</div>
+</div>
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+    <div class="cat-icon"><img src="https://flagcdn.com/bd.svg"></div><div class="cat-name">Bangla</div>
+</div>
+
+
+<div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+    <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/651/651717.png"></div><div class="cat-name">Musics</div>
+</div>
+
+
+
+
+
+
+
+</div>
+<!-- ৩. মুভি সেকশন হেডিং -->
 <div style="font-size: 13px; font-weight: bold; margin: 20px 0 10px 5px; color: #10b981;">POPULAR MOVIES & SERIES</div>
 
-<!-- মুভি কন্টেইনার (লেজি লোডিং ও ইনফিনিট স্ক্রোলিং এর জন্য) -->
+<!-- ৪. মুভি কন্টেইনার -->
 <div id="movieContainer"></div>
 
 <style>     
-    body { background-color: #0d1117; color: #fff; font-family: sans-serif; padding: 2px; margin: 0; padding-bottom: 90px; }
+    body { 
+        background-color: #0d1117; 
+        color: #fff; 
+        font-family: sans-serif; 
+        padding: 10px; 
+        margin: 0; 
+        padding-bottom: 90px; 
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden; 
+    }         
 
-    /* লাইভ ইভেন্ট হরিজন্টাল স্লাইডার স্টাইল */
     .live-slider-container {
         display: flex;
         overflow-x: auto;
         gap: 15px;
-        padding: 5px 10px 15px 10px;
+        width: 100%;
+        max-width: 100%;
+        padding: 5px 0 15px 0;
         margin-bottom: 5px;
+        box-sizing: border-box;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
     }
@@ -42,14 +131,50 @@
         display: none;
     }
 
-    /* স্লাইডার ডট ইনডিকেটর স্টাইল */
+    .category-container { 
+        display: flex; 
+        overflow-x: auto; 
+        gap: 12px; 
+        width: 100%; 
+        max-width: 100%;
+        padding: 5px 0 15px 0;
+        box-sizing: border-box;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .category-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .cat-card { 
+        background: #161b22; 
+        border: 2px solid #10b981; 
+        border-radius: 15px; 
+        padding: 10px; 
+        display: flex; 
+        align-items: center; 
+        cursor: pointer; 
+        flex: 0 0 140px; 
+        height: 60px; 
+        box-sizing: border-box; 
+        scroll-snap-align: start;
+    }
+
+    .cat-icon { 
+        width: 35px; height: 35px; border-radius: 50%; background: #fff; margin-right: 10px; 
+        display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+    }
+    .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .cat-name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
+
     .slider-dots {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 6px;
         width: 100%;
-        margin: 5px 0 20px 0;
+        margin: 5px 0 10px 0;
     }
 
     .slider-dots span {
@@ -67,7 +192,6 @@
         border-radius: 4px;
     }
 
-    /* প্রতিটি লাইভ কার্ডের সাইজ */
     .live-slider-container .card {
         flex: 0 0 85% !important;
         max-width: 320px !important;
@@ -75,7 +199,6 @@
         margin-bottom: 0 !important;
     }
 
-    /* সাধারণ কার্ড ও আরজিবি বর্ডার অ্যানিমেশন */ 
     .card {      
         background: #161b22;      
         border: 2px solid transparent;      
@@ -159,7 +282,6 @@
         100% { box-shadow: 0px 4px 15px rgba(244, 63, 94, 0.9); }
     }
 
-    /* মুভি বা পোস্টার কার্ডের স্টাইল */
     .poster-card {
         padding: 0 !important;
         overflow: hidden;
@@ -187,6 +309,7 @@
         color: #ffffff;
         padding: 12px 12px 8px 12px;
         line-height: 1.4;
+        white-space: pre-line;
     }
 
     .poster-footer {
@@ -210,16 +333,7 @@
 </style>
 
 <script>    
-
-
-
-
 const liveMatches = [
-
-
-
-
-
     {
         league: "FOOTBALL | INTERNATIONAL FRIENDLY",
         team1Name: "Colombia", team1Flag: "https://flagcdn.com/co.svg",
@@ -227,8 +341,6 @@ const liveMatches = [
         startTime: "2026-06-11 19:00:00",
         link: "https://livecdn.rockstreamer.com/main/Iscreen_fifa_main/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
-
-
     {
         league: "CRICKET | TEST SERIES",
         team1Name: "India", team1Flag: "https://flagcdn.com/in.svg",
@@ -237,60 +349,11 @@ const liveMatches = [
         isHot: true,
         link: "http://str2.v3v3v.xyz:2082/live/rokhsi25_951396/POm6KqnW/1949446.m3u8"
     },
-    
-
-
-    
-
-
-
-
-// অন্যান্য লাইভ ম্যাচগুলো এখানে থাকবে...
 ];
 
-
-
-
-
-
-// ডেমো ডেটা অ্যারে (এখানে আপনার ১০০০+ আইটেম থাকলেও অ্যাপ স্লো হবে না)
-const allMovies = 
-
-
-[
-    {
-        title: "Rockstar (2026)",
-        details: "N/A | Music, Musical, Romance | 28 May 2026 \n IMDb Ratings : (N/A) \n Storyline : A rock musician, writes his own songs and composes them himself. \n Director : Azman Rusho \n Cast(s) : Sami Doha, Shakib Khan, Tariq Anam Khan \n Language : Bengali \n Quality : WEB-DL \n Resolution : 480P | 720P | 1080P \n Size : 1GB | 1.2GB | 2.3GB",
-        img: "https://mlsbd-image.com/images/2026/07/23/17847769336a6188e5252a2.webp",
-        date: "2026-07-15 10:00:00",
-        link: "480P,,https://pub-7e14080129214e2588485953a3301a62.r2.dev/a0b0009bc0b3250d4f3e045477049d74?token=1784826438,)720P,,https://pub-2d03da1cc1fd4f9181bd7323727ca91f.r2.dev/dfe70b1f0ef46aea96bdb3f4e3dd3897?token=1784827840,)1080P,,https://pub-f526a4f18ba644488f7f0c45bc26466b.r2.dev/2e78402226627e38d4f1608dda905d3a?token=1784827890,)"
-    },
-    
-    
-
-
-     {
-        title: "Bachelor Point 2026 | episode 101-104",
-        details: "N/A min | Comedy | Drama | 07 Jul 2026 | IMDb Ratings : N/A | Director : Kajal Arefin Ome | Cast : Chashi Alam, Marzuk Russell, Saidur Rahman Pavel, Ziaul Hoque Polash, Faria Shahrin, Lamima Lam | Language : Bengali | Quality : WEB-DL | Resolution : 480P | 720P | 1080P | 4K | Size : 700MB | 1.6GB | 3.2GB | 8.4GB",
-        img: "https://cdn.imgnest.io/uploads/images/2026/07/16/239e5b03-abcb-4e8a-a5a0-f01f8e_y34FSTPF.jpg",
-        date: "2026-07-19 10:00:00",
-        link: "480P,,https://pub-ec00b807d5df44919ae989619190cad9.r2.dev/5e5a0d217e5026ad765ad23bc4d771a7?token=1784831597,)720P,,https://pub-5713f099538e416ca30d53685ac57e08.r2.dev/c5dbee62244bbf80883ce5d44e69393e?token=1784830949,)1080P,,https://pub-cc81083186354ad0b71941bab759db5e.r2.dev/b0456535d9fff7ff4db3c80411cdfaa1?token=1784829700"
-    },
-    
-
-
-
-
-
-    // আপনার বাকি হাজার হাজার আইটেম এখানে যোগ করতে পারেন...
-];
-
-
-
-
-
+let allMovies = [];
 let displayedMoviesCount = 0;
-const batchSize = 5; // একবারে কয়টি করে মুভি লোড হবে
+const batchSize = 15; // একসাথে ১৫টি করে লোড হবে যাতে ১০০০+ আইটেমেও কোনো ল্যাগ না করে
 let currentSearch = '';
 
 window.addEventListener('load', () => { 
@@ -298,12 +361,22 @@ window.addEventListener('load', () => {
     if (loader) loader.style.display = 'none'; 
 
     loadLiveMatches();
-    loadMoreMovies();
+    
+    // আপনার দেওয়া জেসন ফাইলের ডিরেক্ট লিংক ফেচ করা হচ্ছে
+    fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Popular%20movie.json')
+        .then(response => response.json())
+        .then(data => {
+            allMovies = data;
+            loadMoreMovies();
+        })
+        .catch(error => {
+            console.error('Error loading movies:', error);
+            document.getElementById('movieContainer').innerHTML = '<div class="loading-text">Failed to load movies</div>';
+        });
     
     setInterval(updateTimers, 1000); 
     setInterval(updateMovieTimers, 60000);
 
-    // ইনফিনিট স্ক্রোলিং লজিক (নিচে স্ক্রোল করলেই নতুন আইটেম লোড হবে)
     window.addEventListener('scroll', () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
             if (currentSearch === '') {
@@ -313,7 +386,6 @@ window.addEventListener('load', () => {
     });
 }); 
 
-// লাইভ ম্যাচ রেন্ডার করার ফাংশন
 function loadLiveMatches() {
     const container = document.getElementById('liveSliderContainer');
     container.innerHTML = '';
@@ -336,17 +408,16 @@ function loadLiveMatches() {
     setupSliderDots();
 }
 
-// ধাপে ধাপে মুভি লোড করার ফাংশন (Lazy Loading / Pagination)
 function loadMoreMovies() {
     const container = document.getElementById('movieContainer');
     let filteredList = allMovies.filter(movie => 
-        (movie.title + " " + movie.details).toLowerCase().includes(currentSearch)
+        (movie.title + " " + (movie.details || '')).toLowerCase().includes(currentSearch)
     );
 
     let nextBatch = filteredList.slice(displayedMoviesCount, displayedMoviesCount + batchSize);
     
     if (nextBatch.length === 0 && displayedMoviesCount === 0) {
-        container.innerHTML = '<div class="loading-text">No movies and Live Match found</div>';
+        container.innerHTML = '<div class="loading-text">No movies found</div>';
         return;
     }
 
@@ -358,11 +429,10 @@ function loadMoreMovies() {
             <div class="poster-img-box">
                 <img src="${movie.img}" alt="Movie Poster">
             </div>
-            <div class="poster-title">${movie.title} \n ${movie.details}</div>
+            <div class="poster-title">${movie.title} \n ${movie.details || ''}</div>
             <div class="poster-footer">
-                <span>👤 Rasel Rana</span>
+                <span>👤 Admin Rasel Rana</span>
                 <span class="time-ago" data-date="${movie.date}">🕒 calculating...</span>
-                <span>👁️ 0</span>
                 <span>💬 No Comments</span>
             </div>
         `;
@@ -373,7 +443,6 @@ function loadMoreMovies() {
     updateMovieTimers();
 }
 
-// স্লাইডার ডট ইনডিকেটর আপডেট
 function setupSliderDots() {
     const slider = document.querySelector('.live-slider-container');
     const cards = slider.querySelectorAll('.card');
@@ -398,26 +467,29 @@ function setupSliderDots() {
     });
 }
 
-// অ্যাপ্লিকেশনের টেক্সটবক্স থেকে সার্চ করার ফাংশন (হ্যাং হওয়া রোধ করতে অপ্টিমাইজড)
 function filterMatches(input) { 
     currentSearch = input ? input.toLowerCase() : ''; 
     displayedMoviesCount = 0;
     document.getElementById('movieContainer').innerHTML = '';
     
-    // লাইভ ম্যাচ সার্চ ফিল্টার
     document.querySelectorAll('.live-slider-container .card').forEach(card => { 
         let text = card.innerText.toLowerCase(); 
         card.style.display = text.includes(currentSearch) ? "block" : "none";
     }); 
 
-    // মুভি সার্চ ফিল্টার ও লোড
+    document.querySelectorAll('.category-container .cat-card').forEach(card => { 
+        let text = card.innerText.toLowerCase(); 
+        card.style.display = text.includes(currentSearch) ? "flex" : "none";
+    });
+
     loadMoreMovies();
 } 
 
-// মুভির টাইম কাউন্টডাউন
 function updateMovieTimers() {
     document.querySelectorAll('.time-ago').forEach(el => {
-        let postDate = new Date(el.getAttribute('data-date')).getTime();
+        let dateAttr = el.getAttribute('data-date');
+        if (!dateAttr) return;
+        let postDate = new Date(dateAttr).getTime();
         let now = new Date().getTime();
         let diff = now - postDate;
 
@@ -436,7 +508,6 @@ function updateMovieTimers() {
     });
 }
 
-// লাইভ ম্যাচের টাইমার আপডেট
 function updateTimers() { 
     document.querySelectorAll('.status').forEach(el => { 
         let start = new Date(el.getAttribute('data-start')).getTime(); 
