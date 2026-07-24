@@ -94,9 +94,16 @@
         "Tank C": 6,
         "C Link": "https://drive.usercontent.google.com/download?id=1vzSKqSiwNlSuYJDygiBYWafF0tFne2WE&export=download"
     },
+
+    {
+        "Ship Name": "O.T SHANGHAI-01",
+        "Tank C": 6,
+        "C Link": "https://drive.usercontent.google.com/download?id=1vzSKqSiwNlSuYJDygiBYWafF0tFne2WE&export=download"
+    },
+
     {
         "Ship Name": "SNTT Version Code",
         "Tank C": 4.1,
-        "C Link": "10"
+        "C Link": "11"
     }
 ]
