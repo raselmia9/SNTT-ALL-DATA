@@ -14,10 +14,10 @@
         .cat-btn:hover { background: #58a6ff; }         
         .container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 100%; }         
         
-        /* কার্ডের RGB বর্ডার এনিমেশন */         
+        /* কার্ডের RGB বর্ডার ফিক্সড ও ভাইব্রেশন মুক্ত অ্যানিমেশন */         
         .card {          
             background: #161b22;          
-            border: 0.3px solid transparent;          
+            border: 1px solid transparent;          
             border-radius: 8px;          
             padding: 5px;          
             text-align: center;          
@@ -31,13 +31,9 @@
             background-image: linear-gradient(#161b22, #161b22), linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #ff00c8, #ff0000);         
             background-origin: border-box;         
             background-clip: padding-box, border-box;         
-            background-size: 200% 100%;         
-            animation: rgb-border 15s linear infinite;     
-        }          
-
-        @keyframes rgb-border {         
-            0% { background-position: 0% 0%; }         
-            100% { background-position: 200% 0%; }         
+            background-size: 100% 100%; /* সাইজ ফিক্সড করা হয়েছে যাতে লাফালাফি না করে */
+            transform: translateZ(0); /* হার্ডওয়্যার অ্যাকসেলেরেশন ফিক্স */
+            will-change: transform;
         }          
 
         /* লোগোর জন্য স্টাইল */         
@@ -68,11 +64,11 @@
     <div class="container" id="main"></div> 
 
 <script>     
-    const targetUrl = "INPUT URL";     
+    const targetUrl = "https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_OTT_Navigator.m3u";     
     let allChannels = [];     
     let filteredChannels = [];
     let displayedCount = 0;
-    const batchSize = 24; // একসাথে ২৪টি করে আইটেম লোড হবে, যাতে ১০০০+ বা ৫০০০ আইটেমেও ফোন বা অ্যাপ একটুও না কাঁপে (হ্যাং হবে না)
+    const batchSize = 24; 
     let categories = new Set();     
     let currentActiveCategory = "All";     
 
@@ -117,12 +113,10 @@
             }         
         }         
         
-        // লোডার বন্ধ করা
         document.getElementById('status').style.display = 'none';                  
         renderCategories();
         filterCategoriesAndSearch(); 
 
-        // স্ক্রল করার সময় নিচে আসলে স্বয়ংক্রিয়ভাবে পরবর্তী চ্যানেলগুলো লোড হবে (Infinite Scroll)
         window.addEventListener('scroll', () => {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
                 loadMoreChannels();
@@ -163,7 +157,6 @@
     function loadMoreChannels() {
         const main = document.getElementById('main');
         
-        // আগের কোনো "No channels found" টেক থাকলে তা রিমুভ করা
         const oldMsg = main.querySelector('.loading-text');
         if (oldMsg) oldMsg.remove();
 
