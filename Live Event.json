@@ -1,0 +1,22 @@
+[
+  {
+    "eventTitle": "FOOTBALL | INTERNATIONAL FRIENDLY",
+    "matchTime": "2026-06-11 19:00:00",
+    "team1Logo": "https://flagcdn.com/co.svg",
+    "team2Logo": "https://flagcdn.com/jo.svg",
+    "team1Title": "Colombia",
+    "team2Title": "Jordan",
+    "streamLink": "https://livecdn.rockstreamer.com/main/Iscreen_fifa_main/playlist.m3u8|Referer=https://iscreen.com.bd/"
+  },
+
+
+  {
+    "eventTitle": "CRICKET | TEST SERIES",
+    "matchTime": "2026-06-16 07:15:00",
+    "team1Logo": "https://flagcdn.com/in.svg",
+    "team2Logo": "https://flagcdn.com/af.svg",
+    "team1Title": "India",
+    "team2Title": "Afghanistan",
+    "streamLink": "http://str2.v3v3v.xyz:2082/live/rokhsi25_951396/POm6KqnW/1949446.m3u8"
+  }
+]
