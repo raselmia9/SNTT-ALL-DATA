@@ -1,5 +1,14 @@
 [
 
+  {
+    "eventTitle": "CRICKET T20 | SRI LANKA PREMIER LEAGUE",
+    "matchTime": "2026-07-26 05:00:00",
+    "team1Logo": "https://images.seeklogo.com/logo-png/48/1/lanka-premier-league-logo-png_seeklogo-486036.png",
+    "team2Logo": "https://images.seeklogo.com/logo-png/48/1/lanka-premier-league-logo-png_seeklogo-486036.png",
+    "team1Title": "ALL",
+    "team2Title": "ALL",
+    "streamLink": "https://raw.githubusercontent.com/srhady/Fancode-bd/main/raw_link/galle_gallants_vs_dambulla_sixers_4246713_english.m3u8"
+  }
 
   {
     "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
