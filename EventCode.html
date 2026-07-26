@@ -1,4 +1,3 @@
-
 <!DOCTYPE html> 
 <html> 
 <head>     
@@ -270,13 +269,13 @@
 </div>
 
 <div id="liveWrapper" style="margin-bottom: 15px;">
-    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">Manual Live Events</div>
+    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">My Live Events</div>
     <div class="live-slider-container" id="liveSliderContainer"></div> 
     <div class="slider-dots" id="sliderDots"></div>
 </div>
 
 <div class="lfe-wrapper" style="margin-bottom: 15px;">
-    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">Live Featured Events (Auto)</div>
+    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">popular Live Events (Auto)</div>
     <div id="lfeCatContainer" class="category-bar"></div>
     <div class="lfe-slider-container" id="lfeSliderContainer"><div style="color: #8b949e; font-size: 12px; padding: 10px;">Loading live events...</div></div>
 </div>
@@ -320,14 +319,9 @@
 <div id="movieContainer"></div>
 
 
-        
-
-
-
-
 
 <script>    
-const showLiveSlider =true; 
+const showLiveSlider = true;
 
 let allMovies = [];
 let displayedMoviesCount = 0;
@@ -335,12 +329,17 @@ const batchSize = 15;
 let currentSearch = '';
 
 window.addEventListener('load', () => { 
-    const forceHideTimer = setTimeout(hideLoader, 1000);
+    const forceHideTimer = setTimeout(hideLoader, 1500);
 
-    fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Live%20Event.json')
-        .then(res => res.json())
-        .then(data => loadLiveMatches(data))
-        .catch(err => console.log('Manual Live error:', err));
+    if (showLiveSlider) {
+        fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Live%20Event.json')
+            .then(res => res.json())
+            .then(data => loadLiveMatches(data))
+            .catch(err => console.log('Manual Live error:', err));
+    } else {
+        const liveWrapper = document.getElementById('liveWrapper');
+        if (liveWrapper) liveWrapper.style.display = 'none';
+    }
     
     fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Popular%20movie.json')
         .then(res => res.json())
@@ -357,7 +356,7 @@ window.addEventListener('load', () => {
             clearTimeout(forceHideTimer);
         });
     
-    setTimeout(initMultiPlaylists, 100);
+    setTimeout(initMultiPlaylists, 10);
 
     setInterval(updateTimers, 1000); 
     setInterval(updateMovieTimers, 60000);
@@ -383,11 +382,12 @@ function loadLiveMatches(matches) {
     const liveWrapper = document.getElementById('liveWrapper');
     if (!container || !liveWrapper) return;
     
-    if (!Array.isArray(matches) || matches.length === 0) {
+    if (!showLiveSlider || !Array.isArray(matches) || matches.length === 0) {
         liveWrapper.style.display = 'none';
         return;
     }
 
+    liveWrapper.style.display = 'block';
     container.innerHTML = '';
     matches.forEach(match => {
         let card = document.createElement('div');
@@ -412,94 +412,110 @@ let lfeCategories = new Set();
 let lfeActiveCategory = "All";
 
 async function initMultiPlaylists() {
-    const targetUrls = [
-        "https://raw.githubusercontent.com/srhady/Fancode-bd/refs/heads/main/main_playlist.m3u",
-      
-        "https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u",
-        "https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u"
+    const sliderContainer = document.getElementById('lfeSliderContainer');
+    
+    if (sliderContainer) {
+        sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;" id="lfeCountdownText">Checking live events (1.5s)...</div>';
+    }
+
+    let timeLeft = 15; 
+    let countdownInterval = setInterval(() => {
+        timeLeft--;
+        let countText = document.getElementById('lfeCountdownText');
+        if (countText && timeLeft > 0) {
+            let secondsVal = (timeLeft / 10).toFixed(1);
+            countText.innerText = `Checking live events (${secondsVal}s)...`;
+        }
+    }, 100);
+
+    // লক্ষ্য করুন: প্রতিটি প্লেলিস্টের সুনির্দিষ্ট সোর্স ট্যাগ বা লিংক এখানে ম্যাপ করা হয়েছে
+    const targetPlaylists = [
+       
+ 
+       { url: "https://raw.githubusercontent.com/srhady/Fancode-bd/refs/heads/main/main_playlist.m3u", sourceName: "fancode" },
+
+ { url: "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.m3u", sourceName: "willow" },
+       
+
+ { url: "https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u", sourceName: "sonyliv" },
+       
+
+ { url: "https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u", sourceName: "tapmad" }
     ];
 
-    let combinedData = "";
+    let allParsedChannels = [];
 
-    // ফাস্ট লোডিংয়ের জন্য সব লিংক একসাথে ফেচ করা শুরু হবে
-    let promises = targetUrls.map(async (targetUrl) => {
+    let promises = targetPlaylists.map(async (item) => {
         try {
-            let res = await fetch(targetUrl);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1500); 
+
+            let res = await fetch(item.url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
             if (res.ok) {
                 let text = await res.text();
-                if (text && text.includes("#EXTINF")) return text;
+                if (text && text.includes("#EXTINF")) {
+                    return { text, sourceName: item.sourceName }; 
+                }
             }
         } catch (e) {}
-
-        try {
-            let proxyRes = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl));
-            if (proxyRes.ok) {
-                let text = await proxyRes.text();
-                if (text && text.includes("#EXTINF")) return text;
-            }
-        } catch (err) {}
-        return "";
+        
+        return null; 
     });
 
     let results = await Promise.all(promises);
-    results.forEach(text => {
-        if (text) combinedData += "\n" + text;
+    clearInterval(countdownInterval);
+
+    results.forEach(result => {
+        if (result && result.text) {
+            parseAndAddChannels(result.text, result.sourceName);
+        }
     });
 
-    if (combinedData && combinedData.includes("#EXTINF")) {
-        parseLfeM3U(combinedData);
-    } else {
-        const sliderContainer = document.getElementById('lfeSliderContainer');
-        if (sliderContainer) {
-            sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;">বর্তমানে কোনো লাইভ ইভেন্ট উপলব্ধ নেই</div>';
-        }
-    }
-}
+    lfeAllChannels = allParsedChannels;
 
-function parseLfeM3U(data) {
-    const lines = data.split(/\r?\n/);
-    lfeAllChannels = [];
-    lfeCategories.clear();
-    
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith("#EXTINF")) {
-            let lineStr = lines[i];
-            let name = lineStr.split(',').pop().trim();
-            let group = lineStr.includes('group-title="') ? lineStr.split('group-title="')[1].split('"')[0] : "Others";
-            let logo = lineStr.match(/tvg-logo="(.*?)"/)?.[1] || '';
-            
-            let j = i + 1;
-            let url = "", licenseKey = "", cookie = "", referer = "";
-
-            while (j < lines.length && !lines[j].startsWith("#EXTINF")) {
-                let line = lines[j].trim();
-                if (line.startsWith("http")) url = line;
-                if (line.includes("license_key=")) licenseKey = line.split("license_key=")[1].trim();
-                if (line.includes("Edge-Cache-Cookie=")) cookie = line.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
-                if (line.includes("http-referrer=")) referer = line.split("http-referrer=")[1].split(/[ "']/)[0];
-                j++;
-            }
-
-            let finalOutput = url;
-            if (cookie) finalOutput += `|Cookie=Edge-Cache-Cookie=${cookie}`;
-            if (referer) finalOutput += `|Referer=${referer}`;
-            if (licenseKey) finalOutput += `|drmScheme=clearkey&drmLicense=${licenseKey}`;
-
-            if (url) {
-                lfeAllChannels.push({ name, url: finalOutput, logo, group });
-                lfeCategories.add(group);
-            }
-            i = j - 1;
-        }
-    }
-    
     if (lfeAllChannels.length > 0) {
         renderLfeCategories();
         renderLfeSlider();
     } else {
-        const sliderContainer = document.getElementById('lfeSliderContainer');
         if (sliderContainer) {
             sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;">বর্তমানে কোনো লাইভ ইভেন্ট উপলব্ধ নেই</div>';
+        }
+    }
+
+    function parseAndAddChannels(data, defaultSource) {
+        const lines = data.split(/\r?\n/);
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith("#EXTINF")) {
+                let lineStr = lines[i];
+                let name = lineStr.split(',').pop().trim();
+                let group = lineStr.includes('group-title="') ? lineStr.split('group-title="')[1].split('"')[0] : "Others";
+                let logo = lineStr.match(/tvg-logo="(.*?)"/)?.[1] || '';
+                
+                let j = i + 1;
+                let url = "", licenseKey = "", cookie = "", referer = "";
+
+                while (j < lines.length && !lines[j].startsWith("#EXTINF")) {
+                    let line = lines[j].trim();
+                    if (line.startsWith("http")) url = line;
+                    if (line.includes("license_key=")) licenseKey = line.split("license_key=")[1].trim();
+                    if (line.includes("Edge-Cache-Cookie=")) cookie = line.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
+                    if (line.includes("http-referrer=")) referer = line.split("http-referrer=")[1].split(/[ "']/)[0];
+                    j++;
+                }
+
+                let finalOutput = url;
+                if (cookie) finalOutput += `|Cookie=Edge-Cache-Cookie=${cookie}`;
+                if (referer) finalOutput += `|Referer=${referer}`;
+                if (licenseKey) finalOutput += `|drmScheme=clearkey&drmLicense=${licenseKey}`;
+
+                if (url && url.trim() !== "") {
+                    allParsedChannels.push({ name, url: finalOutput, logo, group, source: defaultSource });
+                    lfeCategories.add(group);
+                }
+                i = j - 1;
+            }
         }
     }
 }
@@ -535,6 +551,22 @@ function renderLfeSlider() {
     }
 
     filtered.forEach((ch) => {
+        let siteIcon = 'https://i.ibb.co/3W68Z93/shield.png'; 
+        let source = (ch.source || '').toLowerCase();
+        let groupLower = (ch.group || '').toLowerCase();
+        let nameLower = (ch.name || '').toLowerCase();
+
+        // নিখুঁতভাবে নির্ধারণ করা হচ্ছে আইটেমটি কোন প্ল্যাটফর্ম বা রিলিজ থেকে এসেছে
+        if (source === 'fancode' || groupLower.includes('fancode') || nameLower.includes('fancode') || nameLower.includes('fc')) {
+            siteIcon = 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6c/FanCode_logo.svg/500px-FanCode_logo.svg.png';
+        } else if (source === 'tapmad' || groupLower.includes('tapmad') || nameLower.includes('tapmad')) {
+            siteIcon = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/tapmad%20icon.png';
+        } else if (source === 'sonyliv' || groupLower.includes('sony') || nameLower.includes('sonyliv')) {
+            siteIcon = 'https://www.freelogovectors.net/wp-content/uploads/2021/12/sonyliv-logo-freelogovectors.net_.png';
+        } else if (source === 'willow' || groupLower.includes('willow') || nameLower.includes('willow')) {
+            siteIcon = 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png';
+        }
+
         const card = document.createElement('div');
         card.className = 'card';
         card.onclick = () => sendData(ch.url);
@@ -544,6 +576,11 @@ function renderLfeSlider() {
                     <div class="lfe-dot"></div>
                     <span class="lfe-live-text">LIVE</span>
                 </div>
+                
+                <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+                    <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
+                </div>
+
                 <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
                 <div class="lfe-card-title">${ch.name}</div>
             </div>
@@ -678,7 +715,7 @@ function updateTimers() {
         let card = el.closest('.card'); 
         let league = card.querySelector('.league-header').innerText.toUpperCase(); 
         
-        let maxDuration = 28800000; // টেস্ট ম্যাচের প্রতিদিনের সেশন ৮ ঘণ্টা (২৮,৮০০,০০০ মি.সে.)
+        let maxDuration = 28800000; 
         if (league.includes('ODI')) maxDuration = 36000000; 
         else if (!league.includes('TEST')) maxDuration = 10800000; 
          
@@ -687,9 +724,8 @@ function updateTimers() {
 
         if (diff < 0) { 
             let elapsed = Math.abs(diff); 
-            // টেস্ট ম্যাচের ক্ষেত্রে বর্তমান দিনের ৮ ঘণ্টা পার হয়ে গেলে পরবর্তী দিনের ব্রেক দেখাবে, অন্যথায় রানিং দেখাবে
             if (league.includes('TEST')) {
-                let daySessionMod = elapsed % (maxDuration + 57600000); // ৮ ঘণ্টা খেলা + ১৬ ঘণ্টা ব্রেক বা পরবর্তী দিন ধরে লজিক
+                let daySessionMod = elapsed % (maxDuration + 57600000); 
                 if (daySessionMod <= maxDuration) {
                     let h = Math.floor(daySessionMod / 3600000); 
                     let m = Math.floor((daySessionMod % 3600000) / 60000); 
@@ -725,7 +761,7 @@ function sendData(url) {
     else if (window.CustomWebView) window.CustomWebView.setWebViewString(url); 
     else window.WebViewString = url; 
 }
-</script> 
+</script>
+
 </body> 
-    </html>
-    
+</html>
