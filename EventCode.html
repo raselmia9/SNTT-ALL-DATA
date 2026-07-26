@@ -1,293 +1,330 @@
+
 <!DOCTYPE html> 
 <html> 
 <head>     
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-</head> 
+    <style>     
+        body { 
+            background-color: #0d1117; 
+            color: #fff; 
+            font-family: sans-serif; 
+            padding: 10px; 
+            margin: 0; 
+            padding-bottom: 90px; 
+            box-sizing: border-box;
+            width: 100%;
+            overflow-x: hidden; 
+        }         
+
+        .live-slider-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            width: 100%;
+            max-width: 100%;
+            padding: 5px 0 15px 0;
+            margin-bottom: 5px;
+            box-sizing: border-box;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .live-slider-container::-webkit-scrollbar { display: none; }
+        .live-slider-container .card {
+            flex: 0 0 85% !important;
+            max-width: 320px !important;
+            scroll-snap-align: start;
+            margin-bottom: 0 !important;
+        }
+
+        .lfe-slider-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            width: 100%;
+            max-width: 100%;
+            padding: 5px 0 10px 0;
+            margin-bottom: 5px;
+            box-sizing: border-box;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .lfe-slider-container::-webkit-scrollbar { display: none; }
+        .lfe-slider-container .card {
+            flex: 0 0 65% !important;
+            max-width: 220px !important;
+            height: 110px !important;
+            padding: 0 !important;
+            overflow: hidden;
+            scroll-snap-align: start;
+            margin-bottom: 0 !important;
+        }
+
+        .category-container { 
+            display: flex; 
+            overflow-x: auto; 
+            gap: 12px; 
+            width: 100%; 
+            max-width: 100%;
+            padding: 5px 0 15px 0;
+            box-sizing: border-box;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .category-container::-webkit-scrollbar { display: none; }
+
+        .category-bar { 
+            display: flex; 
+            overflow-x: auto; 
+            gap: 8px; 
+            padding: 5px 0 10px 0; 
+            white-space: nowrap; 
+            margin-bottom: 10px; 
+        }
+        .category-bar::-webkit-scrollbar { display: none; }
+        .cat-btn { background: #161b22; color: #10b981; border: 2px solid #10b981; padding: 6px 14px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+        .cat-btn:hover { background: #10b981; color: #fff; }
+        
+        .cat-card { 
+            background: #161b22; 
+            border: 2px solid #10b981; 
+            border-radius: 15px; 
+            padding: 10px; 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            flex: 0 0 140px; 
+            height: 60px; 
+            box-sizing: border-box; 
+            scroll-snap-align: start;
+        }
+
+        .cat-icon { 
+            width: 35px; height: 35px; border-radius: 50%; background: #fff; margin-right: 10px; 
+            display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+        }
+        .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            margin: 5px 0 10px 0;
+        }
+        .slider-dots span {
+            width: 8px;
+            height: 8px;
+            background: #484f58;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s, width 0.3s;
+        }
+        .slider-dots span.active {
+            background: #10b981;
+            width: 22px;
+            border-radius: 4px;
+        }
+
+        .card {      
+            background: #161b22;      
+            border: 2px solid transparent;      
+            border-radius: 15px;      
+            padding: 15px;      
+            margin-bottom: 20px;      
+            cursor: pointer;      
+            width: 100%;      
+            box-sizing: border-box;     
+            background-clip: padding-box, border-box;     
+            background-origin: border-box;     
+            background-image: linear-gradient(#161b22, #161b22), linear-gradient(45deg, #f43f5e, #10b981, #3b82f6, #f43f5e);     
+            background-size: 100% 100%, 400% 400%;     
+            animation: gradient-animation 3s ease infinite; 
+            position: relative !important;
+        }
+
+        @keyframes gradient-animation {     
+            0% { background-position: 0% 50%; }     
+            50% { background-position: 100% 50%; }     
+            100% { background-position: 0% 50%; } 
+        }             
+
+        .league-header { font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; }         
+        .match-row { display: flex; align-items: center; justify-content: space-between; }         
+        .team { display: flex; flex-direction: column; align-items: center; width: 35%; }         
+        .logo-box { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; }         
+        .logo-box img { width: 100%; height: 100%; object-fit: cover; }         
+        .status { text-align: center; width: 30%; font-size: 11px; font-weight: bold; }         
+        .timer { font-size: 12px; font-weight: bold; margin-bottom: 2px; }         
+        .text-green { color: #10b981; } 
+        .text-red { color: #f43f5e; } 
+        .text-orange { color: #f59e0b; }         
+        .start-time { font-size: 10px; color: #fff; }         
+        .start-date { font-size: 10px; color: #94a3b8; }         
+        .dot { height: 8px; width: 8px; background-color: #f43f5e; border-radius: 50%; animation: pulse 1s infinite; display: inline-block; }         
+        
+        @keyframes pulse { 
+            0% { opacity: 1; } 
+            50% { opacity: 0; } 
+            100% { opacity: 1; } 
+        }         
+
+        #loader-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(13, 17, 23, 0.95); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+        }         
+        .loader { border: 5px solid #333; border-top: 5px solid #10b981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }         
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }    
+
+        .hot-badge {
+            position: absolute !important;
+            top: 0px !important;
+            right: 0px !important;
+            background: #f43f5e;
+            color: white;
+            padding: 3px 8px;
+            font-size: 9px;
+            font-weight: bold;
+            border-bottom-left-radius: 8px;
+            border-top-right-radius: 12px;
+            z-index: 9999 !important;
+            box-shadow: 0px 4px 10px rgba(244, 63, 94, 0.6); 
+            animation: glow-animation 1.5s infinite alternate;
+        }
+
+        @keyframes glow-animation {
+            0% { box-shadow: 0px 2px 5px rgba(244, 63, 94, 0.4); }
+            100% { box-shadow: 0px 4px 15px rgba(244, 63, 94, 0.9); }
+        }
+
+        .poster-card {
+            padding: 0 !important;
+            overflow: hidden;
+            background: #161b22;
+            margin-bottom: 20px;
+        }
+
+        .poster-img-box {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border-top-left-radius: 13px;
+            border-top-right-radius: 13px;
+        }
+        .poster-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .poster-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffffff;
+            padding: 12px 12px 8px 12px;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+
+        .poster-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px 12px 12px;
+            font-size: 10px;
+            color: #8b949e;
+            border-top: 1px solid #30363d;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .loading-text {
+            text-align: center;
+            font-size: 12px;
+            color: #8b949e;
+            margin: 15px 0;
+        }
+
+        .lfe-logo-box { width: 100%; height: 100%; background: #21262d; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin: 0; border-radius: 0; }         
+        .lfe-logo-box img { width: 100%; height: 100%; object-fit: cover; } 
+        .lfe-card-title { position: absolute; bottom: 0; left: 0; width: 100%; font-size: 10px; font-weight: bold; color: #ffffff; background: rgba(13, 17, 23, 0.55); backdrop-filter: blur(3px); padding: 5px 7px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+        .lfe-live-indicator { position: absolute; top: 7px; right: 7px; display: flex; align-items: center; gap: 5px; background: rgba(13, 17, 23, 0.75); backdrop-filter: blur(4px); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.6); z-index: 2; }
+        .lfe-dot { height: 8px; width: 8px; background-color: #f43f5e; border-radius: 50%; animation: lfe-pulse 1s infinite; display: inline-block; }         
+        @keyframes lfe-pulse { 0% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8); } 70% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); } 100% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
+        .lfe-live-text { font-size: 10px; font-weight: bold; color: #f43f5e; letter-spacing: 0.5px; }
+    </style>
+</head>
 <body>
 
-<!-- লোডার -->
 <div id="loader-container">
     <div class="loader"></div>
 </div>
 
-<!-- ১. লাইভ স্লাইডার ও ডট কন্টেইনার -->
-<div id="liveWrapper">
+<div id="liveWrapper" style="margin-bottom: 15px;">
+    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">Manual Live Events</div>
     <div class="live-slider-container" id="liveSliderContainer"></div> 
     <div class="slider-dots" id="sliderDots"></div>
 </div>
 
-<!-- ২. হরিজন্টাল ক্যাটাগরি স্লাইডার -->
+<div class="lfe-wrapper" style="margin-bottom: 15px;">
+    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">Live Featured Events (Auto)</div>
+    <div id="lfeCatContainer" class="category-bar"></div>
+    <div class="lfe-slider-container" id="lfeSliderContainer"><div style="color: #8b949e; font-size: 12px; padding: 10px;">Loading live events...</div></div>
+</div>
+
 <div style="font-size: 13px; font-weight: bold; margin: 15px 0 10px 5px; color: #10b981;">CATEGORIES</div>
 
 <div class="category-container">
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_OTT_Navigator.m3u')">
         <div class="cat-icon"><img src="https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_logo.jpeg"></div><div class="cat-name">Toffee</div>
     </div>
-
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/Fancode-bd/refs/heads/main/main_playlist.m3u')">
         <div class="cat-icon"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6c/FanCode_logo.svg/500px-FanCode_logo.svg.png"></div><div class="cat-name">Fancode</div>
     </div>
-
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u')">
         <div class="cat-icon"><img src="https://www.freelogovectors.net/wp-content/uploads/2021/12/sonyliv-logo-freelogovectors.net_.png"></div><div class="cat-name">SonyLiv</div>
     </div>
-
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u')">
         <div class="cat-icon"><img src="https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/tapmad%20icon.png"></div><div class="cat-name">Tapmad</div>
     </div>
-
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.m3u')">
         <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/2921/2921226.png"></div><div class="cat-name">Willow Event</div>
     </div>
-
-
+    <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/sm-monirulislam/CricHD-Auto-Update-Playlist/refs/heads/main/crichd.m3u')">
+        <div class="cat-icon"><img src="https://m.media-amazon.com/images/I/21h60OobgjL.jpg"></div><div class="cat-name">CricHD</div>
+    </div>
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u')">
         <div class="cat-icon"><img src="https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/image/Picsart_25-11-23_23-36-41-742.png"></div><div class="cat-name">Mrgify</div>
     </div>
-
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/raselmia9/My-all-Playlist/refs/heads/main/iScreen-Live-channel.m3u')">
         <div class="cat-icon"><img src="https://static.wikia.nocookie.net/etv-gspn-bangla/images/1/18/IScreen_logo.png/revision/latest/scale-to-width-down/837?cb=20231207080112"></div><div class="cat-name">iScreen</div>
     </div>
-
-    
+    <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+        <div class="cat-icon"><img src="https://flagcdn.com/bd.svg"></div><div class="cat-name">Bangla</div>
+    </div>
+    <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
+        <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/651/651717.png"></div><div class="cat-name">Musics</div>
+    </div>
 </div>
 
-<!-- ৩. মুভি সেকশন হেডিং -->
 <div style="font-size: 13px; font-weight: bold; margin: 20px 0 10px 5px; color: #10b981;">POPULAR MOVIES & SERIES</div>
-
-<!-- ৪. মুভি কন্টেইনার -->
 <div id="movieContainer"></div>
 
-<style>     
-    body { 
-        background-color: #0d1117; 
-        color: #fff; 
-        font-family: sans-serif; 
-        padding: 10px; 
-        margin: 0; 
-        padding-bottom: 90px; 
-        box-sizing: border-box;
-        width: 100%;
-        overflow-x: hidden; 
-    }         
 
-    .live-slider-container {
-        display: flex;
-        overflow-x: auto;
-        gap: 15px;
-        width: 100%;
-        max-width: 100%;
-        padding: 5px 0 15px 0;
-        margin-bottom: 5px;
-        box-sizing: border-box;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-    }
+        
 
-    .live-slider-container::-webkit-scrollbar {
-        display: none;
-    }
 
-    .category-container { 
-        display: flex; 
-        overflow-x: auto; 
-        gap: 12px; 
-        width: 100%; 
-        max-width: 100%;
-        padding: 5px 0 15px 0;
-        box-sizing: border-box;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .category-container::-webkit-scrollbar {
-        display: none;
-    }
-    
-    .cat-card { 
-        background: #161b22; 
-        border: 2px solid #10b981; 
-        border-radius: 15px; 
-        padding: 10px; 
-        display: flex; 
-        align-items: center; 
-        cursor: pointer; 
-        flex: 0 0 140px; 
-        height: 60px; 
-        box-sizing: border-box; 
-        scroll-snap-align: start;
-    }
 
-    .cat-icon { 
-        width: 35px; height: 35px; border-radius: 50%; background: #fff; margin-right: 10px; 
-        display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
-    }
-    .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
-    .cat-name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
 
-    .slider-dots {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 6px;
-        width: 100%;
-        margin: 5px 0 10px 0;
-    }
-
-    .slider-dots span {
-        width: 8px;
-        height: 8px;
-        background: #484f58;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background 0.3s, width 0.3s;
-    }
-
-    .slider-dots span.active {
-        background: #10b981;
-        width: 22px;
-        border-radius: 4px;
-    }
-
-    .live-slider-container .card {
-        flex: 0 0 85% !important;
-        max-width: 320px !important;
-        scroll-snap-align: start;
-        margin-bottom: 0 !important;
-    }
-
-    .card {      
-        background: #161b22;      
-        border: 2px solid transparent;      
-        border-radius: 15px;      
-        padding: 15px;      
-        margin-bottom: 20px;      
-        cursor: pointer;      
-        width: 100%;      
-        box-sizing: border-box;     
-        background-clip: padding-box, border-box;     
-        background-origin: border-box;     
-        background-image: linear-gradient(#161b22, #161b22), linear-gradient(45deg, #f43f5e, #10b981, #3b82f6, #f43f5e);     
-        background-size: 100% 100%, 400% 400%;     
-        animation: gradient-animation 3s ease infinite; 
-        position: relative !important;
-    }
-
-    @keyframes gradient-animation {     
-        0% { background-position: 0% 50%; }     
-        50% { background-position: 100% 50%; }     
-        100% { background-position: 0% 50%; } 
-    }             
-
-    .league-header { font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; }         
-    .match-row { display: flex; align-items: center; justify-content: space-between; }         
-    .team { display: flex; flex-direction: column; align-items: center; width: 35%; }         
-    .logo-box { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; }         
-    .logo-box img { width: 100%; height: 100%; object-fit: cover; }         
-    .status { text-align: center; width: 30%; font-size: 11px; font-weight: bold; }         
-    .timer { font-size: 12px; font-weight: bold; margin-bottom: 2px; }         
-    .text-green { color: #10b981; } 
-    .text-red { color: #f43f5e; } 
-    .text-orange { color: #f59e0b; }         
-    .start-time { font-size: 10px; color: #fff; }         
-    .start-date { font-size: 10px; color: #94a3b8; }         
-    .dot { height: 8px; width: 8px; background-color: #f43f5e; border-radius: 50%; animation: pulse 1s infinite; display: inline-block; }         
-    
-    @keyframes pulse { 
-        0% { opacity: 1; } 
-        50% { opacity: 0; } 
-        100% { opacity: 1; } 
-    }         
-
-    #loader-container { 
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%; 
-        background: rgba(13, 17, 23, 0.95); 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        z-index: 1000; 
-    }         
-    .loader { border: 5px solid #333; border-top: 5px solid #10b981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }         
-    
-    @keyframes spin { 
-        0% { transform: rotate(0deg); } 
-        100% { transform: rotate(360deg); } 
-    }    
-
-    .hot-badge {
-        position: absolute !important;
-        top: 0px !important;
-        right: 0px !important;
-        background: #f43f5e;
-        color: white;
-        padding: 3px 8px;
-        font-size: 9px;
-        font-weight: bold;
-        border-bottom-left-radius: 8px;
-        border-top-right-radius: 12px;
-        z-index: 9999 !important;
-        box-shadow: 0px 4px 10px rgba(244, 63, 94, 0.6); 
-        animation: glow-animation 1.5s infinite alternate;
-    }
-
-    @keyframes glow-animation {
-        0% { box-shadow: 0px 2px 5px rgba(244, 63, 94, 0.4); }
-        100% { box-shadow: 0px 4px 15px rgba(244, 63, 94, 0.9); }
-    }
-
-    .poster-card {
-        padding: 0 !important;
-        overflow: hidden;
-        background: #161b22;
-        margin-bottom: 20px;
-    }
-
-    .poster-img-box {
-        width: 100%;
-        height: 180px;
-        overflow: hidden;
-        border-top-left-radius: 13px;
-        border-top-right-radius: 13px;
-    }
-
-    .poster-img-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .poster-title {
-        font-size: 13px;
-        font-weight: bold;
-        color: #ffffff;
-        padding: 12px 12px 8px 12px;
-        line-height: 1.4;
-        white-space: pre-line;
-    }
-
-    .poster-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 12px 12px 12px;
-        font-size: 10px;
-        color: #8b949e;
-        border-top: 1px solid #30363d;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    
-    .loading-text {
-        text-align: center;
-        font-size: 12px;
-        color: #8b949e;
-        margin: 15px 0;
-    }
-</style>
 
 <script>    
 const showLiveSlider = true; 
@@ -298,34 +335,30 @@ const batchSize = 15;
 let currentSearch = '';
 
 window.addEventListener('load', () => { 
-    // গ্যারান্টিযুক্ত সেফটি: যেকোনো পরিস্থিতিতে সর্বোচ্চ ১.৫ সেকেন্ডের মধ্যে লোডার হাইড হবেই
-    setTimeout(hideLoader, 1500);
+    const forceHideTimer = setTimeout(hideLoader, 1000);
 
-    // লাইভ ইভেন্ট ফেচ (এটি ফেইল করলেও মুভি লোড হওয়া আটকাবে না)
-    if (!showLiveSlider) {
-        const liveWrapper = document.getElementById('liveWrapper');
-        if (liveWrapper) liveWrapper.remove();
-    } else {
-        fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Live%20Event.json')
-            .then(res => res.json())
-            .then(data => loadLiveMatches(data))
-            .catch(err => console.log('Live fetch ignored error:', err));
-    }
+    fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Live%20Event.json')
+        .then(res => res.json())
+        .then(data => loadLiveMatches(data))
+        .catch(err => console.log('Manual Live error:', err));
     
-    // মুভি জেসন ফেচ
     fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Popular%20movie.json')
         .then(res => res.json())
         .then(data => {
             allMovies = data;
             loadMoreMovies();
             hideLoader();
+            clearTimeout(forceHideTimer);
         })
         .catch(err => {
             console.log('Movie fetch error:', err);
             document.getElementById('movieContainer').innerHTML = '<div class="loading-text">Failed to load movies</div>';
             hideLoader();
+            clearTimeout(forceHideTimer);
         });
     
+    setTimeout(initMultiPlaylists, 100);
+
     setInterval(updateTimers, 1000); 
     setInterval(updateMovieTimers, 60000);
 
@@ -374,6 +407,156 @@ function loadLiveMatches(matches) {
     setupSliderDots();
 }
 
+let lfeAllChannels = [];
+let lfeCategories = new Set();
+let lfeActiveCategory = "All";
+
+async function initMultiPlaylists() {
+    const targetUrls = [
+        "https://raw.githubusercontent.com/srhady/Fancode-bd/refs/heads/main/main_playlist.m3u",
+      
+        "https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u",
+        "https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u"
+    ];
+
+    let combinedData = "";
+
+    // ফাস্ট লোডিংয়ের জন্য সব লিংক একসাথে ফেচ করা শুরু হবে
+    let promises = targetUrls.map(async (targetUrl) => {
+        try {
+            let res = await fetch(targetUrl);
+            if (res.ok) {
+                let text = await res.text();
+                if (text && text.includes("#EXTINF")) return text;
+            }
+        } catch (e) {}
+
+        try {
+            let proxyRes = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl));
+            if (proxyRes.ok) {
+                let text = await proxyRes.text();
+                if (text && text.includes("#EXTINF")) return text;
+            }
+        } catch (err) {}
+        return "";
+    });
+
+    let results = await Promise.all(promises);
+    results.forEach(text => {
+        if (text) combinedData += "\n" + text;
+    });
+
+    if (combinedData && combinedData.includes("#EXTINF")) {
+        parseLfeM3U(combinedData);
+    } else {
+        const sliderContainer = document.getElementById('lfeSliderContainer');
+        if (sliderContainer) {
+            sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;">বর্তমানে কোনো লাইভ ইভেন্ট উপলব্ধ নেই</div>';
+        }
+    }
+}
+
+function parseLfeM3U(data) {
+    const lines = data.split(/\r?\n/);
+    lfeAllChannels = [];
+    lfeCategories.clear();
+    
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith("#EXTINF")) {
+            let lineStr = lines[i];
+            let name = lineStr.split(',').pop().trim();
+            let group = lineStr.includes('group-title="') ? lineStr.split('group-title="')[1].split('"')[0] : "Others";
+            let logo = lineStr.match(/tvg-logo="(.*?)"/)?.[1] || '';
+            
+            let j = i + 1;
+            let url = "", licenseKey = "", cookie = "", referer = "";
+
+            while (j < lines.length && !lines[j].startsWith("#EXTINF")) {
+                let line = lines[j].trim();
+                if (line.startsWith("http")) url = line;
+                if (line.includes("license_key=")) licenseKey = line.split("license_key=")[1].trim();
+                if (line.includes("Edge-Cache-Cookie=")) cookie = line.split("Edge-Cache-Cookie=")[1].split(/[ "']/)[0];
+                if (line.includes("http-referrer=")) referer = line.split("http-referrer=")[1].split(/[ "']/)[0];
+                j++;
+            }
+
+            let finalOutput = url;
+            if (cookie) finalOutput += `|Cookie=Edge-Cache-Cookie=${cookie}`;
+            if (referer) finalOutput += `|Referer=${referer}`;
+            if (licenseKey) finalOutput += `|drmScheme=clearkey&drmLicense=${licenseKey}`;
+
+            if (url) {
+                lfeAllChannels.push({ name, url: finalOutput, logo, group });
+                lfeCategories.add(group);
+            }
+            i = j - 1;
+        }
+    }
+    
+    if (lfeAllChannels.length > 0) {
+        renderLfeCategories();
+        renderLfeSlider();
+    } else {
+        const sliderContainer = document.getElementById('lfeSliderContainer');
+        if (sliderContainer) {
+            sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;">বর্তমানে কোনো লাইভ ইভেন্ট উপলব্ধ নেই</div>';
+        }
+    }
+}
+
+function renderLfeCategories() {
+    const bar = document.getElementById('lfeCatContainer');
+    if (!bar) return;
+    
+    const customOrder = ["Cricket", "Football"];
+    let otherCats = Array.from(lfeCategories).filter(cat => !customOrder.includes(cat)).sort();
+    let sortedCats = [...customOrder.filter(cat => lfeCategories.has(cat)), ...otherCats];
+
+    bar.innerHTML = `<button class="cat-btn" onclick="window.lfeFilterCat('All')">All (${lfeAllChannels.length})</button>`;
+    sortedCats.forEach(cat => {
+        const count = lfeAllChannels.filter(ch => ch.group === cat).length;
+        bar.innerHTML += `<button class="cat-btn" onclick="window.lfeFilterCat('${cat}')">${cat} (${count})</button>`;
+    });
+}
+
+function renderLfeSlider() {
+    const sliderContainer = document.getElementById('lfeSliderContainer');
+    if (!sliderContainer) return;
+
+    sliderContainer.innerHTML = '';
+    
+    const filtered = lfeActiveCategory === 'All' 
+        ? lfeAllChannels 
+        : lfeAllChannels.filter(ch => ch.group === lfeActiveCategory);
+
+    if (filtered.length === 0) {
+        sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;">কোনো চ্যানেল পাওয়া যায়নি</div>';
+        return;
+    }
+
+    filtered.forEach((ch) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => sendData(ch.url);
+        card.innerHTML = `
+            <div class="lfe-logo-box">
+                <div class="lfe-live-indicator">
+                    <div class="lfe-dot"></div>
+                    <span class="lfe-live-text">LIVE</span>
+                </div>
+                <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
+                <div class="lfe-card-title">${ch.name}</div>
+            </div>
+        `;
+        sliderContainer.appendChild(card);
+    });
+}
+
+window.lfeFilterCat = function(cat) {
+    lfeActiveCategory = cat;
+    renderLfeSlider();
+};
+
 function loadMoreMovies() {
     const container = document.getElementById('movieContainer');
     if (!container) return;
@@ -412,7 +595,7 @@ function loadMoreMovies() {
 }
 
 function setupSliderDots() {
-    const slider = document.querySelector('.live-slider-container');
+    const slider = document.getElementById('liveSliderContainer');
     if (!slider) return;
     const cards = slider.querySelectorAll('.card');
     const dotsContainer = document.getElementById('sliderDots');
@@ -441,11 +624,16 @@ function filterMatches(input) {
     document.getElementById('movieContainer').innerHTML = '';
     
     if (showLiveSlider) {
-        document.querySelectorAll('.live-slider-container .card').forEach(card => { 
+        document.querySelectorAll('#liveSliderContainer .card').forEach(card => { 
             let text = card.innerText.toLowerCase(); 
             card.style.display = text.includes(currentSearch) ? "block" : "none";
         }); 
     }
+
+    document.querySelectorAll('#lfeSliderContainer .card').forEach(card => {
+        let text = card.innerText.toLowerCase();
+        card.style.display = text.includes(currentSearch) ? "block" : "none";
+    });
 
     document.querySelectorAll('.category-container .cat-card').forEach(card => { 
         let text = card.innerText.toLowerCase(); 
@@ -489,23 +677,39 @@ function updateTimers() {
                          
         let card = el.closest('.card'); 
         let league = card.querySelector('.league-header').innerText.toUpperCase(); 
-        let maxDuration = 10800000; 
-        if (league.includes('TEST')) maxDuration = 432000000; 
-        else if (league.includes('ODI')) maxDuration = 36000000; 
+        
+        let maxDuration = 28800000; // টেস্ট ম্যাচের প্রতিদিনের সেশন ৮ ঘণ্টা (২৮,৮০০,০০০ মি.সে.)
+        if (league.includes('ODI')) maxDuration = 36000000; 
+        else if (!league.includes('TEST')) maxDuration = 10800000; 
          
         el.querySelector('.start-time').innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}); 
         el.querySelector('.start-date').innerText = dateObj.toLocaleDateString('en-GB'); 
 
-        if (diff < 0 && diff > -maxDuration) { 
+        if (diff < 0) { 
             let elapsed = Math.abs(diff); 
-            let h = Math.floor(elapsed / 3600000); 
-            let m = Math.floor((elapsed % 3600000) / 60000); 
-            let s = Math.floor((elapsed % 60000) / 1000); 
-            timerEl.className = "timer text-red"; 
-            timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`; 
-        } else if (diff <= -maxDuration) { 
-            timerEl.className = "timer"; 
-            timerEl.innerText = "Finished"; 
+            // টেস্ট ম্যাচের ক্ষেত্রে বর্তমান দিনের ৮ ঘণ্টা পার হয়ে গেলে পরবর্তী দিনের ব্রেক দেখাবে, অন্যথায় রানিং দেখাবে
+            if (league.includes('TEST')) {
+                let daySessionMod = elapsed % (maxDuration + 57600000); // ৮ ঘণ্টা খেলা + ১৬ ঘণ্টা ব্রেক বা পরবর্তী দিন ধরে লজিক
+                if (daySessionMod <= maxDuration) {
+                    let h = Math.floor(daySessionMod / 3600000); 
+                    let m = Math.floor((daySessionMod % 3600000) / 60000); 
+                    let s = Math.floor((daySessionMod % 60000) / 1000); 
+                    timerEl.className = "timer text-red"; 
+                    timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`;
+                } else {
+                    timerEl.className = "timer"; 
+                    timerEl.innerText = "Stumps / Break";
+                }
+            } else if (elapsed <= maxDuration) {
+                let h = Math.floor(elapsed / 3600000); 
+                let m = Math.floor((elapsed % 3600000) / 60000); 
+                let s = Math.floor((elapsed % 60000) / 1000); 
+                timerEl.className = "timer text-red"; 
+                timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`; 
+            } else { 
+                timerEl.className = "timer"; 
+                timerEl.innerText = "Finished"; 
+            }
         } else { 
             let h = Math.floor(diff / 3600000); 
             let m = Math.floor((diff % 3600000) / 60000); 
@@ -523,4 +727,5 @@ function sendData(url) {
 }
 </script> 
 </body> 
-</html>
+    </html>
+    
