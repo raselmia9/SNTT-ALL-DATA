@@ -1,35 +1,7 @@
 [
 
 
-  {
-    "eventTitle": "CRICKET T20 | THE HUNDRED",
-    "matchTime": "2026-07-26 05:00:00",
-    "team1Logo": "https://www.jumpdesign.co.uk/wp-content/uploads/2021/09/BANNER-v2.jpg",
-    "team2Logo": "https://www.jumpdesign.co.uk/wp-content/uploads/2021/09/BANNER-v2.jpg",
-    "team1Title": "ALL",
-    "team2Title": "ALL",
-    "streamLink": "https://saseries.akamaized.net/hls/live/2110097/ZIMvsIND-3827e1/master.m3u8"
-  },
-  
-  {
-    "eventTitle": "CRICKET T20 | SRI LANKA PREMIER LEAGUE",
-    "matchTime": "2026-07-26 05:00:00",
-    "team1Logo": "https://images.seeklogo.com/logo-png/48/1/lanka-premier-league-logo-png_seeklogo-486036.png",
-    "team2Logo": "https://images.seeklogo.com/logo-png/48/1/lanka-premier-league-logo-png_seeklogo-486036.png",
-    "team1Title": "ALL",
-    "team2Title": "ALL",
-    "streamLink": "https://raw.githubusercontent.com/srhady/Fancode-bd/main/raw_link/galle_gallants_vs_dambulla_sixers_4246713_english.m3u8"
-  },
 
-  {
-    "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
-    "matchTime": "2026-07-26 05:00:00",
-    "team1Logo": "https://www.bssnews.net/assets/news_photos/2026/02/15/image-361372-1771162130.jpg",
-    "team2Logo": "https://www.bssnews.net/assets/news_photos/2026/02/15/image-361372-1771162130.jpg",
-    "team1Title": "ALL",
-    "team2Title": "ALL",
-    "streamLink": "https://raw.githubusercontent.com/srhady/Fancode-bd/main/raw_link/san_francisco_unicorns_vs_perth_scorchers_xi_4247431_english.m3u8"
-  },
   {
     "eventTitle": "CRICKET TEST SERIES | INTERNATIONAL",
     "matchTime": "2026-07-25 20:00:00",
