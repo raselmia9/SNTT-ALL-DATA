@@ -1,5 +1,16 @@
 [
 
+
+  {
+    "eventTitle": "CRICKET T20 | THE HUNDRED",
+    "matchTime": "2026-07-26 05:00:00",
+    "team1Logo": "https://www.jumpdesign.co.uk/wp-content/uploads/2021/09/BANNER-v2.jpg",
+    "team2Logo": "https://www.jumpdesign.co.uk/wp-content/uploads/2021/09/BANNER-v2.jpg",
+    "team1Title": "ALL",
+    "team2Title": "ALL",
+    "streamLink": "https://saseries.akamaized.net/hls/live/2110097/ZIMvsIND-3827e1/master.m3u8"
+  }
+  
   {
     "eventTitle": "CRICKET T20 | SRI LANKA PREMIER LEAGUE",
     "matchTime": "2026-07-26 05:00:00",
