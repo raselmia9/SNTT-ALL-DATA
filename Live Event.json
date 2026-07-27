@@ -2,7 +2,7 @@
 
 
   
-       {
+          {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-28 05:00:00",
         "team1Logo": "https://cricketvectors.akamaized.net/Teams/QS.png",
@@ -32,7 +32,7 @@
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-30 05:00:00",
-        "team1Logo": "https://cricketvectors.akamaized.net/Teams/GAW.png",
+        "team1Logo": "https://cricketvectors.akamaized.net/Teams/2Y.png",
         "team2Logo": "https://cricketvectors.akamaized.net/Teams/PS.png",
         "team1Title": "Guyana Amazon Warriors",
         "team2Title": "Perth Scorchers",
@@ -45,13 +45,13 @@
         "team2Logo": "https://cricketvectors.akamaized.net/Teams/DV.png",
         "team1Title": "Lahore Qalandars",
         "team2Title": "Desert Vipers",
-        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/percent_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-31 05:00:00",
         "team1Logo": "https://cricketvectors.akamaized.net/Teams/QS.png",
-        "team2Logo": "https://cricketvectors.akamaized.net/Teams/GAW.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Teams/2Y.png",
         "team1Title": "San Francisco Unicorns",
         "team2Title": "Guyana Amazon Warriors",
         "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
@@ -70,8 +70,8 @@
         "matchTime": "2026-08-01 19:00:00",
         "team1Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
         "team2Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
-        "team1Title": "Final",
-        "team2Title": "Final",
+        "team1Title": "TBD",
+        "team2Title": "TBD",
         "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
 
