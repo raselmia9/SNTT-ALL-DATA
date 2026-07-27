@@ -2,7 +2,7 @@
 
 
   
-          {
+             {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-28 05:00:00",
         "team1Logo": "https://cricketvectors.akamaized.net/Teams/QS.png",
@@ -49,31 +49,86 @@
     },
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
-        "matchTime": "2026-07-31 05:00:00",
-        "team1Logo": "https://cricketvectors.akamaized.net/Teams/QS.png",
-        "team2Logo": "https://cricketvectors.akamaized.net/Teams/2Y.png",
-        "team1Title": "San Francisco Unicorns",
-        "team2Title": "Guyana Amazon Warriors",
+        "matchTime": "2026-08-01 19:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
+        "team1Title": "Team 1 (TBC)",
+        "team2Title": "Team 2 (TBC)",
         "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
-        "matchTime": "2026-07-31 20:00:00",
-        "team1Logo": "https://cricketvectors.akamaized.net/Teams/LQ.png",
+        "matchTime": "2026-08-02 19:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
+        "team1Title": "Finalist 1 (TBC)",
+        "team2Title": "Finalist 2 (TBC)",
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+    }
+    {
+        "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
+        "matchTime": "2026-07-28 05:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Teams/QS.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Teams/DV.png",
+        "team1Title": "San Francisco Unicorns",
+        "team2Title": "Desert Vipers",
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+    },
+    {
+        "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
+        "matchTime": "2026-07-29 05:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Teams/DV.png",
         "team2Logo": "https://cricketvectors.akamaized.net/Teams/PS.png",
-        "team1Title": "Lahore Qalandars",
+        "team1Title": "Desert Vipers",
         "team2Title": "Perth Scorchers",
         "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+    },
+    {
+        "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
+        "matchTime": "2026-07-29 20:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Teams/LQ.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Teams/QS.png",
+        "team1Title": "Lahore Qalandars",
+        "team2Title": "San Francisco Unicorns",
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+    },
+    {
+        "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
+        "matchTime": "2026-07-30 05:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Teams/2Y.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Teams/PS.png",
+        "team1Title": "Guyana Amazon Warriors",
+        "team2Title": "Perth Scorchers",
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+    },
+    {
+        "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
+        "matchTime": "2026-07-30 20:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Teams/LQ.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Teams/DV.png",
+        "team1Title": "Lahore Qalandars",
+        "team2Title": "Desert Vipers",
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/percent_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-08-01 19:00:00",
         "team1Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
         "team2Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
-        "team1Title": "TBD",
-        "team2Title": "TBD",
+        "team1Title": "Team 1 (TBC)",
+        "team2Title": "Team 2 (TBC)",
         "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
     },
+    {
+        "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
+        "matchTime": "2026-08-02 19:00:00",
+        "team1Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
+        "team2Logo": "https://cricketvectors.akamaized.net/Series/2EM.png",
+        "team1Title": "Finalist 1 (TBC)",
+        "team2Title": "Finalist 2 (TBC)",
+        "streamLink": "https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/"
+    },
+
 
   
   {
