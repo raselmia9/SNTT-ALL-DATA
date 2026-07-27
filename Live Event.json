@@ -3,11 +3,12 @@
 
   
 
+    
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-28 19:00:00",
-        "team1Logo": "https:\/\/cricketvectors.akamaized.net\/Team\/DV.png",
-        "team2Logo": "https:\/\/cricketvectors.akamaized.net\/Team\/PS.png",
+        "team1Logo": "https:\/\/cricketvectors.akamaized.net\/Teams\/DV.png",
+        "team2Logo": "https:\/\/cricketvectors.akamaized.net\/Teams\/PS.png",
         "team1Title": "Desert Vipers",
         "team2Title": "Perth Scorchers XI",
         "streamLink": "https:\/\/ld58dqz8ajj8.rockstreamer.com\/isc_ssai\/isc_ssai_ads\/playlist.m3u8|Referer=https:\/\/iscreen.com.bd\/"
@@ -15,8 +16,8 @@
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-29 10:00:00",
-        "team1Logo": "https:\/\/cricketvectors.akamaized.net\/Team\/LQ.png",
-        "team2Logo": "https:\/\/cricketvectors.akamaized.net\/Team\/SFU.png",
+        "team1Logo": "https:\/\/cricketvectors.akamaized.net\/Teams\/LQ.png",
+        "team2Logo": "https:\/\/cricketvectors.akamaized.net\/Teams\/SFU.png",
         "team1Title": "Lahore Qalandars",
         "team2Title": "San Francisco Unicorns",
         "streamLink": "https:\/\/ld58dqz8ajj8.rockstreamer.com\/isc_ssai\/isc_ssai_ads\/playlist.m3u8|Referer=https:\/\/iscreen.com.bd\/"
@@ -24,8 +25,8 @@
     {
         "eventTitle": "CRICKET T20 | GLOBAL SUPER LEAGUE",
         "matchTime": "2026-07-29 19:00:00",
-        "team1Logo": "https:\/\/cricketvectors.akamaized.net\/Team\/GAW.png",
-        "team2Logo": "https:\/\/cricketvectors.akamaized.net\/Team\/PS.png",
+        "team1Logo": "https:\/\/cricketvectors.akamaized.net\/Teams\/GAW.png",
+        "team2Logo": "https:\/\/cricketvectors.akamaized.net\/Teams\/PS.png",
         "team1Title": "Guyana Amazon Warriors",
         "team2Title": "Perth Scorchers XI",
         "streamLink": "https:\/\/ld58dqz8ajj8.rockstreamer.com\/isc_ssai\/isc_ssai_ads\/playlist.m3u8|Referer=https:\/\/iscreen.com.bd\/"
@@ -48,7 +49,6 @@
         "team2Title": "Final",
         "streamLink": "https:\/\/ld58dqz8ajj8.rockstreamer.com\/isc_ssai\/isc_ssai_ads\/playlist.m3u8|Referer=https:\/\/iscreen.com.bd\/"
     },
-
 
 
   
