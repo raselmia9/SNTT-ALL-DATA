@@ -10,7 +10,7 @@
         "team2Logo": "https://cricketvectors.akamaized.net/Teams/G5.png",
         "team1Title": "Colombo Kaps",
         "team2Title": "Jaffna Kings",
-        "streamLink": "Sony Ten 5,,https://bldcmprod-cdn.toffeelive.com/cdn/live/sony_sports_5_hd/playlist.m3u8|Cookie= Edge-Cache-Cookie=URLPrefix=aHR0cHM6Ly9ibGRjbXByb2QtY2RuLnRvZmZlZWxpdmUuY29t:Expires=1785374392:KeyName=prod_linear:Signature=K-YQXq0T08JNMPX7GpobgP-h9FbJxy4wf44yq9is4FZ_IP_BFCKHgePvoDJro0y_CoJQB7FdiIQ-va657eHjDg,)T Sports,,http://103.191.99.248:5550/102/tracks-v1a1/mono.m3u8,) iScreen,,https://ld58dqz8ajj8.rockstreamer.com/isc_ssai/isc_ssai_ads/playlist.m3u8|Referer=https://iscreen.com.bd/",
+        "streamLink": "T Sports,,http://103.191.99.248:5550/102/tracks-v1a1/mono.m3u8,) iScreen,,https://c9wm5zqx2rt8vnj6lpl.rockstreamer.com/v1/019f325acf6615fc60e92c29383152/019f325bba0315fc600b2da99b6c8e/main.m3u8|Referer=https://iscreen.com.bd/",
         "isHot": true
     },
     {
