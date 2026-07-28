@@ -104,28 +104,6 @@
         .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
         .cat-name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
 
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-            margin: 5px 0 10px 0;
-        }
-        .slider-dots span {
-            width: 8px;
-            height: 8px;
-            background: #484f58;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background 0.3s, width 0.3s;
-        }
-        .slider-dots span.active {
-            background: #10b981;
-            width: 22px;
-            border-radius: 4px;
-        }
-
         .card {      
             background: #161b22;      
             border: 2px solid transparent;      
@@ -271,7 +249,6 @@
 <div id="liveWrapper" style="margin-bottom: 15px;">
     <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">My Live Events</div>
     <div class="live-slider-container" id="liveSliderContainer"></div> 
-    <div class="slider-dots" id="sliderDots"></div>
 </div>
 
 <div class="lfe-wrapper" style="margin-bottom: 15px;">
@@ -280,7 +257,7 @@
     <div class="lfe-slider-container" id="lfeSliderContainer"><div style="color: #8b949e; font-size: 12px; padding: 10px;">Loading live events...</div></div>
 </div>
 
-<div style="font-size: 13px; font-weight: bold; margin: 15px 0 10px 5px; color: #10b981;">CATEGORIES</div>
+<div style="font-size: 13px; font-weight: bold; margin: 15px 0 10px 5px; color: #10b981;" id="categoryTitleMain">CATEGORIES</div>
 
 <div class="category-container">
     <div class="cat-card" onclick="sendData('Playlist>https://raw.githubusercontent.com/BINOD-XD/Toffee-Auto-Update-Playlist/refs/heads/main/toffee_OTT_Navigator.m3u')">
@@ -317,7 +294,6 @@
 
 <div style="font-size: 13px; font-weight: bold; margin: 20px 0 10px 5px; color: #10b981;">POPULAR MOVIES & SERIES</div>
 <div id="movieContainer"></div>
-
 
 
 <script>    
@@ -387,11 +363,16 @@ function loadLiveMatches(matches) {
         return;
     }
 
+    // খেলা শুরু হওয়ার সময় অনুযায়ী সিরিয়ালী সাজানো (Ascending Order)
+    matches.sort((a, b) => new Date(a.matchTime) - new Date(b.matchTime));
+
     liveWrapper.style.display = 'block';
     container.innerHTML = '';
+    
     matches.forEach(match => {
         let card = document.createElement('div');
         card.className = 'card';
+        card.setAttribute('data-start', match.matchTime);
         card.setAttribute('onclick', `sendData('${match.streamLink}')`);
         card.innerHTML = `
             ${match.isHot ? '<div class="hot-badge">HOT 🔥</div>' : ''}
@@ -404,7 +385,7 @@ function loadLiveMatches(matches) {
         `;
         container.appendChild(card);
     });
-    setupSliderDots();
+    updateTimers();
 }
 
 let lfeAllChannels = [];
@@ -428,19 +409,11 @@ async function initMultiPlaylists() {
         }
     }, 100);
 
-    // লক্ষ্য করুন: প্রতিটি প্লেলিস্টের সুনির্দিষ্ট সোর্স ট্যাগ বা লিংক এখানে ম্যাপ করা হয়েছে
     const targetPlaylists = [
-       
- 
        { url: "https://raw.githubusercontent.com/srhady/Fancode-bd/refs/heads/main/main_playlist.m3u", sourceName: "fancode" },
-
- { url: "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.m3u", sourceName: "willow" },
-       
-
- { url: "https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u", sourceName: "sonyliv" },
-       
-
- { url: "https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u", sourceName: "tapmad" }
+       { url: "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.m3u", sourceName: "willow" },
+       { url: "https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.m3u", sourceName: "sonyliv" },
+       { url: "https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.m3u", sourceName: "tapmad" }
     ];
 
     let allParsedChannels = [];
@@ -556,7 +529,6 @@ function renderLfeSlider() {
         let groupLower = (ch.group || '').toLowerCase();
         let nameLower = (ch.name || '').toLowerCase();
 
-        // নিখুঁতভাবে নির্ধারণ করা হচ্ছে আইটেমটি কোন প্ল্যাটফর্ম বা রিলিজ থেকে এসেছে
         if (source === 'fancode' || groupLower.includes('fancode') || nameLower.includes('fancode') || nameLower.includes('fc')) {
             siteIcon = 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6c/FanCode_logo.svg/500px-FanCode_logo.svg.png';
         } else if (source === 'tapmad' || groupLower.includes('tapmad') || nameLower.includes('tapmad')) {
@@ -631,51 +603,27 @@ function loadMoreMovies() {
     updateMovieTimers();
 }
 
-function setupSliderDots() {
-    const slider = document.getElementById('liveSliderContainer');
-    if (!slider) return;
-    const cards = slider.querySelectorAll('.card');
-    const dotsContainer = document.getElementById('sliderDots');
-
-    if (!dotsContainer || cards.length === 0) return;
-
-    dotsContainer.innerHTML = '';
-    cards.forEach((_, index) => {
-        const dot = document.createElement('span');
-        if (index === 0) dot.classList.add('active');
-        dotsContainer.appendChild(dot);
-    });
-
-    const dots = dotsContainer.querySelectorAll('span');
-    slider.addEventListener('scroll', () => {
-        let index = Math.round(slider.scrollLeft / slider.clientWidth);
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
-    });
-}
-
 function filterMatches(input) { 
-    currentSearch = input ? input.toLowerCase() : ''; 
+    currentSearch = input ? input.toLowerCase().trim() : ''; 
     displayedMoviesCount = 0;
     document.getElementById('movieContainer').innerHTML = '';
     
-    if (showLiveSlider) {
-        document.querySelectorAll('#liveSliderContainer .card').forEach(card => { 
-            let text = card.innerText.toLowerCase(); 
-            card.style.display = text.includes(currentSearch) ? "block" : "none";
-        }); 
+    const liveWrapper = document.getElementById('liveWrapper');
+    const lfeWrapper = document.querySelector('.lfe-wrapper');
+    const categoryContainer = document.querySelector('.category-container');
+    const categoryTitleMain = document.getElementById('categoryTitleMain');
+
+    if (currentSearch !== '') {
+        if (liveWrapper) liveWrapper.style.display = 'none';
+        if (lfeWrapper) lfeWrapper.style.display = 'none';
+        if (categoryContainer) categoryContainer.style.display = 'none';
+        if (categoryTitleMain) categoryTitleMain.style.display = 'none';
+    } else {
+        if (liveWrapper) liveWrapper.style.display = 'block';
+        if (lfeWrapper) lfeWrapper.style.display = 'block';
+        if (categoryContainer) categoryContainer.style.display = 'flex';
+        if (categoryTitleMain) categoryTitleMain.style.display = 'block';
     }
-
-    document.querySelectorAll('#lfeSliderContainer .card').forEach(card => {
-        let text = card.innerText.toLowerCase();
-        card.style.display = text.includes(currentSearch) ? "block" : "none";
-    });
-
-    document.querySelectorAll('.category-container .cat-card').forEach(card => { 
-        let text = card.innerText.toLowerCase(); 
-        card.style.display = text.includes(currentSearch) ? "flex" : "none";
-    });
 
     loadMoreMovies();
 } 
@@ -705,36 +653,55 @@ function updateMovieTimers() {
 
 function updateTimers() { 
     if (!showLiveSlider) return;
-    document.querySelectorAll('.status').forEach(el => { 
-        let start = new Date(el.getAttribute('data-start')).getTime(); 
+    
+    const liveWrapper = document.getElementById('liveWrapper');
+    let visibleCount = 0;
+
+    document.querySelectorAll('#liveSliderContainer .card').forEach(card => { 
+        let el = card.querySelector('.status');
+        if (!el) return;
+
+        let startStr = card.getAttribute('data-start');
+        let start = new Date(startStr).getTime(); 
         let now = new Date().getTime(); 
         let diff = start - now; 
         let timerEl = el.querySelector('.timer'); 
         let dateObj = new Date(start); 
                          
-        let card = el.closest('.card'); 
         let league = card.querySelector('.league-header').innerText.toUpperCase(); 
         
-        let maxDuration = 28800000; 
+        // টেস্ট ম্যাচ বা অন্যান্য ফরম্যাটের জন্য ডিউরেশন ও সময় সেটআপ
+        let maxDuration = 28800000; // ডিফল্ট টি-টোয়েন্টি/অন্যান্য ৮ ঘণ্টা
         if (league.includes('ODI')) maxDuration = 36000000; 
+        else if (league.includes('TEST')) maxDuration = 216000000; // টেস্ট ম্যাচের ৫ দিনের সেশন হিসাব (প্রায় ৬০ ঘণ্টা)
         else if (!league.includes('TEST')) maxDuration = 10800000; 
          
         el.querySelector('.start-time').innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}); 
         el.querySelector('.start-date').innerText = dateObj.toLocaleDateString('en-GB'); 
 
+        let hoursDiff = diff / 3600000;
+        let elapsed = Math.abs(diff);
+
+        let shouldHide = false;
+
         if (diff < 0) { 
-            let elapsed = Math.abs(diff); 
             if (league.includes('TEST')) {
-                let daySessionMod = elapsed % (maxDuration + 57600000); 
-                if (daySessionMod <= maxDuration) {
+                // টেস্ট ম্যাচের ক্ষেত্রে রানিং বা স্টাম্প/ব্রেক হ্যান্ডেলিং
+                let testDayDuration = 21600000; // প্রতিদিনের খেলার সময় (৬ ঘণ্টা)
+                let daySessionMod = elapsed % (testDayDuration + 57600000); 
+                if (daySessionMod <= testDayDuration) {
                     let h = Math.floor(daySessionMod / 3600000); 
                     let m = Math.floor((daySessionMod % 3600000) / 60000); 
                     let s = Math.floor((daySessionMod % 60000) / 1000); 
                     timerEl.className = "timer text-red"; 
-                    timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`;
+                    timerEl.innerHTML = `<div class="dot"></div> Test Live | Day Session`;
                 } else {
                     timerEl.className = "timer"; 
                     timerEl.innerText = "Stumps / Break";
+                }
+                // টেস্ট ম্যাচ ৫ দিন পর্যন্ত (৫ * ২৪ ঘণ্টা = ১২০ ঘণ্টা) দৃশ্যমান থাকবে
+                if (elapsed > 432000000) { 
+                    shouldHide = true;
                 }
             } else if (elapsed <= maxDuration) {
                 let h = Math.floor(elapsed / 3600000); 
@@ -743,17 +710,47 @@ function updateTimers() {
                 timerEl.className = "timer text-red"; 
                 timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`; 
             } else { 
-                timerEl.className = "timer"; 
-                timerEl.innerText = "Finished"; 
+                let finishExcess = elapsed - maxDuration;
+                if (finishExcess <= 7200000) {
+                    timerEl.className = "timer"; 
+                    timerEl.innerText = "Finished"; 
+                } else {
+                    shouldHide = true; 
+                }
             }
         } else { 
-            let h = Math.floor(diff / 3600000); 
-            let m = Math.floor((diff % 3600000) / 60000); 
-            let s = Math.floor((diff % 60000) / 1000); 
-            timerEl.className = "timer text-green"; 
-            timerEl.innerText = "Start in: " + h + "h " + m + "m " + s + "s"; 
+            // টেস্ট ম্যাচ বা অন্যান্য খেলার জন্য আপকামিং লিমিট ৩০ ঘণ্টা রাখা হয়েছে, তবে টেস্ট ম্যাচের ক্ষেত্রে এটি আরও বেশি সময় ধরে শো করবে
+            let upcomingLimit = league.includes('TEST') ? 120 : 30;
+
+            if (hoursDiff > upcomingLimit) {
+                shouldHide = true; 
+            } else if (hoursDiff > 1) {
+                timerEl.className = "timer text-orange";
+                timerEl.innerText = "Upcoming";
+            } else {
+                let h = Math.floor(diff / 3600000); 
+                let m = Math.floor((diff % 3600000) / 60000); 
+                let s = Math.floor((diff % 60000) / 1000); 
+                timerEl.className = "timer text-green"; 
+                timerEl.innerText = "Start in: " + h + "h " + m + "m " + s + "s"; 
+            }
         } 
-    }); 
+
+        if (!league.includes('TEST') && diff < 0 && elapsed > (maxDuration + 7200000)) {
+            shouldHide = true;
+        }
+
+        if (shouldHide) {
+            card.style.display = "none";
+        } else {
+            card.style.display = "block";
+            visibleCount++;
+        }
+    });
+
+    if (liveWrapper && currentSearch === '') {
+        liveWrapper.style.display = visibleCount > 0 ? "block" : "none";
+    }
 } 
 
 function sendData(url) { 
