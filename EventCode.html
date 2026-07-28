@@ -670,37 +670,35 @@ function updateTimers() {
                          
         let league = card.querySelector('.league-header').innerText.toUpperCase(); 
         
-        // টেস্ট ম্যাচ বা অন্যান্য ফরম্যাটের জন্য ডিউরেশন ও সময় সেটআপ
-        let maxDuration = 28800000; // ডিফল্ট টি-টোয়েন্টি/অন্যান্য ৮ ঘণ্টা
+        let maxDuration = 28800000; 
         if (league.includes('ODI')) maxDuration = 36000000; 
-        else if (league.includes('TEST')) maxDuration = 216000000; // টেস্ট ম্যাচের ৫ দিনের সেশন হিসাব (প্রায় ৬০ ঘণ্টা)
+        else if (league.includes('TEST')) maxDuration = 432000000; 
         else if (!league.includes('TEST')) maxDuration = 10800000; 
          
         el.querySelector('.start-time').innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}); 
         el.querySelector('.start-date').innerText = dateObj.toLocaleDateString('en-GB'); 
 
-        let hoursDiff = diff / 3600000;
         let elapsed = Math.abs(diff);
-
         let shouldHide = false;
+        let hideBufferTime = 7200000; // ম্যাচ শেষ হওয়ার পর অতিরিক্ত ২ ঘণ্টা (7200000 ms) দৃশ্যমান থাকবে
 
         if (diff < 0) { 
             if (league.includes('TEST')) {
-                // টেস্ট ম্যাচের ক্ষেত্রে রানিং বা স্টাম্প/ব্রেক হ্যান্ডেলিং
-                let testDayDuration = 21600000; // প্রতিদিনের খেলার সময় (৬ ঘণ্টা)
-                let daySessionMod = elapsed % (testDayDuration + 57600000); 
-                if (daySessionMod <= testDayDuration) {
-                    let h = Math.floor(daySessionMod / 3600000); 
-                    let m = Math.floor((daySessionMod % 3600000) / 60000); 
-                    let s = Math.floor((daySessionMod % 60000) / 1000); 
+                let testDayDuration = 21600000; 
+                let totalDayCycle = 86400000;  
+                
+                let currentDayNumber = Math.floor(elapsed / totalDayCycle) + 1;
+                let daySessionMod = elapsed % totalDayCycle;
+
+                if (currentDayNumber <= 5 && daySessionMod <= testDayDuration) {
                     timerEl.className = "timer text-red"; 
-                    timerEl.innerHTML = `<div class="dot"></div> Test Live | Day Session`;
+                    timerEl.innerHTML = `<div class="dot"></div> Day ${currentDayNumber} | Live Session`;
                 } else {
-                    timerEl.className = "timer"; 
-                    timerEl.innerText = "Stumps / Break";
+                    timerEl.className = "timer text-orange"; 
+                    timerEl.innerText = `Day ${Math.min(currentDayNumber, 5)} | Stumps / Break`;
                 }
-                // টেস্ট ম্যাচ ৫ দিন পর্যন্ত (৫ * ২৪ ঘণ্টা = ১২০ ঘণ্টা) দৃশ্যমান থাকবে
-                if (elapsed > 432000000) { 
+
+                if (elapsed > (432000000 + hideBufferTime)) { 
                     shouldHide = true;
                 }
             } else if (elapsed <= maxDuration) {
@@ -711,32 +709,34 @@ function updateTimers() {
                 timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`; 
             } else { 
                 let finishExcess = elapsed - maxDuration;
-                if (finishExcess <= 7200000) {
+                if (finishExcess <= hideBufferTime) {
                     timerEl.className = "timer"; 
                     timerEl.innerText = "Finished"; 
                 } else {
-                    shouldHide = true; 
+                    shouldHide = true; // খেলা শেষ হওয়ার ২ ঘণ্টা পর অটো হাইড
                 }
             }
         } else { 
-            // টেস্ট ম্যাচ বা অন্যান্য খেলার জন্য আপকামিং লিমিট ৩০ ঘণ্টা রাখা হয়েছে, তবে টেস্ট ম্যাচের ক্ষেত্রে এটি আরও বেশি সময় ধরে শো করবে
-            let upcomingLimit = league.includes('TEST') ? 120 : 30;
+            // এখানে ৩০ ঘন্টার লিমিট শর্তটি পুরোপুরি বাদ দেওয়া হয়েছে, ফলে সব আপকামিং ম্যাচ দেখাবে
+            let h = Math.floor(diff / 3600000); 
+            let m = Math.floor((diff % 3600000) / 60000); 
+            let s = Math.floor((diff % 60000) / 1000); 
 
-            if (hoursDiff > upcomingLimit) {
-                shouldHide = true; 
-            } else if (hoursDiff > 1) {
+            if (h > 24) {
+                let days = Math.floor(h / 24);
+                let remHours = h % 24;
                 timerEl.className = "timer text-orange";
-                timerEl.innerText = "Upcoming";
+                timerEl.innerText = `Start in: ${days}d ${remHours}h`;
+            } else if (h >= 1) {
+                timerEl.className = "timer text-orange";
+                timerEl.innerText = `Start in: ${h}h ${m}m`;
             } else {
-                let h = Math.floor(diff / 3600000); 
-                let m = Math.floor((diff % 3600000) / 60000); 
-                let s = Math.floor((diff % 60000) / 1000); 
-                timerEl.className = "timer text-green"; 
-                timerEl.innerText = "Start in: " + h + "h " + m + "m " + s + "s"; 
+                timerEl.className = "timer text-green";
+                timerEl.innerText = `Start in: ${h}h ${m}m ${s}s`;
             }
         } 
 
-        if (!league.includes('TEST') && diff < 0 && elapsed > (maxDuration + 7200000)) {
+        if (!league.includes('TEST') && diff < 0 && elapsed > (maxDuration + hideBufferTime)) {
             shouldHide = true;
         }
 
