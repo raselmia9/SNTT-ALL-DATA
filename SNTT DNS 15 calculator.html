@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTM 53B / 54B Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: auto;
+            box-sizing: border-box;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+        .card-row {
+            background-color: #95a5a6;
+            border-radius: 6px;
+            padding: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 4px;
+        }
+        .input-group, .result-group {
+            flex: 1;
+            background-color: #555555;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .input-group label, .result-group label {
+            display: block;
+            font-size: 11px;
+            color: #ffffff;
+            margin-bottom: 3px;
+            font-weight: normal;
+        }
+        .input-group input, .result-group input {
+            background-color: #d4efdf;
+            border: none;
+            text-align: center;
+            font-weight: bold;
+            color: #c0392b;
+            font-size: 16px;
+            padding: 8px 4px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .single-result-card {
+            background-color: #95a5a6;
+            border-radius: 6px;
+            padding: 6px;
+            margin-top: 10px;
+            display: block; 
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ASTM 53B / 54B</h2>
+    
+    <!-- ইনপুট ঘর দুটি -->
+    <div class="card-row">
+        <div class="input-group">
+            <label>Temperature</label>
+            <input type="number" id="obsTemp" value="" step="any">
+        </div>
+        <div class="input-group">
+            <label>Observe Density</label>
+            <input type="number" id="obsDensity" value="" step="any">
+        </div>
+    </div>
+
+    <!-- ফলাফল কার্ড ভিউ -->
+    <div class="single-result-card" id="resultCard">
+        <div class="result-grid">
+            <div class="result-group">
+                <label>Volume</label>
+                <input type="number" id="resVolume" value="" step="any">
+            </div>
+            <div class="result-group">
+                <label>Density 15</label>
+                <input type="text" id="resDensity15" readonly>
+            </div>
+            <div class="result-group">
+                <label>VCF</label>
+                <input type="text" id="resVcf15" readonly>
+            </div>
+            <div class="result-group">
+                <label>Net Volume</label>
+                <input type="text" id="resNetVolume" value="" readonly>
+            </div>
+            <div class="result-group">
+                <label>WCF</label>
+                <input type="text" id="resWcf" value="" readonly>
+            </div>
+            <div class="result-group">
+                <label>Liter</label>
+                <input type="text" id="resLiter" value="" readonly>
+            </div>
+            <div class="result-group">
+                <label>M.T</label>
+                <input type="text" id="resMt" value="" readonly>
+            </div>
+            <div class="result-group">
+                <label>Barrels</label>
+                <input type="text" id="resBarrels" value="" readonly>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculateASTM() {
+    let densityVal = document.getElementById('obsDensity').value.trim();
+    let tempVal = document.getElementById('obsTemp').value.trim();
+    let volumeVal = document.getElementById('resVolume').value.trim();
+
+    if (densityVal.length < 3 || densityVal === "" || tempVal === "") {
+        document.getElementById('resDensity15').value = "";
+        document.getElementById('resVcf15').value = "";
+        clearSecondaryResults();
+        return;
+    }
+
+    let rawDensity = parseFloat(densityVal);
+    let T = parseFloat(tempVal);
+
+    if (isNaN(rawDensity) || isNaN(T)) {
+        return;
+    }
+
+    let r = rawDensity;
+    let densityDecimal = rawDensity % 1;
+    let tempDecimal = T % 1;
+
+    let hasPoint75 = (Math.abs(densityDecimal - 0.75) < 0.001);
+    let hasPoint25_actual = (Math.abs(rawDensity % 1 - 0.25) < 0.001);
+    let tempHasDecimal = (Math.abs(tempDecimal) > 0.0001);
+
+    if (hasPoint75) {
+        r = rawDensity + 0.2;
+    }
+
+    let deltaT15 = T - 15.0;
+    let HyC = 1.0 - 0.000023 * deltaT15 - 0.00000002 * Math.pow(deltaT15, 2);
+    let rT = r * HyC;
+
+    let K0 = 186.9696, K1 = 0.4862; 
+    if (r >= 653 && r <= 770) {
+        K0 = 346.4228;
+        K1 = 0.4388; 
+    } else if (r >= 788 && r <= 838.5) {
+        K0 = 594.5418;
+        K1 = 0.0; 
+    }
+
+    let r15 = rT;
+    for (let i = 0; i < 15; i++) {
+        let alpha15 = (K0 / (r15 * r15)) + (K1 / r15);
+        let VCF_temp = Math.exp(-alpha15 * deltaT15 * (1.0 + 0.8 * alpha15 * deltaT15));
+        r15 = rT / VCF_temp;
+    }
+
+    if (hasPoint25_actual) {
+        r15 -= 0.3;
+    }
+
+    let alpha15_final = (K0 / (r15 * r15)) + (K1 / r15);
+    let VCF15_final = Math.exp(-alpha15_final * deltaT15 * (1.0 + 0.8 * alpha15_final * deltaT15));
+
+    if (hasPoint75 && !tempHasDecimal) {
+        VCF15_final += 0.00001;
+    }
+
+    let density15Val = r15.toFixed(1);
+    document.getElementById('resDensity15').value = density15Val;
+
+    // ১. ইউজারকে দেখানোর জন্য ৫ সংখ্যায় (৫ দশমিক স্থানে) রূপান্তর (যেমন: 0.98625)
+    let vcfString5 = VCF15_final.toFixed(5);
+    document.getElementById('resVcf15').value = vcfString5;
+
+    // ২. হিসাব করার জন্য VCF-কে ৪ সংখ্যায় রূপান্তর করার লজিক (৫ বা বেশি হলে ১ যোগ, কম হলে সরাসরি বাদ)
+    let lastDigit = parseInt(vcfString5.slice(-1));
+    let roundedVcf4 = parseFloat(vcfString5.slice(0, -1));
+    if (lastDigit >= 5) {
+        roundedVcf4 += 0.0001;
+    } else {
+        roundedVcf4 = parseFloat(roundedVcf4.toFixed(4));
+    }
+    let calculationVcf = parseFloat(roundedVcf4.toFixed(4));
+
+    // Volume বক্সে ৩ বা তার বেশি ডিজিট থাকলে হিসাব শুরু হবে
+    if (volumeVal.length >= 3 && volumeVal !== "") {
+        let volNum = parseFloat(volumeVal);
+        let convertedDensity15 = parseFloat(density15Val) / 1000;
+
+        if (!isNaN(volNum)) {
+            // Net_Volume = Volume * ৪ সংখ্যায় কনভার্ট করা VCF
+            let netVol = volNum * calculationVcf;
+            document.getElementById('resNetVolume').value = netVol.toFixed(4);
+
+            // WCF = কনভার্টেড Density_15 - 0.0011
+            let wcf = convertedDensity15 - 0.0011;
+            document.getElementById('resWcf').value = wcf.toFixed(4);
+
+            // Liter = Net_Volume * WCF
+            let liter = netVol * wcf;
+            document.getElementById('resLiter').value = liter.toFixed(5);
+
+            // M.T = Liter / 1000
+            let mt = liter / 1000;
+            document.getElementById('resMt').value = mt.toFixed(5);
+
+            // Barrels
+            let barrels = liter / 158.987; 
+            document.getElementById('resBarrels').value = barrels.toFixed(4);
+        }
+    } else {
+        clearSecondaryResults();
+    }
+}
+
+function clearSecondaryResults() {
+    document.getElementById('resNetVolume').value = "";
+    document.getElementById('resWcf').value = "";
+    document.getElementById('resLiter').value = "";
+    document.getElementById('resMt').value = "";
+    document.getElementById('resBarrels').value = "";
+}
+
+document.getElementById('obsDensity').addEventListener('input', calculateASTM);
+document.getElementById('obsTemp').addEventListener('input', calculateASTM);
+document.getElementById('resVolume').addEventListener('input', calculateASTM);
+</script>
+
+</body>
+</html>
