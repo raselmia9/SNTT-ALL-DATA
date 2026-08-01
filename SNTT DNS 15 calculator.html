@@ -159,7 +159,7 @@ function autoCalculate() {
     let obsDensityStr = document.getElementById('obsDensity').value.trim();
     let volumeStr = document.getElementById('volume').value.trim();
 
-    // শর্ত: টেম্পারেচার অন্তত ২ ডিজিট এবং ডেনসিটি অন্তত ৩ ডিজিট হতে হবে
+    // টেম্পারেচার অন্তত ২ ডিজিট এবং ডেনসিটি অন্তত ৩ ডিজিট হতে হবে
     if (tempStr.length < 2 || obsDensityStr.length < 3) {
         clearOutputs();
         return;
@@ -173,7 +173,7 @@ function autoCalculate() {
         return;
     }
 
-    // ASTM D1250 মূল গণনার লজিক (.25 & .75 Handling)
+    // ASTM D1250 লজিক (.25 & .75 Step Rounding)
     let dt = temp - 15.0;
     let obsDensity;
     let rem = rawObsDensity % 1.0;
@@ -204,10 +204,11 @@ function autoCalculate() {
     let alpha15 = getAlpha15(roundedDen15);
     let vcf = Math.exp(-alpha15 * dt * (1.0 + 0.8 * alpha15 * dt));
 
+    // আউটপুট: Density 15 এবং VCF (৪ দশমিক ঘর পর্যন্ত - ডেভেলপার যেভাবে চেয়েছেন)
     document.getElementById('den15').value = roundedDen15.toFixed(1);
-    document.getElementById('vcf').value = vcf.toFixed(5);
+    document.getElementById('vcf').value = vcf.toFixed(4); // <--- ৪ দশমিক স্থান করা হলো
 
-    // Kodular ব্লকের লজিক অনুযায়ী অন্যান্য ফিল্ডের হিসাব (Volume দিলে)
+    // ভলিউম ফিল্ডের হিসাব
     if (volumeStr !== "" && !isNaN(parseFloat(volumeStr))) {
         let volume = parseFloat(volumeStr);
 
