@@ -13,32 +13,32 @@
         }
         body {
             background-color: #f0f2f5;
-            padding: 15px;
+            padding: 10px 15px 20px 15px; /* উপরে মাত্র ১০ পিক্সেল ফাঁকা রাখা হয়েছে */
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* কার্ডটি উপরে সেট করার জন্য */
             min-height: 100vh;
         }
         .container {
             background: #ffffff;
             width: 100%;
             max-width: 480px;
-            padding: 20px 15px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .title {
             text-align: center;
             color: #2b2b2b;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .grid-section {
             background-color: #7f8c8d;
             padding: 10px;
             border-radius: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
@@ -159,7 +159,7 @@ function autoCalculate() {
     let obsDensityStr = document.getElementById('obsDensity').value.trim();
     let volumeStr = document.getElementById('volume').value.trim();
 
-    // ১. শর্ত: টেম্পারেচার অন্তত ২ ডিজিট এবং ডেনসিটি অন্তত ৩ ডিজিট না হলে আউটপুট ক্লিয়ার থাকবে
+    // শর্ত: টেম্পারেচার অন্তত ২ ডিজিট এবং ডেনসিটি অন্তত ৩ ডিজিট হতে হবে
     if (tempStr.length < 2 || obsDensityStr.length < 3) {
         clearOutputs();
         return;
@@ -173,7 +173,7 @@ function autoCalculate() {
         return;
     }
 
-    // ২. ASTM D1250 মূল গণনার লজিক (.25 & .75 Handling)
+    // ASTM D1250 মূল গণনার লজিক (.25 & .75 Handling)
     let dt = temp - 15.0;
     let obsDensity;
     let rem = rawObsDensity % 1.0;
@@ -204,36 +204,29 @@ function autoCalculate() {
     let alpha15 = getAlpha15(roundedDen15);
     let vcf = Math.exp(-alpha15 * dt * (1.0 + 0.8 * alpha15 * dt));
 
-    // Density 15 এবং VCF এর মান বসানো
     document.getElementById('den15').value = roundedDen15.toFixed(1);
     document.getElementById('vcf').value = vcf.toFixed(5);
 
-    // ৩. Kodular ব্লকের লজিক অনুযায়ী অন্যান্য ফিল্ডের হিসাব (Volume দিলে)
+    // Kodular ব্লকের লজিক অনুযায়ী অন্যান্য ফিল্ডের হিসাব (Volume দিলে)
     if (volumeStr !== "" && !isNaN(parseFloat(volumeStr))) {
         let volume = parseFloat(volumeStr);
 
-        // Net Volume = Volume * VCF
         let netVol = volume * vcf;
         document.getElementById('netVolume').value = netVol.toFixed(2);
 
-        // WCF = Density 15 - 1.1 (kg/m3)
         let wcfVal = roundedDen15 - 1.1;
         document.getElementById('wcf').value = wcfVal.toFixed(1);
 
-        // Liter (Mass in kg or Liters in Vacuum/Air) = Net Volume * WCF / 1000
         let literVal = netVol * (wcfVal / 1000);
         document.getElementById('liter').value = literVal.toFixed(2);
 
-        // M.T (Metric Tonnes) = Liter / 1000
         let mtVal = literVal / 1000;
         document.getElementById('mt').value = mtVal.toFixed(3);
 
-        // Barrels = Net Volume / 158.9873 (Standard Barrel conversion)
         let barrelsVal = netVol / 158.9873;
         document.getElementById('barrels').value = barrelsVal.toFixed(2);
 
     } else {
-        // ভলিউম না দিলে বাকি ফিল্ডগুলো খালি থাকবে
         document.getElementById('netVolume').value = "";
         document.getElementById('wcf').value = "";
         document.getElementById('liter').value = "";
