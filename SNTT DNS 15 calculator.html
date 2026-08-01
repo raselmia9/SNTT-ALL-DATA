@@ -216,7 +216,7 @@ function autoCalculate() {
 
     // আউটপুট: VCF ৪ দশমিক ঘর পর্যন্ত সেট করা হয়েছে (0.xxxx)
     document.getElementById('den15').value = roundedDen15.toFixed(1);
-    document.getElementById('vcf').value = vcf.toFixed(4);
+    document.getElementById('vcf').value = vcf.toFixed(5);
 
     // ভলিউম সাপেক্ষে অন্যান্য আউটপুট
     if (volumeStr !== "" && !isNaN(parseFloat(volumeStr))) {
