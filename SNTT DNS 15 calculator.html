@@ -13,10 +13,10 @@
         }
         body {
             background-color: #f0f2f5;
-            padding: 10px 15px 20px 15px; /* উপরে মাত্র ১০ পিক্সেল ফাঁকা রাখা হয়েছে */
+            padding: 10px 15px 20px 15px; /* উপরে অল্প ফাঁকা রাখা হয়েছে */
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* কার্ডটি উপরে সেট করার জন্য */
+            align-items: flex-start;
             min-height: 100vh;
         }
         .container {
@@ -85,7 +85,7 @@
 <div class="container">
     <div class="title">ASTM 53B / 54B</div>
 
-    <!-- টপ ইনপুট সেকশন: টেম্পারেচার ও অবজার্ভ ডেনসিটি -->
+    <!-- ইনপুট ফিল্ড -->
     <div class="grid-section">
         <div class="card-box">
             <div class="card-label">Temperature</div>
@@ -97,7 +97,7 @@
         </div>
     </div>
 
-    <!-- ফলাফল ও অতিরিক্ত ভলিউম ইনপুট গ্রিড -->
+    <!-- ফলাফল ও অতিরিক্ত ইনপুট ফিল্ড -->
     <div class="grid-section">
         <div class="card-box">
             <div class="card-label">Volume</div>
@@ -138,9 +138,19 @@
 </div>
 
 <script>
+// ASTM D1250 Multi-Range Equation Constants Adjustment
 function getAlpha15(den15) {
-    let K0 = 186.9696;
-    let K1 = 0.48618;
+    let K0, K1;
+    if (den15 < 770.0) {
+        K0 = 341.0957;
+        K1 = 0.0;
+    } else if (den15 <= 788.0) {
+        K0 = 594.5418;
+        K1 = 0.0;
+    } else {
+        K0 = 186.9696;
+        K1 = 0.48618;
+    }
     return (K0 + K1 * den15) / (den15 * den15);
 }
 
@@ -159,7 +169,7 @@ function autoCalculate() {
     let obsDensityStr = document.getElementById('obsDensity').value.trim();
     let volumeStr = document.getElementById('volume').value.trim();
 
-    // টেম্পারেচার অন্তত ২ ডিজিট এবং ডেনসিটি অন্তত ৩ ডিজিট হতে হবে
+    // ডিজিট লেংথ শর্ত (Temp >= 2, Density >= 3)
     if (tempStr.length < 2 || obsDensityStr.length < 3) {
         clearOutputs();
         return;
@@ -190,7 +200,7 @@ function autoCalculate() {
     let hyc = 1.0 - 0.000023 * dt - 0.000000002 * (dt * dt);
     let hydDensity = obsDensity * hyc;
 
-    // Density at 15°C Iteration Loop
+    // Density at 15°C Iteration
     let den15 = hydDensity;
     for (let i = 0; i < 15; i++) {
         let alpha = getAlpha15(den15);
@@ -204,11 +214,11 @@ function autoCalculate() {
     let alpha15 = getAlpha15(roundedDen15);
     let vcf = Math.exp(-alpha15 * dt * (1.0 + 0.8 * alpha15 * dt));
 
-    // আউটপুট: Density 15 এবং VCF (৪ দশমিক ঘর পর্যন্ত - ডেভেলপার যেভাবে চেয়েছেন)
+    // আউটপুট: VCF ৪ দশমিক ঘর পর্যন্ত সেট করা হয়েছে (0.xxxx)
     document.getElementById('den15').value = roundedDen15.toFixed(1);
-    document.getElementById('vcf').value = vcf.toFixed(4); // <--- ৪ দশমিক স্থান করা হলো
+    document.getElementById('vcf').value = vcf.toFixed(4);
 
-    // ভলিউম ফিল্ডের হিসাব
+    // ভলিউম সাপেক্ষে অন্যান্য আউটপুট
     if (volumeStr !== "" && !isNaN(parseFloat(volumeStr))) {
         let volume = parseFloat(volumeStr);
 
@@ -238,4 +248,5 @@ function autoCalculate() {
 </script>
 
 </body>
-</html>
+    </html>
+    
