@@ -3,250 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNTT DNS 15 - ASTM 53B / 54B</title>
+    <title>BAT 01 - Tank & ASTM 54B</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            padding: 10px 15px 20px 15px; /* উপরে অল্প ফাঁকা রাখা হয়েছে */
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-        .container {
-            background: #ffffff;
-            width: 100%;
-            max-width: 480px;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .title {
-            text-align: center;
-            color: #2b2b2b;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .grid-section {
-            background-color: #7f8c8d;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .card-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .card-label {
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        .input-field, .output-field {
-            width: 100%;
-            height: 40px;
-            background-color: #d1e8e2;
-            border: 1px solid #a0c4b8;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #1a252f;
-            outline: none;
-        }
-        .input-field:focus {
-            background-color: #e2f3ee;
-            border-color: #3498db;
-        }
-        .output-field {
-            background-color: #d1e8e2;
-            cursor: not-allowed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+        body{background:#8e44ad;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px}
+        .container{background:#8e44ad;width:100%;max-width:480px;padding:5px}
+        .main-title,.astm-title{text-align:center;color:#fff;font-size:18px;font-weight:bold;background:#27ae60;padding:8px;border-radius:6px;margin-bottom:8px;border:2px solid #ffd700;box-shadow:0 0 8px rgba(255,215,0,.6)}
+        .astm-title{background:#2980b9;font-size:15px;padding:6px;margin-top:12px}
+        .grid-section,.tank-grid{background:#7f8c8d;padding:8px 6px;border-radius:6px;margin-bottom:8px;display:grid;gap:8px}
+        .tank-grid{grid-template-columns:repeat(4,1fr);gap:5px}
+        .grid-section{grid-template-columns:1fr 1fr}
+        .input-group{position:relative;margin-top:6px}
+        .input-field,.output-field{width:100%;height:36px;background:#d1e8e2;border:2px solid #ffd700;box-shadow:0 0 4px rgba(255,215,0,.6);border-radius:6px;text-align:center;font-size:12px;font-weight:bold;color:#1a252f;outline:none;padding-top:4px}
+        .input-field:focus{background:#e2f3ee;border-color:#ffea75;box-shadow:0 0 6px rgba(255,215,0,.9)}
+        .output-field{cursor:not-allowed;display:flex;align-items:center;justify-content:center}
+        .floating-label{position:absolute;top:-10px;left:5px;background:#7f8c8d;color:#fff;font-size:8.5px;font-weight:bold;padding:0 3px;border-radius:3px;border:1px solid #ffd700;line-height:16px}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="title">ASTM 53B / 54B</div>
-
-    <!-- ইনপুট ফিল্ড -->
+    <div class="main-title" id="ship_title">BAT 01</div>
+    <div class="tank-grid" id="tankContainer"></div>
     <div class="grid-section">
-        <div class="card-box">
-            <div class="card-label">Temperature</div>
-            <input type="number" id="temp" class="input-field" step="any" placeholder="" oninput="autoCalculate()">
-        </div>
-        <div class="card-box">
-            <div class="card-label">Observe Density</div>
-            <input type="number" id="obsDensity" class="input-field" step="any" placeholder="" oninput="autoCalculate()">
-        </div>
+        <div class="input-group"><span class="floating-label">Total Dip</span><input type="text" id="total_dip" class="output-field" readonly value="0"></div>
+        <div class="input-group"><span class="floating-label">Total Liter</span><input type="text" id="total_liter" class="output-field" readonly value="0"></div>
     </div>
 
-    <!-- ফলাফল ও অতিরিক্ত ইনপুট ফিল্ড -->
+    <div class="astm-title">ASTM 53B / 54B</div>
     <div class="grid-section">
-        <div class="card-box">
-            <div class="card-label">Volume</div>
-            <input type="number" id="volume" class="input-field" step="any" placeholder="" oninput="autoCalculate()">
-        </div>
-        <div class="card-box">
-            <div class="card-label">Density 15</div>
-            <input type="text" id="den15" class="output-field" readonly>
-        </div>
-
-        <div class="card-box">
-            <div class="card-label">VCF</div>
-            <input type="text" id="vcf" class="output-field" readonly>
-        </div>
-        <div class="card-box">
-            <div class="card-label">Net Volume</div>
-            <input type="text" id="netVolume" class="output-field" readonly>
-        </div>
-
-        <div class="card-box">
-            <div class="card-label">WCF</div>
-            <input type="text" id="wcf" class="output-field" readonly>
-        </div>
-        <div class="card-box">
-            <div class="card-label">Liter</div>
-            <input type="text" id="liter" class="output-field" readonly>
-        </div>
-
-        <div class="card-box">
-            <div class="card-label">M.T</div>
-            <input type="text" id="mt" class="output-field" readonly>
-        </div>
-        <div class="card-box">
-            <div class="card-label">Barrels</div>
-            <input type="text" id="barrels" class="output-field" readonly>
-        </div>
+        <div class="input-group"><span class="floating-label">Temperature</span><input type="number" id="temp" class="input-field" step="any" oninput="calcAll()"></div>
+        <div class="input-group"><span class="floating-label">Observe Density</span><input type="number" id="obsDensity" class="input-field" step="any" oninput="calcAll()"></div>
+        <div class="input-group"><span class="floating-label">Density 15</span><input type="text" id="den15" class="output-field" readonly></div>
+        <div class="input-group"><span class="floating-label">VCF</span><input type="text" id="vcf" class="output-field" readonly></div>
+        <div class="input-group"><span class="floating-label">Volume</span><input type="number" id="volume" class="input-field" step="any" oninput="calcAll()"></div>
+        <div class="input-group"><span class="floating-label">Net Volume</span><input type="text" id="netVolume" class="output-field" readonly></div>
+        <div class="input-group"><span class="floating-label">WCF</span><input type="text" id="wcf" class="output-field" readonly></div>
+        <div class="input-group"><span class="floating-label">Liter</span><input type="text" id="liter" class="output-field" readonly></div>
+        <div class="input-group"><span class="floating-label">M.T</span><input type="text" id="mt" class="output-field" readonly></div>
+        <div class="input-group"><span class="floating-label">Barrels</span><input type="text" id="barrels" class="output-field" readonly></div>
     </div>
 </div>
 
 <script>
-// ASTM D1250 Multi-Range Equation Constants Adjustment
-function getAlpha15(den15) {
-    let K0, K1;
-    if (den15 < 770.0) {
-        K0 = 341.0957;
-        K1 = 0.0;
-    } else if (den15 <= 788.0) {
-        K0 = 594.5418;
-        K1 = 0.0;
-    } else {
-        K0 = 186.9696;
-        K1 = 0.48618;
+    let d = {}, t = ['p1', 's1', 'p2', 's2', 'p3', 's3'];
+    const gVal = id => document.getElementById(id), setVal = (id, v) => gVal(id).value = v;
+
+    window.onload = () => {
+        tankContainer.innerHTML = t.map(x => `
+            <div class="input-group"><span class="floating-label">${x.toUpperCase()} Dip</span><input type="text" inputmode="numeric" id="${x}_dip" class="input-field" oninput="calcAll()"></div>
+            <div class="input-group"><span class="floating-label">${x.toUpperCase()} Liter</span><input type="text" id="${x}_liter" class="output-field" readonly></div>
+        `).join('');
+
+        fetch("https://raw.githubusercontent.com/raselmia9/youtube-streamer/refs/heads/main/BAT%2001.txt")
+            .then(r => r.json())
+            .then(res => { d = res; calcAll(); })
+            .catch(err => console.error(err));
+    };
+
+    const getL = (n, p, m) => {
+        if (!n || m <= 0) return 0;
+        let b = Math.floor(m / 10) * 10, e = n[`${p}=${m}`];
+        if (e !== undefined) return Math.round(parseFloat(e));
+        let l = parseFloat(n[`${p}=${b}`]), u = parseFloat(n[`${p}=${b + 10}`]);
+        return isNaN(l) ? 0 : isNaN(u) ? Math.round(l) : Math.round(l + (((m - b) / 10) * (u - l)));
+    };
+
+    const gA = dn => (dn < 770 ? 341.0957 : dn <= 788 ? 594.5418 : 186.9696 + 0.48618 * dn) / (dn * dn);
+
+    function calcAll() {
+        let s = ship_title.innerText.trim(), td = 0, tl = 0;
+        t.forEach(x => {
+            let k = x.toUpperCase(), v = parseFloat(gVal(`${x}_dip`).value) || 0;
+            let l = getL(d?.[s]?.[k], k, v);
+            setVal(`${x}_liter`, l > 0 ? l : "");
+            td += v; tl += l;
+        });
+        setVal('total_dip', td);
+        setVal('total_liter', tl);
+        setVal('volume', tl > 0 ? tl : "");
+
+        let temp = parseFloat(gVal('temp').value), oD = parseFloat(gVal('obsDensity').value), vol = parseFloat(gVal('volume').value);
+        if (isNaN(temp) || isNaN(oD)) return ['den15','vcf','netVolume','wcf','liter','mt','barrels'].forEach(id => setVal(id, ''));
+
+        let dt = temp - 15, rem = oD % 1;
+        let obsD = Math.abs(rem - 0.25) < 0.001 ? Math.floor(oD) : Math.abs(rem - 0.75) < 0.001 ? Math.ceil(oD) : Math.round(oD * 2) / 2;
+        let hydD = obsD * (1 - 0.000023 * dt - 0.000000002 * dt * dt), d15 = hydD;
+        for (let i = 0; i < 15; i++) d15 = hydD / Math.exp(-gA(d15) * dt * (1 + 0.8 * gA(d15) * dt));
+
+        let rD15 = Math.round(d15 * 10) / 10, vcf = Math.exp(-gA(rD15) * dt * (1 + 0.8 * gA(rD15) * dt));
+        setVal('den15', rD15.toFixed(1));
+        setVal('vcf', vcf.toFixed(5));
+
+        if (!isNaN(vol)) {
+            let netV = vol * vcf, wcf = rD15 - 1.1, lit = netV * (wcf / 1000);
+            setVal('netVolume', netV.toFixed(2));
+            setVal('wcf', wcf.toFixed(1));
+            setVal('liter', lit.toFixed(2));
+            setVal('mt', (lit / 1000).toFixed(3));
+            setVal('barrels', (netV / 158.9873).toFixed(2));
+        }
     }
-    return (K0 + K1 * den15) / (den15 * den15);
-}
-
-function clearOutputs() {
-    document.getElementById('den15').value = "";
-    document.getElementById('vcf').value = "";
-    document.getElementById('netVolume').value = "";
-    document.getElementById('wcf').value = "";
-    document.getElementById('liter').value = "";
-    document.getElementById('mt').value = "";
-    document.getElementById('barrels').value = "";
-}
-
-function autoCalculate() {
-    let tempStr = document.getElementById('temp').value.trim();
-    let obsDensityStr = document.getElementById('obsDensity').value.trim();
-    let volumeStr = document.getElementById('volume').value.trim();
-
-    // ডিজিট লেংথ শর্ত (Temp >= 2, Density >= 3)
-    if (tempStr.length < 2 || obsDensityStr.length < 3) {
-        clearOutputs();
-        return;
-    }
-
-    let temp = parseFloat(tempStr);
-    let rawObsDensity = parseFloat(obsDensityStr);
-
-    if (isNaN(temp) || isNaN(rawObsDensity)) {
-        clearOutputs();
-        return;
-    }
-
-    // ASTM D1250 লজিক (.25 & .75 Step Rounding)
-    let dt = temp - 15.0;
-    let obsDensity;
-    let rem = rawObsDensity % 1.0;
-
-    if (Math.abs(rem - 0.25) < 0.001) {
-        obsDensity = Math.floor(rawObsDensity);
-    } else if (Math.abs(rem - 0.75) < 0.001) {
-        obsDensity = Math.ceil(rawObsDensity);
-    } else {
-        obsDensity = Math.round(rawObsDensity * 2) / 2;
-    }
-
-    // কাচ কারেকশন (HYC)
-    let hyc = 1.0 - 0.000023 * dt - 0.000000002 * (dt * dt);
-    let hydDensity = obsDensity * hyc;
-
-    // Density at 15°C Iteration
-    let den15 = hydDensity;
-    for (let i = 0; i < 15; i++) {
-        let alpha = getAlpha15(den15);
-        let vcf_temp = Math.exp(-alpha * dt * (1.0 + 0.8 * alpha * dt));
-        den15 = hydDensity / vcf_temp;
-    }
-
-    let roundedDen15 = Math.round(den15 * 10) / 10;
-
-    // VCF Calculation
-    let alpha15 = getAlpha15(roundedDen15);
-    let vcf = Math.exp(-alpha15 * dt * (1.0 + 0.8 * alpha15 * dt));
-
-    // আউটপুট: VCF ৪ দশমিক ঘর পর্যন্ত সেট করা হয়েছে (0.xxxx)
-    document.getElementById('den15').value = roundedDen15.toFixed(1);
-    document.getElementById('vcf').value = vcf.toFixed(5);
-
-    // ভলিউম সাপেক্ষে অন্যান্য আউটপুট
-    if (volumeStr !== "" && !isNaN(parseFloat(volumeStr))) {
-        let volume = parseFloat(volumeStr);
-
-        let netVol = volume * vcf;
-        document.getElementById('netVolume').value = netVol.toFixed(2);
-
-        let wcfVal = roundedDen15 - 1.1;
-        document.getElementById('wcf').value = wcfVal.toFixed(1);
-
-        let literVal = netVol * (wcfVal / 1000);
-        document.getElementById('liter').value = literVal.toFixed(2);
-
-        let mtVal = literVal / 1000;
-        document.getElementById('mt').value = mtVal.toFixed(3);
-
-        let barrelsVal = netVol / 158.9873;
-        document.getElementById('barrels').value = barrelsVal.toFixed(2);
-
-    } else {
-        document.getElementById('netVolume').value = "";
-        document.getElementById('wcf').value = "";
-        document.getElementById('liter').value = "";
-        document.getElementById('mt').value = "";
-        document.getElementById('barrels').value = "";
-    }
-}
 </script>
 
 </body>
-    </html>
-    
+</html>
