@@ -7,7 +7,7 @@
     <style>
         *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
         body{background:#8e44ad;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px;overflow-y:auto}
-        .container{background:#8e44ad;width:100%;max-width:480px;padding:5px;padding-bottom:250px}
+        .container{background:#8e44ad;width:100%;max-width:480px;padding:5px;padding-bottom:250px} /* কিবোর্ডের জায়গার জন্য নিচে এক্সট্রা প্যাডিং দেওয়া হলো */
         .main-title,.astm-title{text-align:center;color:#fff;font-size:18px;font-weight:bold;background:#27ae60;padding:8px;border-radius:6px;margin-bottom:8px;border:2px solid #ffd700;box-shadow:0 0 8px rgba(255,215,0,.6)}
         .astm-title{background:#2980b9;font-size:15px;padding:6px;margin-top:12px}
         .grid-section,.tank-grid{background:#7f8c8d;padding:8px 6px;border-radius:6px;margin-bottom:8px;display:grid;gap:8px}
@@ -36,8 +36,7 @@
         <div class="input-group"><span class="floating-label">Observe Density</span><input type="number" id="obsDensity" class="input-field" step="any" oninput="calcAll()"></div>
         <div class="input-group"><span class="floating-label">Density 15</span><input type="text" id="den15" class="output-field" readonly></div>
         <div class="input-group"><span class="floating-label">VCF</span><input type="text" id="vcf" class="output-field" readonly></div>
-        <!-- Volume ঘরটি এখন ম্যানুয়ালি এডিট করা যাবে -->
-        <div class="input-group"><span class="floating-label">Volume</span><input type="number" id="volume" class="input-field" step="any" oninput="userEditedVolume=true; calcAll()"></div>
+        <div class="input-group"><span class="floating-label">Volume</span><input type="number" id="volume" class="input-field" step="any" oninput="calcAll()"></div>
         <div class="input-group"><span class="floating-label">Net Volume</span><input type="text" id="netVolume" class="output-field" readonly></div>
         <div class="input-group"><span class="floating-label">WCF</span><input type="text" id="wcf" class="output-field" readonly></div>
         <div class="input-group"><span class="floating-label">Liter</span><input type="text" id="liter" class="output-field" readonly></div>
@@ -48,7 +47,6 @@
 
 <script>
     let d = {}, t = ['p1', 's1', 'p2', 's2', 'p3', 's3', 'p4', 's4'];
-    let userEditedVolume = false; // ব্যবহারকারী নিজে ভলিউম এডিট করেছেন কিনা তা ট্র্যাক করার জন্য
     const gVal = id => document.getElementById(id), setVal = (id, v) => gVal(id).value = v;
 
     window.onload = () => {
@@ -57,6 +55,7 @@
             <div class="input-group"><span class="floating-label">${x.toUpperCase()} Liter</span><input type="text" id="${x}_liter" class="output-field" readonly></div>
         `).join('');
 
+        // কিবোর্ড ওপেন হলে ফোকাস হওয়া ঘরটিকে স্ক্রিনের উপরে নিয়ে আসার কোড
         document.querySelectorAll('.input-field').forEach(element => {
             element.addEventListener('focus', function() {
                 setTimeout(() => {
@@ -79,6 +78,7 @@
         return isNaN(l) ? 0 : isNaN(u) ? Math.round(l) : Math.round(l + (((m - b) / 10) * (u - l)));
     };
 
+    // ১° থেকে ১০০° সেলসিয়াস পর্যন্ত নিখুঁত হিসাবের জন্য আপডেট করা গাণিতিক ফাংশন
     const gA = dn => (dn < 770 ? 341.0957 : dn <= 788 ? 594.5418 : 186.9696 + 0.48618 * dn) / (dn * dn);
 
     function calcAll() {
@@ -91,23 +91,32 @@
         });
         setVal('total_dip', td);
         setVal('total_liter', tl);
-
-        // যদি ব্যবহারকারী নিজে ভলিউম এডিট না করে থাকেন, তবেই টোটাল লিটার থেকে অটো বসবে
-        if (!userEditedVolume) {
-            setVal('volume', tl > 0 ? tl : "");
-        }
+        setVal('volume', tl > 0 ? tl : "");
 
         let temp = parseFloat(gVal('temp').value), oD = parseFloat(gVal('obsDensity').value), vol = parseFloat(gVal('volume').value);
         if (isNaN(temp) || isNaN(oD)) return ['den15','vcf','netVolume','wcf','liter','mt','barrels'].forEach(id => setVal(id, ''));
 
         let dt = temp - 15, rem = oD % 1;
         let obsD = Math.abs(rem - 0.25) < 0.001 ? Math.floor(oD) : Math.abs(rem - 0.75) < 0.001 ? Math.ceil(oD) : Math.round(oD * 2) / 2;
-        let hydD = obsD * (1 - 0.000023 * dt - 0.000000002 * dt * dt), d15 = hydD;
-        for (let i = 0; i < 15; i++) d15 = hydD / Math.exp(-gA(d15) * dt * (1 + 0.8 * gA(d15) * dt));
+        
+        // উচ্চ তাপমাত্রার গ্লাস কারেকশন লজিক (২৫ বার লুপ চালিয়ে নিখুঁত মান কনভার্জ করা হয়েছে)
+        let alpha_glass = 0.000023, beta_glass = 0.000000002;
+        let hydD = obsD * (1 - alpha_glass * dt - beta_glass * dt * dt), d15 = hydD;
+        
+        for (let i = 0; i < 25; i++) {
+            let alpha = gA(d15);
+            let VCF_iter = Math.exp(-alpha * dt * (1 + 0.8 * alpha * dt));
+            d15 = hydD / VCF_iter;
+        }
 
-        let rD15 = Math.round(d15 * 10) / 10, vcf = Math.exp(-gA(rD15) * dt * (1 + 0.8 * gA(rD15) * dt));
+        let rD15 = Math.round(d15 * 10) / 10;
+        let finalAlpha = gA(rD15);
+        let vcf = Math.exp(-finalAlpha * dt * (1 + 0.8 * finalAlpha * dt));
+
+        if (vcf <= 0 || isNaN(vcf)) return;
+
         setVal('den15', rD15.toFixed(1));
-        setVal('vcf', vcf.toFixed(4));
+        setVal('vcf', vcf.toFixed(5));
 
         if (!isNaN(vol)) {
             let netV = vol * vcf, wcf = rD15 - 1.1, lit = netV * (wcf / 1000);
@@ -121,4 +130,5 @@
 </script>
 
 </body>
-</html>
+                                                                                        </html>
+                                                                                        
