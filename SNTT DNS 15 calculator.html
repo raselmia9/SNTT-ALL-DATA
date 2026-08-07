@@ -116,7 +116,7 @@
         if (vcf <= 0 || isNaN(vcf)) return;
 
         setVal('den15', rD15.toFixed(1));
-        setVal('vcf', vcf.toFixed(5));
+        setVal('vcf', vcf.toFixed(4));
 
         if (!isNaN(vol)) {
             let netV = vol * vcf, wcf = rD15 - 1.1, lit = netV * (wcf / 1000);
