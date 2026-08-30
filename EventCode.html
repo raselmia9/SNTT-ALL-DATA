@@ -311,7 +311,7 @@ window.addEventListener('load', () => {
     const forceHideTimer = setTimeout(hideLoader, 1500);
 
     if (showLiveSlider) {
-        fetch('https://raw.githubusercontent.com/raselmia9/Ccrichd-event-playlist-final/refs/heads/main/output.json')
+        fetch('https://raw.githubusercontent.com/raselmia9/buffstreamss/refs/heads/main/matches.json')
             .then(res => res.json())
             .then(data => loadLiveMatches(data))
             .catch(err => console.log('Manual Live error:', err));
