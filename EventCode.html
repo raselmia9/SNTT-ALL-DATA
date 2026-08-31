@@ -298,7 +298,6 @@
 
 
 
-
 <script>    
 const showLiveSlider = true ;
 
@@ -311,7 +310,7 @@ window.addEventListener('load', () => {
     const forceHideTimer = setTimeout(hideLoader, 1500);
 
     if (showLiveSlider) {
-        fetch('https://raw.githubusercontent.com/raselmia9/buffstreamss/refs/heads/main/matches.json')
+        fetch('https://raw.githubusercontent.com/raselmia9/Ccrichd-event-playlist-final/refs/heads/main/output.json')
             .then(res => res.json())
             .then(data => loadLiveMatches(data))
             .catch(err => console.log('Manual Live error:', err));
@@ -537,7 +536,9 @@ function renderLfeCategories() {
     });
 }
 
-function renderLfeSlider() {
+
+
+    function renderLfeSlider() {
     const sliderContainer = document.getElementById('lfeSliderContainer');
     if (!sliderContainer) return;
 
@@ -635,12 +636,14 @@ function loadMoreMovies() {
             <div class="poster-footer">
                 <span>👤 Admin Rasel Rana</span>
                 <span class="time-ago" data-date="${movie.date}">🕒 calculating...</span>
-                <span>💬 Not Comments</span>
+                <span>💬 No Comments</span>
             </div>
         `;
         container.appendChild(card);
     });
 
+    displayedMoviesCount += nextBatch.length;
+    updateMovieTimers();
 }
 
 function filterMatches(input) { 
@@ -804,3 +807,4 @@ function sendData(url) {
 
 </body> 
 </html>
+    
