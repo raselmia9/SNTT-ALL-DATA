@@ -623,10 +623,16 @@ function loadMoreMovies() {
         return;
     }
 
-    nextBatch.forEach(movie => {
+        nextBatch.forEach(movie => {
         let card = document.createElement('div');
         card.className = 'card poster-card';
-        card.setAttribute('onclick', `sendData('${movie.link}')`);
+        
+        // এখানে onclick-এ event.preventDefault() যুক্ত করা হয়েছে যাতে পেজ লাফিয়ে না ওঠে
+        card.onclick = function(event) {
+            event.preventDefault();
+            sendData(movie.link);
+        };
+
         card.innerHTML = `
             <div class="poster-img-box">
                 <img src="${movie.img}" alt="Movie Poster">
@@ -641,8 +647,6 @@ function loadMoreMovies() {
         container.appendChild(card);
     });
 
-    displayedMoviesCount += nextBatch.length;
-    updateMovieTimers();
 }
 
 function filterMatches(input) { 
