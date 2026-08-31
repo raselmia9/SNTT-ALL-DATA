@@ -320,7 +320,7 @@ window.addEventListener('load', () => {
         if (liveWrapper) liveWrapper.style.display = 'none';
     }
     
-    fetch('https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/Popular%20movie.json')
+    fetch('https://raw.githubusercontent.com/raselmia9/Movie_json_List/refs/heads/main/Popular%20movie.json')
         .then(res => res.json())
         .then(data => {
             allMovies = data;
