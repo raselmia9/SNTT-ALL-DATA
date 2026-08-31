@@ -51,7 +51,7 @@
         .lfe-slider-container .card {
             flex: 0 0 65% !important;
             max-width: 220px !important;
-            height: 110px !important;
+            height: 80px !important; /* কার্ডের হাইট আরও ১০% কমানো হয়েছে */
             padding: 0 !important;
             overflow: hidden;
             scroll-snap-align: start;
@@ -80,35 +80,35 @@
             margin-bottom: 10px; 
         }
         .category-bar::-webkit-scrollbar { display: none; }
-        .cat-btn { background: #161b22; color: #10b981; border: 2px solid #10b981; padding: 6px 14px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+        .cat-btn { background: #161b22; color: #10b981; border: 2px solid #10b981; padding: 2px 7px; border-radius: 10px; cursor: pointer; font-size: 6px; font-weight: bold; flex-shrink: 0; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
         .cat-btn:hover { background: #10b981; color: #fff; }
         
         .cat-card { 
             background: #161b22; 
             border: 2px solid #10b981; 
             border-radius: 15px; 
-            padding: 10px; 
+            padding: 8px; 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
             flex: 0 0 140px; 
-            height: 60px; 
+            height: 43px; /* কার্ডের হাইট আরও ১০% কমানো হয়েছে */
             box-sizing: border-box; 
             scroll-snap-align: start;
         }
 
         .cat-icon { 
-            width: 35px; height: 35px; border-radius: 50%; background: #fff; margin-right: 10px; 
+            width: 27px; height: 27px; border-radius: 50%; background: #fff; margin-right: 8px; 
             display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
         }
         .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .cat-name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
+        .cat-name { font-size: 7px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
 
         .card {      
             background: #161b22;      
             border: 2px solid transparent;      
             border-radius: 15px;      
-            padding: 15px;      
+            padding: 8px;      
             margin-bottom: 20px;      
             cursor: pointer;      
             width: 100%;      
@@ -127,19 +127,19 @@
             100% { background-position: 0% 50%; } 
         }             
 
-        .league-header { font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; }         
+        .league-header { font-size: 6px; font-weight: bold; margin-bottom: 6px; text-align: center; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
         .match-row { display: flex; align-items: center; justify-content: space-between; }         
         .team { display: flex; flex-direction: column; align-items: center; width: 35%; }         
-        .logo-box { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; }         
+        .logo-box { width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; }        
         .logo-box img { width: 100%; height: 100%; object-fit: cover; }         
-        .status { text-align: center; width: 30%; font-size: 11px; font-weight: bold; }         
-        .timer { font-size: 12px; font-weight: bold; margin-bottom: 2px; }         
+        .status { text-align: center; width: 30%; font-size: 6px; font-weight: bold; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
+        .timer { font-size: 6px; font-weight: bold; margin-bottom: 2px; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
         .text-green { color: #10b981; } 
         .text-red { color: #f43f5e; } 
         .text-orange { color: #f59e0b; }         
-        .start-time { font-size: 10px; color: #fff; }         
-        .start-date { font-size: 10px; color: #94a3b8; }         
-        .dot { height: 8px; width: 8px; background-color: #f43f5e; border-radius: 50%; animation: pulse 1s infinite; display: inline-block; }         
+        .start-time { font-size: 5px; color: #fff; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
+        .start-date { font-size: 5px; color: #94a3b8; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
+        .dot { height: 3px; width: 3px; background-color: #f43f5e; border-radius: 50%; animation: pulse 1s infinite; display: inline-block; }         
         
         @keyframes pulse { 
             0% { opacity: 1; } 
@@ -172,11 +172,11 @@
             right: 0px !important;
             background: #f43f5e;
             color: white;
-            padding: 3px 8px;
-            font-size: 9px;
+            padding: 1px 3px;
+            font-size: 4px; /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
             font-weight: bold;
-            border-bottom-left-radius: 8px;
-            border-top-right-radius: 12px;
+            border-bottom-left-radius: 6px;
+            border-top-right-radius: 10px;
             z-index: 9999 !important;
             box-shadow: 0px 4px 10px rgba(244, 63, 94, 0.6); 
             animation: glow-animation 1.5s infinite alternate;
@@ -196,7 +196,7 @@
 
         .poster-img-box {
             width: 100%;
-            height: 180px;
+            height: 131px; /* পোস্টার কার্ডের হাইট আরও ১০% কমানো হয়েছে */
             overflow: hidden;
             border-top-left-radius: 13px;
             border-top-right-radius: 13px;
@@ -204,10 +204,10 @@
         .poster-img-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .poster-title {
-            font-size: 13px;
+            font-size: 6px; /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
             font-weight: bold;
             color: #ffffff;
-            padding: 12px 12px 8px 12px;
+            padding: 6px 6px 3px 6px;
             line-height: 1.4;
             white-space: pre-line;
         }
@@ -216,8 +216,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px 12px 12px;
-            font-size: 10px;
+            padding: 3px 6px 6px 6px;
+            font-size: 5px; /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
             color: #8b949e;
             border-top: 1px solid #30363d;
             gap: 5px;
@@ -226,18 +226,18 @@
         
         .loading-text {
             text-align: center;
-            font-size: 12px;
+            font-size: 6px; /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
             color: #8b949e;
             margin: 15px 0;
         }
 
         .lfe-logo-box { width: 100%; height: 100%; background: #21262d; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin: 0; border-radius: 0; }         
         .lfe-logo-box img { width: 100%; height: 100%; object-fit: cover; } 
-        .lfe-card-title { position: absolute; bottom: 0; left: 0; width: 100%; font-size: 10px; font-weight: bold; color: #ffffff; background: rgba(13, 17, 23, 0.55); backdrop-filter: blur(3px); padding: 5px 7px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; border-top: 1px solid rgba(255, 255, 255, 0.15); }
-        .lfe-live-indicator { position: absolute; top: 7px; right: 7px; display: flex; align-items: center; gap: 5px; background: rgba(13, 17, 23, 0.75); backdrop-filter: blur(4px); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.6); z-index: 2; }
-        .lfe-dot { height: 8px; width: 8px; background-color: #f43f5e; border-radius: 50%; animation: lfe-pulse 1s infinite; display: inline-block; }         
+        .lfe-card-title { position: absolute; bottom: 0; left: 0; width: 100%; font-size: 5px; font-weight: bold; color: #ffffff; background: rgba(13, 17, 23, 0.55); backdrop-filter: blur(3px); padding: 2px 3px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; border-top: 1px solid rgba(255, 255, 255, 0.15); } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
+        .lfe-live-indicator { position: absolute; top: 5px; right: 5px; display: flex; align-items: center; gap: 4px; background: rgba(13, 17, 23, 0.75); backdrop-filter: blur(4px); padding: 2px 5px; border-radius: 5px; border: 1px solid rgba(244, 63, 94, 0.6); z-index: 2; }
+        .lfe-dot { height: 3px; width: 3px; background-color: #f43f5e; border-radius: 50%; animation: lfe-pulse 1s infinite; display: inline-block; }         
         @keyframes lfe-pulse { 0% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8); } 70% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); } 100% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
-        .lfe-live-text { font-size: 10px; font-weight: bold; color: #f43f5e; letter-spacing: 0.5px; }
+        .lfe-live-text { font-size: 5px; font-weight: bold; color: #f43f5e; letter-spacing: 0.5px; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
     </style>
 </head>
 <body>
