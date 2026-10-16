@@ -6,22 +6,158 @@
     <title>?Ship Name? - Tank & ASTM 54B</title>
     <style>
         *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-        body{background:#8e44ad;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px;overflow-y:auto}
-        .container{background:#8e44ad;width:100%;max-width:480px;padding:5px;padding-bottom:250px}
-        .main-title,.astm-title{text-align:center;color:#fff;font-size:18px;font-weight:bold;background:#27ae60;padding:8px;border-radius:6px;margin-bottom:8px;border:2px solid #ffd700;box-shadow:0 0 8px rgba(255,215,0,.6)}
-        .astm-title{background:#2980b9;font-size:15px;padding:6px;margin-top:12px}
-        .grid-section,.tank-grid{background:#7f8c8d;padding:8px 6px;border-radius:6px;margin-bottom:8px;display:grid;gap:8px}
-        /* এক লাইনে চারটি ঘর (আপনার দ্বিতীয় স্ক্রিনশটের মতো) */
-        .tank-grid{grid-template-columns:repeat(4, 1fr);gap:6px}
-        .grid-section{grid-template-columns:1fr 1fr}
-        .input-group{position:relative;margin-top:6px}
-        .input-field,.output-field{width:100%;height:36px;background:#d1e8e2;border:2px solid #ffd700;box-shadow:0 0 4px rgba(255,215,0,.6);border-radius:6px;text-align:center;font-size:11px;font-weight:bold;color:#1a252f;outline:none;padding-top:4px}
-        .input-field:focus{background:#e2f3ee;border-color:#ffea75;box-shadow:0 0 6px rgba(255,215,0,.9)}
-        .output-field{cursor:not-allowed;display:flex;align-items:center;justify-content:center}
-        .floating-label{position:absolute;top:-10px;left:3px;background:#7f8c8d;color:#fff;font-size:7.5px;font-weight:bold;padding:0 2px;border-radius:3px;border:1px solid #ffd700;line-height:16px}
+        
+        /* প্রিমিয়াম থ্রিডি গ্রেডিয়েন্ট ব্যাকগ্রাউন্ড এবং বাবল কন্টেইনার */
+        body {
+            background: linear-gradient(135deg, #1b1464, #3b5998, #00c6ff);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 4px;
+            overflow-y: auto;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ব্যাকগ্রাউন্ড বাবল অ্যানিমেশন */
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            animation: rise 8s infinite linear;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            100% { transform: translateY(-100vh) scale(1.4); opacity: 0; }
+        }
+
+        .container{
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            padding: 2px;
+            padding-bottom: 250px;
+        }
+
+        /* স্ক্রিনশটের কার্ডের মতো চমৎকার গ্রেডিয়েন্ট ও গ্লোয়িং ইফেক্ট টাইটেল ও সেকশন */
+        .main-title {
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .astm-title {
+            text-align: center;
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f2994a, #f2c94c);
+            padding: 8px;
+            border-radius: 12px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .grid-section, .tank-grid {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            padding: 8px 6px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: grid;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        /* এক লাইনে চারটি ঘর বা কলাম */
+        .tank-grid { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+        .grid-section { grid-template-columns: 1fr 1fr; }
+        
+        .input-group { position: relative; margin-top: 6px; }
+        
+        .input-field, .output-field {
+            width: 100%;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #3498db;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2c3e50;
+            outline: none;
+            padding-top: 4px;
+        }
+        
+        .input-field:focus {
+            background: #ffffff;
+            border-color: #2ecc71;
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.6);
+        }
+        
+        .output-field {
+            background: rgba(236, 240, 241, 0.9);
+            border-color: #bdc3c7;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .floating-label {
+            position: absolute;
+            top: -9px;
+            left: 4px;
+            background: #2c3e50;
+            color: #fff;
+            font-size: 7.5px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            line-height: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
+
+<!-- ব্যাকগ্রাউন্ড বাবলের কন্টেইনার -->
+<div class="bubbles" id="bubbleContainer"></div>
 
 <div class="container">
     <div class="main-title" id="ship_title">?Ship Name?</div>
@@ -47,18 +183,29 @@
 </div>
 
 <script>
-    // অ্যাপ ইনভেন্টরের TinyDB থেকে আসা জেসন ডাটা এখানে সরাসরি সেট হবে
-    let rawJson = '/*PUT_JSON_STRING_HERE*/';
-    let d = {};
-    try {
-        d = JSON.parse(rawJson);
-    } catch(err) {
-        d = {};
-    }
+    // বাবল অ্যানিমেশন জেনারেটর
+    window.addEventListener('DOMContentLoaded', () => {
+        const bubbleContainer = document.getElementById('bubbleContainer');
+        const bubbleCount = 15;
+        for (let i = 0; i < bubbleCount; i++) {
+            let b = document.createElement('div');
+            b.classList.add('bubble');
+            let size = Math.random() * 25 + 10;
+            b.style.width = size + 'px';
+            b.style.height = size + 'px';
+            b.style.left = Math.random() * 100 + '%';
+            b.style.animationDuration = (Math.random() * 6 + 6) + 's';
+            b.style.animationDelay = (Math.random() * 5) + 's';
+            bubbleContainer.appendChild(b);
+        }
+    });
+
+    // আপনার জেসন ডাটা
+    let d = /*PUT_JSON_STRING_HERE*/
 
     let t = ['p1', 's1', 'p2', 's2', 'p3', 's3', 'p4', 's4', 'p5', 's5'];
     
-    // এখান থেকে আপনি চাইলে কয়টি ট্যাংক দেখতে চান তা পরিবর্তন করতে পারবেন (যেমন: 6, 8 বা 10)
+    // এখান থেকে ট্যাংক সংখ্যা কন্ট্রোল করতে পারবেন (যেমন: 6, 8 বা 10)
     let activeTankCount = 10; 
     let isManualVolume = false;
 
@@ -107,11 +254,13 @@
         let activeTanks = t.slice(0, activeTankCount);
 
         activeTanks.forEach(x => {
-            let k = x.toUpperCase(), v = parseFloat(gVal(`${x}_dip`)?.value) || 0;
+            let k = x.toUpperCase(), elem = gVal(`${x}_dip`);
+            let v = elem ? (parseFloat(elem.value) || 0) : 0;
             let l = getL(d?.[s]?.[k], k, v);
             if(gVal(`${x}_liter`)) setVal(`${x}_liter`, l > 0 ? l : "");
             td += v; tl += l;
         });
+        
         setVal('total_dip', td);
         setVal('total_liter', tl);
 
