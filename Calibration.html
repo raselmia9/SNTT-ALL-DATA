@@ -24,7 +24,7 @@
 <body>
 
 <div class="container">
-    <div class="main-title" id="ship_title">?Ship Name?</div>
+    <div class="main-title" id="ship_title">BAT 01</div>
     
     <div class="tank-grid" id="tankContainer"></div>
     <div class="grid-section">
@@ -48,12 +48,29 @@
 </div>
 
 <script>
-    // সরাসরি ডেটা এখানে বসিয়ে দেওয়া হলো
-    let d = TinyDB JSON Data
+    // অ্যাপ ইনভেন্টরে `/*PUT_JSON_STRING_HERE*/` অংশটি TinyDB থেকে পাওয়া জেসন স্ট্রিং দিয়ে রিপ্লেস করবেন
+    let rawJson = '/*PUT_JSON_STRING_HERE*/';
+    
+    let d = {};
+    try {
+        d = JSON.parse(rawJson);
+    } catch(e) {
+        // ফলব্যাক হিসেবে ডিফল্ট ডাটা যাতে লেআউট ভেঙে না যায়
+        d = {
+            "BAT 01": {
+                "P1": { "0": "0", "10": "1000" }, "S1": { "0": "0", "10": "1000" },
+                "P2": { "0": "0", "10": "1000" }, "S2": { "0": "0", "10": "1000" },
+                "P3": { "0": "0", "10": "1000" }, "S3": { "0": "0", "10": "1000" },
+                "P4": { "0": "0", "10": "1000" }, "S4": { "0": "0", "10": "1000" },
+                "P5": { "0": "0", "10": "1000" }, "S5": { "0": "0", "10": "1000" }
+            }
+        };
+    }
+
     let t = ['p1', 's1', 'p2', 's2', 'p3', 's3', 'p4', 's4', 'p5', 's5'];
     
     // এখান থেকে আপনি কয়টি ট্যাংক দেখতে চান তা ম্যানুয়ালি পরিবর্তন করতে পারবেন (যেমন: 6, 8 বা 10)
-    let activeTankCount = Tank Capacity; 
+    let activeTankCount = 10; 
 
     let isManualVolume = false;
 
