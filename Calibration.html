@@ -2,8 +2,8 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>?Ship Name? - Tank & ASTM 54B</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tank & ASTM 54B</title>
 
 <style>
 * {
@@ -25,122 +25,117 @@ body {
     inset: 0;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    margin: 0;
+    padding: 4px;
+
+    overflow: hidden;
     overscroll-behavior: none;
-    padding: 6px;
-    display: block;
+    overflow-anchor: none;
 
     background:
-        radial-gradient(ellipse at 15% 10%, rgba(0, 225, 255, .24), transparent 45%),
-        radial-gradient(ellipse at 90% 90%, rgba(125, 70, 255, .28), transparent 45%),
-        linear-gradient(135deg, #09152f, #142e59 48%, #071b37);
+        radial-gradient(ellipse at top, #087ca7 0%, transparent 55%),
+        linear-gradient(145deg, #071746, #063b80 55%, #00a6c7);
 
-    background-attachment: fixed;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    color: #fff;
 }
 
-body::-webkit-scrollbar {
+/* মূল কন্টেন্ট: বাইরের পেজ স্ক্রল করবে না */
+#app {
+    position: absolute;
+    inset: 4px;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    overflow-anchor: none;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+#app::-webkit-scrollbar {
     display: none;
 }
 
-/* 3D Ship Title Card */
+/* 3D Ship Title */
 .main-title {
     position: relative;
     text-align: center;
     color: #fff;
     font-size: 18px;
     font-weight: 800;
-    letter-spacing: .5px;
-
     padding: 12px 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     border-radius: 14px;
 
-    background: linear-gradient(
-        145deg,
-        #18c9a7 0%,
-        #079b89 45%,
-        #08705f 100%
-    );
-
-    border: 1px solid rgba(255,255,255,.45);
+    background: linear-gradient(135deg, #00e6a0, #007cbd);
+    border: 1px solid rgba(255,255,255,.65);
 
     box-shadow:
-        0 7px 0 #064c48,
-        0 10px 16px rgba(0,0,0,.36),
-        inset 0 2px 2px rgba(255,255,255,.42),
-        inset 0 -3px 5px rgba(0,0,0,.20);
+        inset 0 2px 2px rgba(255,255,255,.55),
+        inset 0 -5px 8px rgba(0,0,0,.22),
+        0 5px 0 #034c80,
+        0 9px 18px rgba(0,0,0,.38);
 
-    text-shadow: 0 2px 3px rgba(0,0,0,.25);
+    text-shadow: 0 2px 3px rgba(0,0,0,.45);
 }
 
-/* 3D ASTM Title Card */
+/* 3D ASTM Title */
 .astm-title {
-    position: relative;
     text-align: center;
     color: #fff;
     font-size: 15px;
     font-weight: 800;
-    letter-spacing: .5px;
+    padding: 10px;
+    margin: 14px 0 10px;
+    border-radius: 13px;
 
-    padding: 10px 8px;
-    margin-top: 15px;
-    margin-bottom: 12px;
-    border-radius: 14px;
-
-    background: linear-gradient(
-        145deg,
-        #ffbd59 0%,
-        #f08b30 48%,
-        #bc501a 100%
-    );
-
-    border: 1px solid rgba(255,255,255,.5);
+    background: linear-gradient(135deg, #ffdf55, #ff8c00, #ed5300);
+    border: 1px solid rgba(255,255,255,.7);
 
     box-shadow:
-        0 7px 0 #843713,
-        0 10px 16px rgba(0,0,0,.35),
-        inset 0 2px 2px rgba(255,255,255,.5),
-        inset 0 -3px 5px rgba(0,0,0,.18);
+        inset 0 2px 3px rgba(255,255,255,.65),
+        inset 0 -4px 7px rgba(120,40,0,.25),
+        0 5px 0 #934000,
+        0 8px 15px rgba(0,0,0,.35);
 
-    text-shadow: 0 2px 3px rgba(0,0,0,.28);
+    text-shadow: 0 2px 3px rgba(80,30,0,.5);
 }
 
-/* শুধুমাত্র প্রয়োজনীয় দুটি Grid Layout */
+/* দুইটি গুরুত্বপূর্ণ Grid */
 .grid-section,
 .tank-grid {
+    width: 100%;
+    min-width: 0;
+
     background: linear-gradient(
         145deg,
-        rgba(255,255,255,.13),
-        rgba(255,255,255,.045)
+        rgba(30,180,255,.19),
+        rgba(0,35,100,.5)
     );
 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    padding: 9px 6px;
+    padding: 8px 6px;
     border-radius: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 9px;
 
     display: grid;
-    gap: 7px;
+    gap: 6px;
 
-    border: 1px solid rgba(255,255,255,.18);
+    border: 1px solid rgba(120,225,255,.55);
 
     box-shadow:
-        0 7px 20px rgba(0,0,0,.23),
-        inset 0 1px 1px rgba(255,255,255,.12);
+        inset 0 1px 2px rgba(255,255,255,.2),
+        0 5px 15px rgba(0,0,0,.2);
 }
 
-/* Tank Grid */
 .tank-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 5px;
 }
 
-/* ASTM and Summary Grid */
 .grid-section {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -156,84 +151,77 @@ body::-webkit-scrollbar {
     display: block;
     width: 100%;
     min-width: 0;
-    height: 38px;
+    max-width: 100%;
+    height: 36px;
 
-    background: rgba(255,255,255,.96);
-    border: 2px solid #3498db;
+    background: #f5fbff;
+    border: 2px solid #35b9ff;
     border-radius: 8px;
 
     text-align: center;
     font-size: 12px;
     font-weight: bold;
-    color: #20324b;
-
+    color: #17395d;
     outline: none;
-    padding: 5px 2px 0;
+    padding: 3px;
 
-    box-shadow:
-        inset 0 2px 4px rgba(0,0,0,.07),
-        0 2px 3px rgba(0,0,0,.12);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.1);
 
+    /* ইনপুট ফোকাসে smooth scrolling নেই */
     scroll-margin: 0;
 }
 
 .input-field:focus {
+    border-color: #32e6a1;
     background: #fff;
-    border-color: #2ecc71;
-    box-shadow:
-        0 0 0 2px rgba(46,204,113,.18),
-        0 0 9px rgba(46,204,113,.45);
+    box-shadow: 0 0 5px rgba(50,230,161,.45);
 }
 
 .output-field {
-    background: rgba(231,238,245,.96);
-    border-color: #aebdca;
-    cursor: default;
+    background: #dcecf8;
+    border-color: #8bbbdc;
 }
 
 .floating-label {
     position: absolute;
     top: -9px;
     left: 4px;
-    z-index: 2;
-
     max-width: calc(100% - 8px);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 
-    background: #152c49;
+    background: #103d6c;
     color: #fff;
+
     font-size: 7.5px;
     font-weight: bold;
-
     padding: 1px 4px;
     border-radius: 4px;
     border: 1px solid rgba(255,255,255,.3);
     line-height: 14px;
 
-    box-shadow: 0 2px 4px rgba(0,0,0,.25);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* ছোট মোবাইলের জন্যও গ্রিডের প্রস্থ নিয়ন্ত্রিত */
 @media (max-width: 360px) {
     body {
-        padding: 4px;
+        padding: 2px;
     }
 
-    .grid-section,
-    .tank-grid {
-        padding: 7px 4px;
+    #app {
+        inset: 2px;
+    }
+
+    .tank-grid,
+    .grid-section {
         gap: 4px;
+        padding: 6px 4px;
     }
 
     .input-field,
     .output-field {
-        height: 36px;
         font-size: 11px;
-    }
-
-    .main-title {
-        font-size: 16px;
     }
 }
 </style>
@@ -241,91 +229,92 @@ body::-webkit-scrollbar {
 
 <body>
 
-<div class="main-title" id="ship_title">?Ship Name?</div>
+<div id="app">
+    <div class="main-title" id="ship_title">?Ship Name?</div>
 
-<div class="tank-grid" id="tankContainer"></div>
+    <div class="tank-grid" id="tankContainer"></div>
 
-<div class="grid-section">
-    <div class="input-group">
-        <span class="floating-label">Total Dip</span>
-        <input type="text" id="total_dip" class="output-field" readonly value="0">
+    <div class="grid-section">
+        <div class="input-group">
+            <span class="floating-label">Total Dip</span>
+            <input type="text" id="total_dip" class="output-field" readonly value="0">
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Total Liter</span>
+            <input type="text" id="total_liter" class="output-field" readonly value="0">
+        </div>
     </div>
 
-    <div class="input-group">
-        <span class="floating-label">Total Liter</span>
-        <input type="text" id="total_liter" class="output-field" readonly value="0">
-    </div>
-</div>
+    <div class="astm-title">ASTM 53B / 54B</div>
 
-<div class="astm-title">ASTM 53B / 54B</div>
+    <div class="grid-section">
+        <div class="input-group">
+            <span class="floating-label">Temperature</span>
+            <input type="number" id="temp" class="input-field" step="any" oninput="calcAll()">
+        </div>
 
-<div class="grid-section">
-    <div class="input-group">
-        <span class="floating-label">Temperature</span>
-        <input type="number" id="temp" class="input-field" step="any" oninput="calcAll()">
-    </div>
+        <div class="input-group">
+            <span class="floating-label">Observe Density</span>
+            <input type="number" id="obsDensity" class="input-field" step="any" oninput="calcAll()">
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">Observe Density</span>
-        <input type="number" id="obsDensity" class="input-field" step="any" oninput="calcAll()">
-    </div>
+        <div class="input-group">
+            <span class="floating-label">Density 15</span>
+            <input type="text" id="den15" class="output-field" readonly>
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">Density 15</span>
-        <input type="text" id="den15" class="output-field" readonly>
-    </div>
+        <div class="input-group">
+            <span class="floating-label">VCF</span>
+            <input type="text" id="vcf" class="output-field" readonly>
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">VCF</span>
-        <input type="text" id="vcf" class="output-field" readonly>
-    </div>
+        <div class="input-group">
+            <span class="floating-label">Volume</span>
+            <input type="number" id="volume" class="input-field" step="any" oninput="calcAll()">
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">Volume</span>
-        <input type="number" id="volume" class="input-field" step="any" oninput="calcAll()">
-    </div>
+        <div class="input-group">
+            <span class="floating-label">Net Volume</span>
+            <input type="text" id="netVolume" class="output-field" readonly>
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">Net Volume</span>
-        <input type="text" id="netVolume" class="output-field" readonly>
-    </div>
+        <div class="input-group">
+            <span class="floating-label">WCF</span>
+            <input type="text" id="wcf" class="output-field" readonly>
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">WCF</span>
-        <input type="text" id="wcf" class="output-field" readonly>
-    </div>
+        <div class="input-group">
+            <span class="floating-label">Liter</span>
+            <input type="text" id="liter" class="output-field" readonly>
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">Liter</span>
-        <input type="text" id="liter" class="output-field" readonly>
-    </div>
+        <div class="input-group">
+            <span class="floating-label">M.T</span>
+            <input type="text" id="mt" class="output-field" readonly>
+        </div>
 
-    <div class="input-group">
-        <span class="floating-label">M.T</span>
-        <input type="text" id="mt" class="output-field" readonly>
-    </div>
-
-    <div class="input-group">
-        <span class="floating-label">Barrels</span>
-        <input type="text" id="barrels" class="output-field" readonly>
+        <div class="input-group">
+            <span class="floating-label">Barrels</span>
+            <input type="text" id="barrels" class="output-field" readonly>
+        </div>
     </div>
 </div>
 
 <script>
-let d = /*PUT_JSON_STRING_HERE*/
+/* এখানে আগের সম্পূর্ণ JSON ডেটা বসাও */
+let d = /*PUT_JSON_STRING_HERE*/;
 
-let t = ['p1', 's1', 'p2', 's2', 'p3', 's3', 'p4', 's4', 'p5', 's5'];
-
+let t = ['p1','s1','p2','s2','p3','s3','p4','s4','p5','s5'];
 let activeTankCount = 10;
 let isManualVolume = false;
 
 const gVal = id => document.getElementById(id);
 const setVal = (id, v) => gVal(id).value = v;
 
-window.onload = () => {
-    let activeTanks = t.slice(0, activeTankCount);
+window.addEventListener('load', () => {
+    const tankContainer = gVal('tankContainer');
 
-    gVal('tankContainer').innerHTML = activeTanks.map(x => `
+    tankContainer.innerHTML = t.slice(0, activeTankCount).map(x => `
         <div class="input-group">
             <span class="floating-label">${x.toUpperCase()} Dip</span>
             <input type="text" inputmode="numeric"
@@ -339,14 +328,18 @@ window.onload = () => {
         </div>
     `).join('');
 
-    gVal('volume').addEventListener('input', function() {
+    gVal('volume').addEventListener('input', () => {
         isManualVolume = true;
         calcAll();
     });
 
-    // ইচ্ছাকৃতভাবে scrollIntoView ব্যবহার করা হয়নি।
+    /*
+     * scrollIntoView() ব্যবহার করা হয়নি।
+     * focus ইভেন্টে পেজকে জোর করে সরানো হয় না।
+     */
+
     calcAll();
-};
+});
 
 const getL = (n, p, m) => {
     if (!n || m <= 0) return 0;
@@ -366,8 +359,8 @@ const getL = (n, p, m) => {
 
 const gA = dn =>
     (dn < 770 ? 341.0957 :
-        dn <= 788 ? 594.5418 :
-        186.9696 + 0.48618 * dn) / (dn * dn);
+     dn <= 788 ? 594.5418 :
+     186.9696 + 0.48618 * dn) / (dn * dn);
 
 function onDipChange() {
     isManualVolume = false;
@@ -377,16 +370,15 @@ function onDipChange() {
 function calcAll() {
     let s = gVal('ship_title').innerText.trim();
     let td = 0, tl = 0;
-    let activeTanks = t.slice(0, activeTankCount);
 
-    activeTanks.forEach(x => {
+    t.slice(0, activeTankCount).forEach(x => {
         let k = x.toUpperCase();
         let elem = gVal(`${x}_dip`);
         let v = elem ? (parseFloat(elem.value) || 0) : 0;
         let l = getL(d?.[s]?.[k], k, v);
 
         if (gVal(`${x}_liter`)) {
-            setVal(`${x}_liter`, l > 0 ? l : "");
+            setVal(`${x}_liter`, l > 0 ? l : '');
         }
 
         td += v;
@@ -397,7 +389,7 @@ function calcAll() {
     setVal('total_liter', tl);
 
     if (!isManualVolume) {
-        setVal('volume', tl > 0 ? tl : "");
+        setVal('volume', tl > 0 ? tl : '');
     }
 
     let temp = parseFloat(gVal('temp').value);
@@ -405,7 +397,7 @@ function calcAll() {
     let vol = parseFloat(gVal('volume').value);
 
     if (isNaN(temp) || isNaN(oD)) {
-        return ['den15', 'vcf', 'netVolume', 'wcf', 'liter', 'mt', 'barrels']
+        return ['den15','vcf','netVolume','wcf','liter','mt','barrels']
             .forEach(id => setVal(id, ''));
     }
 
@@ -419,18 +411,26 @@ function calcAll() {
 
     let alpha_glass = 0.000023;
     let beta_glass = 0.000000002;
-    let hydD = obsD * (1 - alpha_glass * dt - beta_glass * dt * dt);
+
+    let hydD = obsD *
+        (1 - alpha_glass * dt - beta_glass * dt * dt);
+
     let d15 = hydD;
 
     for (let i = 0; i < 25; i++) {
         let alpha = gA(d15);
-        let VCF_iter = Math.exp(-alpha * dt * (1 + 0.8 * alpha * dt));
+        let VCF_iter = Math.exp(
+            -alpha * dt * (1 + 0.8 * alpha * dt)
+        );
         d15 = hydD / VCF_iter;
     }
 
     let rD15 = Math.round(d15 * 10) / 10;
     let finalAlpha = gA(rD15);
-    let rawVcf = Math.exp(-finalAlpha * dt * (1 + 0.8 * finalAlpha * dt));
+
+    let rawVcf = Math.exp(
+        -finalAlpha * dt * (1 + 0.8 * finalAlpha * dt)
+    );
 
     if (rawVcf <= 0 || isNaN(rawVcf)) return;
 
@@ -450,7 +450,7 @@ function calcAll() {
         setVal('mt', (lit / 1000).toFixed(3));
         setVal('barrels', (netV / 158.987459).toFixed(2));
     } else {
-        ['netVolume', 'wcf', 'liter', 'mt', 'barrels']
+        ['netVolume','wcf','liter','mt','barrels']
             .forEach(id => setVal(id, ''));
     }
 }
