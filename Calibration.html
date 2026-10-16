@@ -2,251 +2,237 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>?Ship Name? - Tank & ASTM 54B</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>?Ship Name? - Tank & ASTM 54B</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-        html {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            overscroll-behavior-x: none;
-        }
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-x: none;
+}
 
-        body {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            min-height: 100vh;
-            min-height: 100dvh;
-            background: linear-gradient(135deg, #1b1464, #3b5998, #00c6ff);
-            background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 4px;
-            overflow-x: hidden;
-            overflow-y: auto;
-            position: relative;
-            overscroll-behavior-x: none;
-            -webkit-text-size-adjust: 100%;
-        }
+body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1b1464, #3b5998, #00c6ff);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    padding: 4px;
+    overflow-x: clip;
+    overflow-y: auto;
+    position: relative;
+    overscroll-behavior-x: none;
+    -webkit-text-size-adjust: 100%;
+    touch-action: pan-y;
+}
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        /* Background bubbles */
-        .bubbles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
+.bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
 
-        .bubble {
-            position: absolute;
-            bottom: -50px;
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 50%;
-            animation: rise 8s infinite linear;
-        }
+.bubble {
+    position: absolute;
+    bottom: -50px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    animation: rise 8s infinite linear;
+}
 
-        @keyframes rise {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(-100vh) scale(1.4);
-                opacity: 0;
-            }
-        }
+@keyframes rise {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-100vh) scale(1.4);
+        opacity: 0;
+    }
+}
 
-        .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 480px;
-            min-width: 0;
-            padding: 2px;
-            margin: 0 auto;
-        }
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 2px;
+}
 
-        .main-title {
-            text-align: center;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #00b09b, #96c93d);
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-            overflow-wrap: anywhere;
-        }
+.main-title {
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    overflow-wrap: anywhere;
+}
 
-        .astm-title {
-            text-align: center;
-            color: #fff;
-            font-size: 15px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #f2994a, #f2c94c);
-            padding: 8px;
-            border-radius: 12px;
-            margin-top: 12px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-        }
+.astm-title {
+    text-align: center;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+    padding: 8px;
+    border-radius: 12px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
 
-        .grid-section,
-        .tank-grid {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.15),
-                rgba(255, 255, 255, 0.05)
-            );
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 8px 6px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            display: grid;
-            gap: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
+.grid-section,
+.tank-grid {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.15),
+        rgba(255,255,255,0.05)
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 8px 6px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    display: grid;
+    gap: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
 
-        /* Four columns for tank fields */
-        .tank-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 4px;
-        }
+.tank-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+}
 
-        /* Two columns for Total and ASTM fields */
-        .grid-section {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+.grid-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
-        .input-group {
-            position: relative;
-            margin-top: 6px;
-            width: 100%;
-            min-width: 0;
-            max-width: 100%;
-        }
+.input-group {
+    position: relative;
+    margin-top: 6px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
 
-        .input-field,
-        .output-field {
-            display: block;
-            width: 100%;
-            min-width: 0;
-            max-width: 100%;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #3498db;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-            border-radius: 8px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #2c3e50;
-            outline: none;
-            padding: 4px 2px 0;
-            margin: 0;
-            appearance: none;
-            -webkit-appearance: none;
-            transform: none;
-        }
+.input-field,
+.output-field {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 36px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid #3498db;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c3e50;
+    outline: none;
+    padding: 4px 2px 0;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    transform: none;
+    touch-action: manipulation;
+}
 
-        .input-field:focus {
-            background: #fff;
-            border-color: #2ecc71;
-            box-shadow: 0 0 8px rgba(46, 204, 113, 0.6);
-        }
+.input-field:focus {
+    background: #fff;
+    border-color: #2ecc71;
+    box-shadow: 0 0 8px rgba(46,204,113,0.6);
+}
 
-        .output-field {
-            background: rgba(236, 240, 241, 0.9);
-            border-color: #bdc3c7;
-            cursor: default;
-            text-overflow: clip;
-        }
+.output-field {
+    background: rgba(236,240,241,0.9);
+    border-color: #bdc3c7;
+}
 
-        .floating-label {
-            position: absolute;
-            top: -9px;
-            left: 4px;
-            max-width: calc(100% - 8px);
-            background: #2c3e50;
-            color: #fff;
-            font-size: 7.5px;
-            font-weight: bold;
-            padding: 1px 4px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            line-height: 14px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            pointer-events: none;
-        }
+.floating-label {
+    position: absolute;
+    top: -9px;
+    left: 4px;
+    max-width: calc(100% - 8px);
+    background: #2c3e50;
+    color: #fff;
+    font-size: 7.5px;
+    font-weight: bold;
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.3);
+    line-height: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
 
-        /* Small screens */
-        @media (max-width: 360px) {
-            body {
-                padding: 3px;
-            }
+@media (max-width: 360px) {
+    body {
+        padding: 3px;
+    }
 
-            .container {
-                padding: 1px;
-            }
+    .container {
+        padding: 1px;
+    }
 
-            .tank-grid,
-            .grid-section {
-                padding-left: 4px;
-                padding-right: 4px;
-            }
+    .tank-grid,
+    .grid-section {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
 
-            .tank-grid {
-                gap: 3px;
-            }
+    .tank-grid {
+        gap: 3px;
+    }
 
-            .grid-section {
-                gap: 5px;
-            }
-
-            .input-field,
-            .output-field {
-                padding-left: 1px;
-                padding-right: 1px;
-            }
-        }
-    </style>
+    .grid-section {
+        gap: 5px;
+    }
+}
+</style>
 </head>
 
 <body>
-
 <div class="bubbles" id="bubbleContainer"></div>
 
 <div class="container">
@@ -259,7 +245,6 @@
             <span class="floating-label">Total Dip</span>
             <input type="text" id="total_dip" class="output-field" readonly value="0">
         </div>
-
         <div class="input-group">
             <span class="floating-label">Total Liter</span>
             <input type="text" id="total_liter" class="output-field" readonly value="0">
@@ -273,47 +258,38 @@
             <span class="floating-label">Temperature</span>
             <input type="number" id="temp" class="input-field" step="any" inputmode="decimal">
         </div>
-
         <div class="input-group">
             <span class="floating-label">Observe Density</span>
             <input type="number" id="obsDensity" class="input-field" step="any" inputmode="decimal">
         </div>
-
         <div class="input-group">
             <span class="floating-label">Density 15</span>
             <input type="text" id="den15" class="output-field" readonly>
         </div>
-
         <div class="input-group">
             <span class="floating-label">VCF</span>
             <input type="text" id="vcf" class="output-field" readonly>
         </div>
-
         <div class="input-group">
             <span class="floating-label">Volume</span>
             <input type="number" id="volume" class="input-field" step="any" inputmode="decimal">
         </div>
-
         <div class="input-group">
             <span class="floating-label">Net Volume</span>
             <input type="text" id="netVolume" class="output-field" readonly>
         </div>
-
         <div class="input-group">
             <span class="floating-label">WCF</span>
             <input type="text" id="wcf" class="output-field" readonly>
         </div>
-
         <div class="input-group">
             <span class="floating-label">Liter</span>
             <input type="text" id="liter" class="output-field" readonly>
         </div>
-
         <div class="input-group">
             <span class="floating-label">M.T</span>
             <input type="text" id="mt" class="output-field" readonly>
         </div>
-
         <div class="input-group">
             <span class="floating-label">Barrels</span>
             <input type="text" id="barrels" class="output-field" readonly>
@@ -322,279 +298,190 @@
 </div>
 
 <script>
-    /* Bubble animation */
-    window.addEventListener('DOMContentLoaded', () => {
-        const bubbleContainer = document.getElementById('bubbleContainer');
-        const bubbleCount = 15;
+/* Bubble animation */
+window.addEventListener('DOMContentLoaded', () => {
+    const bubbleContainer = document.getElementById('bubbleContainer');
 
-        for (let i = 0; i < bubbleCount; i++) {
-            const b = document.createElement('div');
-            b.classList.add('bubble');
+    for (let i = 0; i < 15; i++) {
+        const bubble = document.createElement('div');
+        const size = Math.random() * 25 + 10;
 
-            const size = Math.random() * 25 + 10;
+        bubble.className = 'bubble';
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = Math.random() * 100 + '%';
+        bubble.style.animationDuration = (Math.random() * 6 + 6) + 's';
+        bubble.style.animationDelay = (Math.random() * 5) + 's';
 
-            b.style.width = size + 'px';
-            b.style.height = size + 'px';
-            b.style.left = Math.random() * 100 + '%';
-            b.style.animationDuration = (Math.random() * 6 + 6) + 's';
-            b.style.animationDelay = (Math.random() * 5) + 's';
+        bubbleContainer.appendChild(bubble);
+    }
+});
 
-            bubbleContainer.appendChild(b);
-        }
+/* এখানে তোমার আসল JSON ডেটা বসাও */
+let d = YOUR_JSON_DATA_HERE;
+
+const t = ['p1','s1','p2','s2','p3','s3','p4','s4','p5','s5'];
+let activeTankCount = 10;
+let isManualVolume = false;
+
+const gVal = id => document.getElementById(id);
+const setVal = (id, value) => {
+    const el = gVal(id);
+    if (el) el.value = value;
+};
+
+window.addEventListener('load', () => {
+    const tankContainer = gVal('tankContainer');
+
+    tankContainer.innerHTML = t.slice(0, activeTankCount).map(x => `
+        <div class="input-group">
+            <span class="floating-label">${x.toUpperCase()} Dip</span>
+            <input type="text" inputmode="numeric" id="${x}_dip"
+                   class="input-field" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <span class="floating-label">${x.toUpperCase()} Liter</span>
+            <input type="text" id="${x}_liter" class="output-field" readonly>
+        </div>
+    `).join('');
+
+    t.slice(0, activeTankCount).forEach(x => {
+        gVal(`${x}_dip`).addEventListener('input', onDipChange);
     });
 
-    /*
-      এখানে তোমার আসল JSON ডেটা বসাবে।
-      উদাহরণ:
-      let d = { ... };
-    */
-    let d = /*PUT_JSON_STRING_HERE*/;
+    gVal('temp').addEventListener('input', calcAll);
+    gVal('obsDensity').addEventListener('input', calcAll);
 
-    const t = [
-        'p1', 's1', 'p2', 's2', 'p3',
-        's3', 'p4', 's4', 'p5', 's5'
-    ];
-
-    let activeTankCount = 10;
-    let isManualVolume = false;
-
-    const gVal = id => document.getElementById(id);
-
-    const setVal = (id, value) => {
-        const element = gVal(id);
-        if (element) element.value = value;
-    };
-
-    /* Build tank fields */
-    window.addEventListener('load', () => {
-        const tankContainer = gVal('tankContainer');
-        const activeTanks = t.slice(0, activeTankCount);
-
-        tankContainer.innerHTML = activeTanks.map(x => `
-            <div class="input-group">
-                <span class="floating-label">${x.toUpperCase()} Dip</span>
-                <input
-                    type="text"
-                    inputmode="numeric"
-                    id="${x}_dip"
-                    class="input-field"
-                    autocomplete="off"
-                >
-            </div>
-
-            <div class="input-group">
-                <span class="floating-label">${x.toUpperCase()} Liter</span>
-                <input
-                    type="text"
-                    id="${x}_liter"
-                    class="output-field"
-                    readonly
-                >
-            </div>
-        `).join('');
-
-        /* Tank dip input handlers */
-        activeTanks.forEach(x => {
-            const dipInput = gVal(`${x}_dip`);
-
-            dipInput.addEventListener('input', onDipChange);
-        });
-
-        /* ASTM input handlers */
-        ['temp', 'obsDensity'].forEach(id => {
-            gVal(id).addEventListener('input', calcAll);
-        });
-
-        gVal('volume').addEventListener('input', () => {
-            isManualVolume = true;
-            calcAll();
-        });
-
-        /*
-          গুরুত্বপূর্ণ:
-          ইনপুটে focus হলে scrollIntoView() চালানো হচ্ছে না।
-          ফলে প্রতিবার কিবোর্ড খোলার সময় পেজকে মসৃণভাবে
-          মাঝখানে সরানোর চেষ্টা করবে না।
-        */
-
+    gVal('volume').addEventListener('input', () => {
+        isManualVolume = true;
         calcAll();
     });
 
-    /* Dip-to-liter lookup */
-    const getL = (n, p, m) => {
-        if (!n || m <= 0) return 0;
+    /* Intentionally no scrollIntoView/focus scrolling. */
+    calcAll();
+});
 
-        const base = Math.floor(m / 10) * 10;
-        const exact = n[`${p}=${m}`];
+const getL = (n, p, m) => {
+    if (!n || m <= 0) return 0;
 
-        if (exact !== undefined) {
-            return Math.round(parseFloat(exact));
-        }
+    const base = Math.floor(m / 10) * 10;
+    const exact = n[`${p}=${m}`];
 
-        const lower = parseFloat(n[`${p}=${base}`]);
-        const upper = parseFloat(n[`${p}=${base + 10}`]);
+    if (exact !== undefined) return Math.round(parseFloat(exact));
 
-        if (isNaN(lower)) return 0;
-        if (isNaN(upper)) return Math.round(lower);
+    const lower = parseFloat(n[`${p}=${base}`]);
+    const upper = parseFloat(n[`${p}=${base + 10}`]);
 
-        return Math.round(
-            lower + ((m - base) / 10) * (upper - lower)
-        );
-    };
+    if (isNaN(lower)) return 0;
+    if (isNaN(upper)) return Math.round(lower);
 
-    /* ASTM alpha calculation */
-    const gA = density => {
-        if (!Number.isFinite(density) || density <= 0) return NaN;
+    return Math.round(lower + ((m - base) / 10) * (upper - lower));
+};
 
-        return (
-            density < 770
-                ? 341.0957
-                : density <= 788
-                    ? 594.5418
-                    : 186.9696 + 0.48618 * density
-        ) / (density * density);
-    };
+const gA = density => {
+    if (!Number.isFinite(density) || density <= 0) return NaN;
 
-    function onDipChange() {
-        isManualVolume = false;
-        calcAll();
+    return (
+        density < 770 ? 341.0957 :
+        density <= 788 ? 594.5418 :
+        186.9696 + 0.48618 * density
+    ) / (density * density);
+};
+
+function onDipChange() {
+    isManualVolume = false;
+    calcAll();
+}
+
+function calcAll() {
+    const shipName = gVal('ship_title').innerText.trim();
+    let totalDip = 0;
+    let totalLiter = 0;
+
+    t.slice(0, activeTankCount).forEach(x => {
+        const key = x.toUpperCase();
+        const dip = parseFloat(gVal(`${x}_dip`).value) || 0;
+        const tankData = d?.[shipName]?.[key];
+        const liter = getL(tankData, key, dip);
+
+        setVal(`${x}_liter`, liter > 0 ? liter : '');
+
+        totalDip += dip;
+        totalLiter += liter;
+    });
+
+    setVal('total_dip', totalDip);
+    setVal('total_liter', totalLiter);
+
+    if (!isManualVolume) {
+        setVal('volume', totalLiter > 0 ? totalLiter : '');
     }
 
-    function calcAll() {
-        const shipElement = gVal('ship_title');
-        const shipName = shipElement.innerText.trim();
+    const temp = parseFloat(gVal('temp').value);
+    const observedDensity = parseFloat(gVal('obsDensity').value);
+    const volume = parseFloat(gVal('volume').value);
 
-        let totalDip = 0;
-        let totalLiter = 0;
-
-        const activeTanks = t.slice(0, activeTankCount);
-
-        activeTanks.forEach(x => {
-            const key = x.toUpperCase();
-            const dipElement = gVal(`${x}_dip`);
-
-            const dip = dipElement
-                ? (parseFloat(dipElement.value) || 0)
-                : 0;
-
-            const tankData = d?.[shipName]?.[key];
-            const liter = getL(tankData, key, dip);
-
-            if (gVal(`${x}_liter`)) {
-                setVal(`${x}_liter`, liter > 0 ? liter : '');
-            }
-
-            totalDip += dip;
-            totalLiter += liter;
-        });
-
-        setVal('total_dip', totalDip);
-        setVal('total_liter', totalLiter);
-
-        if (!isManualVolume) {
-            setVal('volume', totalLiter > 0 ? totalLiter : '');
-        }
-
-        const temp = parseFloat(gVal('temp').value);
-        const observedDensity = parseFloat(gVal('obsDensity').value);
-        const volume = parseFloat(gVal('volume').value);
-
-        if (isNaN(temp) || isNaN(observedDensity) || observedDensity <= 0) {
-            [
-                'den15',
-                'vcf',
-                'netVolume',
-                'wcf',
-                'liter',
-                'mt',
-                'barrels'
-            ].forEach(id => setVal(id, ''));
-
-            return;
-        }
-
-        const deltaTemp = temp - 15;
-        const remainder = observedDensity % 1;
-
-        const roundedDensity =
-            Math.abs(remainder - 0.25) < 0.001
-                ? Math.floor(observedDensity)
-                : Math.abs(remainder - 0.75) < 0.001
-                    ? Math.ceil(observedDensity)
-                    : Math.round(observedDensity * 2) / 2;
-
-        const alphaGlass = 0.000023;
-        const betaGlass = 0.000000002;
-
-        const hydDensity =
-            roundedDensity *
-            (1 - alphaGlass * deltaTemp - betaGlass * deltaTemp * deltaTemp);
-
-        let density15 = hydDensity;
-
-        for (let i = 0; i < 25; i++) {
-            const alpha = gA(density15);
-
-            if (!Number.isFinite(alpha)) break;
-
-            const vcfIteration = Math.exp(
-                -alpha * deltaTemp *
-                (1 + 0.8 * alpha * deltaTemp)
-            );
-
-            if (!Number.isFinite(vcfIteration) || vcfIteration === 0) break;
-
-            density15 = hydDensity / vcfIteration;
-        }
-
-        const roundedDensity15 = Math.round(density15 * 10) / 10;
-        const finalAlpha = gA(roundedDensity15);
-
-        const rawVcf = Math.exp(
-            -finalAlpha * deltaTemp *
-            (1 + 0.8 * finalAlpha * deltaTemp)
-        );
-
-        if (!Number.isFinite(rawVcf) || rawVcf <= 0) {
-            [
-                'den15',
-                'vcf',
-                'netVolume',
-                'wcf',
-                'liter',
-                'mt',
-                'barrels'
-            ].forEach(id => setVal(id, ''));
-
-            return;
-        }
-
-        const vcf = parseFloat(rawVcf.toFixed(4));
-
-        setVal('den15', roundedDensity15.toFixed(1));
-        setVal('vcf', vcf.toFixed(4));
-
-        if (!isNaN(volume)) {
-            const netVolume = volume * vcf;
-            const wcf = roundedDensity15 - 1.1;
-            const liter = netVolume * (wcf / 1000);
-
-            setVal('netVolume', netVolume.toFixed(2));
-            setVal('wcf', wcf.toFixed(1));
-            setVal('liter', liter.toFixed(2));
-            setVal('mt', (liter / 1000).toFixed(3));
-            setVal('barrels', (netVolume / 158.987459).toFixed(2));
-        } else {
-            [
-                'netVolume',
-                'wcf',
-                'liter',
-                'mt',
-                'barrels'
-            ].forEach(id => setVal(id, ''));
-        }
+    if (isNaN(temp) || isNaN(observedDensity) || observedDensity <= 0) {
+        ['den15','vcf','netVolume','wcf','liter','mt','barrels']
+            .forEach(id => setVal(id, ''));
+        return;
     }
+
+    const dt = temp - 15;
+    const remainder = observedDensity % 1;
+
+    const obsD =
+        Math.abs(remainder - 0.25) < 0.001 ? Math.floor(observedDensity) :
+        Math.abs(remainder - 0.75) < 0.001 ? Math.ceil(observedDensity) :
+        Math.round(observedDensity * 2) / 2;
+
+    const alphaGlass = 0.000023;
+    const betaGlass = 0.000000002;
+
+    const hydD = obsD * (
+        1 - alphaGlass * dt - betaGlass * dt * dt
+    );
+
+    let d15 = hydD;
+
+    for (let i = 0; i < 25; i++) {
+        const alpha = gA(d15);
+        const iterationVCF = Math.exp(-alpha * dt * (1 + 0.8 * alpha * dt));
+
+        if (!Number.isFinite(iterationVCF) || iterationVCF === 0) break;
+        d15 = hydD / iterationVCF;
+    }
+
+    const rD15 = Math.round(d15 * 10) / 10;
+    const finalAlpha = gA(rD15);
+    const rawVCF = Math.exp(-finalAlpha * dt * (1 + 0.8 * finalAlpha * dt));
+
+    if (!Number.isFinite(rawVCF) || rawVCF <= 0) {
+        ['den15','vcf','netVolume','wcf','liter','mt','barrels']
+            .forEach(id => setVal(id, ''));
+        return;
+    }
+
+    const vcf = parseFloat(rawVCF.toFixed(4));
+
+    setVal('den15', rD15.toFixed(1));
+    setVal('vcf', vcf.toFixed(4));
+
+    if (!isNaN(volume)) {
+        const netV = volume * vcf;
+        const wcf = rD15 - 1.1;
+        const liter = netV * (wcf / 1000);
+
+        setVal('netVolume', netV.toFixed(2));
+        setVal('wcf', wcf.toFixed(1));
+        setVal('liter', liter.toFixed(2));
+        setVal('mt', (liter / 1000).toFixed(3));
+        setVal('barrels', (netV / 158.987459).toFixed(2));
+    } else {
+        ['netVolume','wcf','liter','mt','barrels']
+            .forEach(id => setVal(id, ''));
+    }
+}
 </script>
-
 </body>
 </html>
