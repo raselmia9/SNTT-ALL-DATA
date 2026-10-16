@@ -550,7 +550,6 @@ setInterval(updateCards,1000);
 
 //টেলিভিশন বাটন এর শুরুর অংশ
 
-
 const downloadAllBtn = document.getElementById("downloadAllBtn");
 const downloadProgressBox = document.getElementById("downloadProgressBox");
 const downloadStatus = document.getElementById("downloadStatus");
@@ -559,6 +558,9 @@ const downloadProgressBar = document.getElementById("downloadProgressBar");
 const downloadCount = document.getElementById("downloadCount");
 const downloadShipName = document.getElementById("downloadShipName");
 
+const CALIBRATION_MARKER = "Download Calibration JSON Text";
+const SEPARATOR = "<,>";
+
 let downloadQueue = [];
 let currentShipIndex = 0;
 let completedShips = 0;
@@ -566,7 +568,9 @@ let downloadRunning = false;
 let waitingForSave = false;
 
 function setShipProgress(done, total, shipName, status) {
-  const percent = total ? Math.round(done / total * 100) : 100;
+  const percent = total > 0
+    ? Math.round((done / total) * 100)
+    : 0;
 
   if (downloadProgressBox) downloadProgressBox.hidden = false;
   if (downloadProgressBar) downloadProgressBar.style.width = percent + "%";
@@ -576,8 +580,8 @@ function setShipProgress(done, total, shipName, status) {
   if (downloadStatus) downloadStatus.textContent = status;
 }
 
-function sendShipToApp() {
-  if (!downloadRunning) return;
+function sendCurrentShip() {
+  if (!downloadRunning || waitingForSave) return;
 
   if (currentShipIndex >= downloadQueue.length) {
     downloadRunning = false;
@@ -596,22 +600,26 @@ function sendShipToApp() {
   }
 
   const ship = downloadQueue[currentShipIndex];
-  const shipName = String(ship[0]);
-  const link = String(ship[2]);
+  const shipName = String(ship[0] || "");
+  const link = String(ship[2] || "");
+
+  // চারটি অংশের আউটপুট তৈরি
+  const evaluateJS = "window.shipDownloadCompleted();";
+
+  const output = [
+    shipName,
+    link,
+    evaluateJS,
+    CALIBRATION_MARKER
+  ].join(SEPARATOR);
 
   waitingForSave = true;
-
-  // Format: Ship Name,Link,Evaluate JS
-  const output =
-    shipName + "," +
-    link + "," +
-    "window.shipDownloadCompleted()";
 
   setShipProgress(
     completedShips,
     downloadQueue.length,
     shipName,
-    "Sending ship details..."
+    "Waiting for calibration data..."
   );
 
   try {
@@ -621,11 +629,11 @@ function sendShipToApp() {
     ) {
       window.AppInventor.setWebViewString(output);
     } else {
-      throw new Error("App bridge unavailable");
+      throw new Error("AppInventor bridge unavailable");
     }
   } catch (error) {
-    downloadRunning = false;
     waitingForSave = false;
+    downloadRunning = false;
 
     if (downloadAllBtn) downloadAllBtn.disabled = false;
 
@@ -633,22 +641,22 @@ function sendShipToApp() {
       completedShips,
       downloadQueue.length,
       shipName,
-      "Failed to send data to app"
+      "Could not send data to Kodular"
     );
   }
 }
 
-// Niotron/Kodular calls this using Evaluate JS
-// ONLY after the current ship data is saved successfully.
+// Kodular-এর Evaluate JS ব্লক সফলভাবে ডাটা সেভ করার পর
+// এই ফাংশনটি চালাবে।
 window.shipDownloadCompleted = function () {
   if (!downloadRunning || !waitingForSave) return;
 
   waitingForSave = false;
-  completedShips++;
 
   const finishedShip = downloadQueue[currentShipIndex];
-  const finishedName = String(finishedShip[0]);
+  const finishedName = String(finishedShip[0] || "");
 
+  completedShips++;
   currentShipIndex++;
 
   setShipProgress(
@@ -658,12 +666,13 @@ window.shipDownloadCompleted = function () {
     "Saved successfully"
   );
 
-  // Send the next ship only after successful save.
-  sendShipToApp();
+  // পরবর্তী জাহাজ পাঠাও
+  sendCurrentShip();
 };
 
-// Call this through Evaluate JS if saving fails.
-window.shipDownloadFailed = function () {
+// Kodular-এ ডাটা সংগ্রহ বা যাচাই ব্যর্থ হলে
+// এই ফাংশনটি চালানো যাবে।
+window.shipDownloadFailed = function (message) {
   if (!downloadRunning || !waitingForSave) return;
 
   waitingForSave = false;
@@ -676,25 +685,33 @@ window.shipDownloadFailed = function () {
   setShipProgress(
     completedShips,
     downloadQueue.length,
-    ship ? String(ship[0]) : "Unknown ship",
-    "Download failed"
+    ship ? String(ship[0] || "") : "Unknown ship",
+    message || "Download failed"
   );
 };
 
+// Download বাটনে ক্লিক করলে চালু হবে
 function startAllShipDownloads() {
   if (downloadRunning) return;
 
-  // Use the existing ships array; exclude its final version-code item.
+  if (typeof ships === "undefined" || !Array.isArray(ships)) {
+    setShipProgress(0, 0, "—", "Ship list unavailable");
+    return;
+  }
+
+  // শেষের Version Code বাদ; None ও File লিংক বাদ
   downloadQueue = ships
     .slice(0, -1)
     .filter(function (ship) {
-      return ship[2] &&
+      return Array.isArray(ship) &&
+        ship[0] &&
+        ship[2] &&
         ship[2] !== "None" &&
         ship[2] !== "File";
     });
 
   if (downloadQueue.length === 0) {
-    setShipProgress(0, 0, "No valid links", "Nothing to download");
+    setShipProgress(0, 0, "—", "No valid calibration links");
     return;
   }
 
@@ -712,7 +729,7 @@ function startAllShipDownloads() {
     "Starting downloads..."
   );
 
-  sendShipToApp();
+  sendCurrentShip();
 }
 
 if (downloadAllBtn) {
