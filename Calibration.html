@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAT Tank & ASTM 54B</title>
+    <title>?Ship Name? - Tank & ASTM 54B</title>
     <style>
         *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
         body{background:#8e44ad;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px;overflow-y:auto}
@@ -11,7 +11,7 @@
         .main-title,.astm-title{text-align:center;color:#fff;font-size:18px;font-weight:bold;background:#27ae60;padding:8px;border-radius:6px;margin-bottom:8px;border:2px solid #ffd700;box-shadow:0 0 8px rgba(255,215,0,.6)}
         .astm-title{background:#2980b9;font-size:15px;padding:6px;margin-top:12px}
         .grid-section,.tank-grid{background:#7f8c8d;padding:8px 6px;border-radius:6px;margin-bottom:8px;display:grid;gap:8px}
-        /* এক লাইনে চারটি কলাম */
+        /* এক লাইনে চারটি ঘর (আপনার দ্বিতীয় স্ক্রিনশটের মতো) */
         .tank-grid{grid-template-columns:repeat(4, 1fr);gap:6px}
         .grid-section{grid-template-columns:1fr 1fr}
         .input-group{position:relative;margin-top:6px}
@@ -25,7 +25,6 @@
 
 <div class="container">
     <div class="main-title" id="ship_title">?Ship Name?</div>
-    
     <div class="tank-grid" id="tankContainer"></div>
     <div class="grid-section">
         <div class="input-group"><span class="floating-label">Total Dip</span><input type="text" id="total_dip" class="output-field" readonly value="0"></div>
@@ -48,22 +47,19 @@
 </div>
 
 <script>
-    // অ্যাপ ইনভেন্টরে `/*PUT_JSON_STRING_HERE*/` অংশটি TinyDB থেকে পাওয়া আপনার আসল জেসন স্ট্রিং দিয়ে রিপ্লেস করবেন
+    // অ্যাপ ইনভেন্টরের TinyDB থেকে আসা জেসন ডাটা এখানে সরাসরি সেট হবে
     let rawJson = '/*PUT_JSON_STRING_HERE*/';
-    
     let d = {};
     try {
         d = JSON.parse(rawJson);
-    } catch(e) {
+    } catch(err) {
         d = {};
     }
 
-    // আপনার চাহিদা অনুযায়ী ট্যাংকগুলোর তালিকা (প্রয়ोजनমত এখানে বাড়িয়ে বা কমিয়ে নিতে পারেন)
     let t = ['p1', 's1', 'p2', 's2', 'p3', 's3', 'p4', 's4', 'p5', 's5'];
     
-    // এখান থেকে আপনি কয়টি ট্যাংক দেখতে চান তা ম্যানুয়ালি পরিবর্তন করতে পারবেন (যেমন: 6, 8 বা 10)
+    // এখান থেকে আপনি চাইলে কয়টি ট্যাংক দেখতে চান তা পরিবর্তন করতে পারবেন (যেমন: 6, 8 বা 10)
     let activeTankCount = 10; 
-
     let isManualVolume = false;
 
     const gVal = id => document.getElementById(id), setVal = (id, v) => gVal(id).value = v;
@@ -72,7 +68,7 @@
         let activeTanks = t.slice(0, activeTankCount);
         tankContainer.innerHTML = activeTanks.map(x => `
             <div class="input-group"><span class="floating-label">${x.toUpperCase()} Dip</span><input type="text" inputmode="numeric" id="${x}_dip" class="input-field" oninput="onDipChange()"></div>
-            <div class="input-group"><span class="floating-label">${x.toUpperCase()} Lit</span><input type="text" id="${x}_liter" class="output-field" readonly></div>
+            <div class="input-group"><span class="floating-label">${x.toUpperCase()} Liter</span><input type="text" id="${x}_liter" class="output-field" readonly></div>
         `).join('');
 
         document.getElementById('volume').addEventListener('input', function() {
@@ -111,13 +107,11 @@
         let activeTanks = t.slice(0, activeTankCount);
 
         activeTanks.forEach(x => {
-            let k = x.toUpperCase(), elem = gVal(`${x}_dip`);
-            let v = elem ? (parseFloat(elem.value) || 0) : 0;
+            let k = x.toUpperCase(), v = parseFloat(gVal(`${x}_dip`)?.value) || 0;
             let l = getL(d?.[s]?.[k], k, v);
             if(gVal(`${x}_liter`)) setVal(`${x}_liter`, l > 0 ? l : "");
             td += v; tl += l;
         });
-        
         setVal('total_dip', td);
         setVal('total_liter', tl);
 
