@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            height: 100vh;
             padding: 4px;
             overflow-y: auto;
             position: relative;
@@ -202,10 +203,8 @@
     });
 
     // আপনার জেসন ডাটা
-    let d = /*PUT_JSON_STRING_HERE*/
+    let d = /*PUT_JSON_STRING_HERE*/;
         
-        
-
     let t = ['p1', 's1', 'p2', 's2', 'p3', 's3', 'p4', 's4', 'p5', 's5'];
     
     // এখান থেকে ট্যাংক সংখ্যা কন্ট্রোল করতে পারবেন (যেমন: 6, 8 বা 10)
@@ -224,14 +223,6 @@
         document.getElementById('volume').addEventListener('input', function() {
             isManualVolume = true;
             calcAll();
-        });
-
-        document.querySelectorAll('.input-field').forEach(element => {
-            element.addEventListener('focus', function() {
-                setTimeout(() => {
-                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            });
         });
 
         calcAll();
