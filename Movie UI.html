@@ -19,14 +19,16 @@
         .live-slider-container {
             display: flex;
             overflow-x: auto;
-            gap: 15px;
+            gap: 12px;
             width: 100%;
             max-width: 100%;
-            padding: 5px 0 15px 0;
+            padding: 5px 0 10px 0;
             margin-bottom: 5px;
             box-sizing: border-box;
-            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
+            will-change: scroll-position;
+            transform: translateZ(0);
         }
         .live-slider-container::-webkit-scrollbar { display: none; }
         .live-slider-container .card {
@@ -36,7 +38,6 @@
             padding: 6px 8px !important;
             box-sizing: border-box !important;
             overflow: hidden !important;
-            scroll-snap-align: start;
             margin-bottom: 0 !important;
         }
 
@@ -49,17 +50,18 @@
             padding: 5px 0 10px 0;
             margin-bottom: 5px;
             box-sizing: border-box;
-            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
+            will-change: scroll-position;
+            transform: translateZ(0);
         }
         .lfe-slider-container::-webkit-scrollbar { display: none; }
         .lfe-slider-container .card {
             flex: 0 0 65% !important;
             max-width: 220px !important;
-            height: 80px !important; /* কার্ডের হাইট আরও ১০% কমানো হয়েছে */
+            height: 80px !important;
             padding: 0 !important;
-            overflow: hidden;
-            scroll-snap-align: start;
+            overflow: hidden !important;
             margin-bottom: 0 !important;
         }
 
@@ -111,19 +113,16 @@
 
         .card {      
             background: #161b22;      
-            border: 2px solid transparent;      
-            border-radius: 15px;      
+            border: 1px solid #30363d;      
+            border-radius: 14px;      
             padding: 8px;      
             margin-bottom: 20px;      
             cursor: pointer;      
             width: 100%;      
             box-sizing: border-box;     
-            background-clip: padding-box, border-box;     
-            background-origin: border-box;     
-            background-image: linear-gradient(#161b22, #161b22), linear-gradient(45deg, #f43f5e, #10b981, #3b82f6, #f43f5e);     
-            background-size: 100% 100%, 400% 400%;     
-            animation: gradient-animation 3s ease infinite; 
             position: relative !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.2s ease;
         }
 
         @keyframes gradient-animation {     
@@ -177,14 +176,13 @@
             right: 0px !important;
             background: #f43f5e;
             color: white;
-            padding: 1px 3px;
-            font-size: 4px; /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
+            padding: 2px 5px;
+            font-size: 5px;
             font-weight: bold;
             border-bottom-left-radius: 6px;
-            border-top-right-radius: 10px;
-            z-index: 9999 !important;
-            box-shadow: 0px 4px 10px rgba(244, 63, 94, 0.6); 
-            animation: glow-animation 1.5s infinite alternate;
+            border-top-right-radius: 12px;
+            z-index: 10 !important;
+            box-shadow: 0 1px 4px rgba(244, 63, 94, 0.4);
         }
 
         @keyframes glow-animation {
@@ -905,7 +903,24 @@ function buildMatchCard(match) {
     const defaultLogoUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='%231e293b'/%3E%3Cpath d='M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z' fill='%2310b981'/%3E%3C/svg%3E"; 
     let card = document.createElement("div");
     card.className = "card";
-    card.setAttribute("data-start", match.matchTime);
+    card.setAttribute("data-start", match.matchTime || "");
+
+    const league = (match.eventTitle || "").toUpperCase();
+    let maxDuration = 10800000;
+    if (league.includes("ODI")) maxDuration = 36000000;
+    else if (league.includes("TEST")) maxDuration = 432000000;
+    card.setAttribute("data-max-dur", maxDuration);
+    card.setAttribute("data-test", league.includes("TEST") ? "1" : "0");
+
+    let start = parseMatchDate(match.matchTime);
+    let timeStr = "";
+    let dateStr = "";
+    if (start > 0) {
+        let dateObj = new Date(start);
+        timeStr = dateObj.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit", hour12: true});
+        dateStr = dateObj.toLocaleDateString("en-GB");
+    }
+
     card.onclick = function() { sendData(match.streamLink); };
     card.innerHTML = `
         ${match.isHot ? '<div class="hot-badge">HOT 🔥</div>' : ""}
@@ -913,18 +928,18 @@ function buildMatchCard(match) {
         <div class="match-row">             
             <div class="team">
                 <div class="logo-box">
-                    <img src="${match.team1Logo || defaultLogoUrl}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultLogoUrl}';">
+                    <img src="${match.team1Logo || defaultLogoUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultLogoUrl}';">
                 </div>
                 <div style="font-size:10px; margin-top:3px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team1Title}">${match.team1Title}</div>
             </div>             
             <div class="status" data-start="${match.matchTime}">
                 <div class="timer">--:--:--</div>
-                <div class="start-time"></div>
-                <div class="start-date"></div>
+                <div class="start-time">${timeStr}</div>
+                <div class="start-date">${dateStr}</div>
             </div>             
             <div class="team">
                 <div class="logo-box">
-                    <img src="${match.team2Logo || defaultLogoUrl}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultLogoUrl}';">
+                    <img src="${match.team2Logo || defaultLogoUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultLogoUrl}';">
                 </div>
                 <div style="font-size:10px; margin-top:3px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team2Title}">${match.team2Title}</div>
             </div>         
@@ -933,39 +948,66 @@ function buildMatchCard(match) {
     return card;
 }
 
+let isLiveRendering = false;
+let liveScrollThrottled = false;
+
 function renderNextLiveBatch() {
-    const container = document.getElementById("liveSliderContainer");
-    if (!container) return;
+    if (isLiveRendering) return;
+    isLiveRendering = true;
 
-    const oldLoadMore = document.getElementById("liveLoadMoreCard");
-    if (oldLoadMore) oldLoadMore.remove();
+    try {
+        const container = document.getElementById("liveSliderContainer");
+        if (!container) return;
 
-    const nextBatch = allLiveMatches.slice(liveMatchesRendered, liveMatchesRendered + LIVE_BATCH_SIZE);
-    if (nextBatch.length === 0) return;
+        const oldLoadMore = document.getElementById("liveLoadMoreCard");
+        if (oldLoadMore) oldLoadMore.remove();
 
-    nextBatch.forEach(match => {
-        container.appendChild(buildMatchCard(match));
-    });
-    liveMatchesRendered += nextBatch.length;
+        const nextBatch = allLiveMatches.slice(liveMatchesRendered, liveMatchesRendered + LIVE_BATCH_SIZE);
+        if (nextBatch.length === 0) return;
 
-    if (liveMatchesRendered < allLiveMatches.length) {
-        const remaining = allLiveMatches.length - liveMatchesRendered;
-        const loadMoreCard = document.createElement("div");
-        loadMoreCard.id = "liveLoadMoreCard";
-        loadMoreCard.className = "card";
-        loadMoreCard.style.cssText = "display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; height:82px; text-align:center; box-sizing:border-box;";
-        loadMoreCard.innerHTML = `
-            <div style="font-size:18px; color:#10b981; line-height:1;">➕</div>
-            <div style="font-size:11px; font-weight:bold; color:#10b981; margin-top:2px;">Load More (5)</div>
-            <div style="font-size:9px; color:#8b949e;">${remaining} more matches</div>
-        `;
-        loadMoreCard.onclick = function() {
-            renderNextLiveBatch();
-        };
-        container.appendChild(loadMoreCard);
+        const frag = document.createDocumentFragment();
+        nextBatch.forEach(match => {
+            frag.appendChild(buildMatchCard(match));
+        });
+        container.appendChild(frag);
+        liveMatchesRendered += nextBatch.length;
+
+        if (liveMatchesRendered < allLiveMatches.length) {
+            const remaining = allLiveMatches.length - liveMatchesRendered;
+            const loadMoreCard = document.createElement("div");
+            loadMoreCard.id = "liveLoadMoreCard";
+            loadMoreCard.className = "card";
+            loadMoreCard.style.cssText = "display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; height:82px; text-align:center; box-sizing:border-box;";
+            loadMoreCard.innerHTML = `
+                <div style="font-size:18px; color:#10b981; line-height:1;">➕</div>
+                <div style="font-size:11px; font-weight:bold; color:#10b981; margin-top:2px;">Load More (5)</div>
+                <div style="font-size:9px; color:#8b949e;">${remaining} more matches</div>
+            `;
+            loadMoreCard.onclick = function() {
+                renderNextLiveBatch();
+            };
+            container.appendChild(loadMoreCard);
+        }
+
+        updateTimers();
+    } finally {
+        isLiveRendering = false;
     }
+}
 
-    updateTimers();
+function handleLiveScroll() {
+    if (isLiveRendering || liveMatchesRendered >= allLiveMatches.length) return;
+    if (liveScrollThrottled) return;
+
+    liveScrollThrottled = true;
+    requestAnimationFrame(() => {
+        liveScrollThrottled = false;
+        const container = document.getElementById("liveSliderContainer");
+        if (!container || isLiveRendering) return;
+        if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 120) {
+            renderNextLiveBatch();
+        }
+    });
 }
 
 function loadLiveMatches(matches) {
@@ -978,24 +1020,16 @@ function loadLiveMatches(matches) {
         return;
     }
 
-    // লাইভ ম্যাচ শুরুতে, এরপর আপকামিং ম্যাচ, সবার শেষে ফিনিশড ম্যাচ
     allLiveMatches = sortMatches(matches);
     liveMatchesRendered = 0;
 
     liveWrapper.style.display = "block";
     container.innerHTML = "";
 
-    // ৫টি করে ম্যাচ লোড
     renderNextLiveBatch();
 
-    // স্ক্রল করে শেষে পৌঁছালে অটো পরবর্তী ৫টি ম্যাচ লোড হবে
     if (!isLiveScrollAttached) {
-        container.addEventListener("scroll", () => {
-            if (liveMatchesRendered >= allLiveMatches.length) return;
-            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 150) {
-                renderNextLiveBatch();
-            }
-        }, { passive: true });
+        container.addEventListener("scroll", handleLiveScroll, { passive: true });
         isLiveScrollAttached = true;
     }
 }
@@ -1153,6 +1187,8 @@ function renderLfeCategories() {
         siteIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/1920px-Amazon_Prime_Video_logo.svg.png';
     }
 
+    const defaultSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='%231e293b'/%3E%3Cpath d='M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z' fill='%2310b981'/%3E%3C/svg%3E";
+
     const card = document.createElement('div');
     card.className = 'card';
     card.onclick = () => sendData(ch.url);
@@ -1164,47 +1200,74 @@ function renderLfeCategories() {
             </div>
             
             <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
-                <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' rx=\'20\' fill=\'%231e293b\'/%3E%3Cpath d=\'M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z\' fill=\'%2310b981\'/%3E%3C/svg%3E';">
+                <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultSvg}';">
             </div>
 
-            <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' rx=\'20\' fill=\'%231e293b\'/%3E%3Cpath d=\'M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z\' fill=\'%2310b981\'/%3E%3C/svg%3E';">
+            <img src="${ch.logo || defaultSvg}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultSvg}';">
             <div class="lfe-card-title">${ch.name}</div>
         </div>
     `;
     return card;
 }
 
+let isLfeRendering = false;
+let lfeScrollThrottled = false;
+
 function renderNextLfeBatch() {
-    const sliderContainer = document.getElementById('lfeSliderContainer');
-    if (!sliderContainer) return;
+    if (isLfeRendering) return;
+    isLfeRendering = true;
 
-    const oldLoadMore = document.getElementById('lfeLoadMoreCard');
-    if (oldLoadMore) oldLoadMore.remove();
+    try {
+        const sliderContainer = document.getElementById('lfeSliderContainer');
+        if (!sliderContainer) return;
 
-    const nextBatch = lfeCurrentFiltered.slice(lfeRenderedCount, lfeRenderedCount + LFE_BATCH_SIZE);
-    if (nextBatch.length === 0) return;
+        const oldLoadMore = document.getElementById('lfeLoadMoreCard');
+        if (oldLoadMore) oldLoadMore.remove();
 
-    nextBatch.forEach(ch => {
-        sliderContainer.appendChild(buildLfeCard(ch));
-    });
-    lfeRenderedCount += nextBatch.length;
+        const nextBatch = lfeCurrentFiltered.slice(lfeRenderedCount, lfeRenderedCount + LFE_BATCH_SIZE);
+        if (nextBatch.length === 0) return;
 
-    if (lfeRenderedCount < lfeCurrentFiltered.length) {
-        const remaining = lfeCurrentFiltered.length - lfeRenderedCount;
-        const loadMoreCard = document.createElement('div');
-        loadMoreCard.id = 'lfeLoadMoreCard';
-        loadMoreCard.className = 'card';
-        loadMoreCard.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; height:80px; text-align:center; box-sizing:border-box;';
-        loadMoreCard.innerHTML = `
-            <div style="font-size:18px; color:#10b981; line-height:1;">➕</div>
-            <div style="font-size:11px; font-weight:bold; color:#10b981; margin-top:2px;">Load More (5)</div>
-            <div style="font-size:9px; color:#8b949e;">${remaining} more</div>
-        `;
-        loadMoreCard.onclick = function() {
-            renderNextLfeBatch();
-        };
-        sliderContainer.appendChild(loadMoreCard);
+        const frag = document.createDocumentFragment();
+        nextBatch.forEach(ch => {
+            frag.appendChild(buildLfeCard(ch));
+        });
+        sliderContainer.appendChild(frag);
+        lfeRenderedCount += nextBatch.length;
+
+        if (lfeRenderedCount < lfeCurrentFiltered.length) {
+            const remaining = lfeCurrentFiltered.length - lfeRenderedCount;
+            const loadMoreCard = document.createElement('div');
+            loadMoreCard.id = 'lfeLoadMoreCard';
+            loadMoreCard.className = 'card';
+            loadMoreCard.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; height:80px; text-align:center; box-sizing:border-box;';
+            loadMoreCard.innerHTML = `
+                <div style="font-size:18px; color:#10b981; line-height:1;">➕</div>
+                <div style="font-size:11px; font-weight:bold; color:#10b981; margin-top:2px;">Load More (5)</div>
+                <div style="font-size:9px; color:#8b949e;">${remaining} more</div>
+            `;
+            loadMoreCard.onclick = function() {
+                renderNextLfeBatch();
+            };
+            sliderContainer.appendChild(loadMoreCard);
+        }
+    } finally {
+        isLfeRendering = false;
     }
+}
+
+function handleLfeScroll() {
+    if (isLfeRendering || lfeRenderedCount >= lfeCurrentFiltered.length) return;
+    if (lfeScrollThrottled) return;
+
+    lfeScrollThrottled = true;
+    requestAnimationFrame(() => {
+        lfeScrollThrottled = false;
+        const sliderContainer = document.getElementById('lfeSliderContainer');
+        if (!sliderContainer || isLfeRendering) return;
+        if (sliderContainer.scrollLeft + sliderContainer.clientWidth >= sliderContainer.scrollWidth - 120) {
+            renderNextLfeBatch();
+        }
+    });
 }
 
 function renderLfeSlider() {
@@ -1227,12 +1290,7 @@ function renderLfeSlider() {
     renderNextLfeBatch();
 
     if (!isLfeScrollAttached) {
-        sliderContainer.addEventListener('scroll', () => {
-            if (lfeRenderedCount >= lfeCurrentFiltered.length) return;
-            if (sliderContainer.scrollLeft + sliderContainer.clientWidth >= sliderContainer.scrollWidth - 150) {
-                renderNextLfeBatch();
-            }
-        }, { passive: true });
+        sliderContainer.addEventListener('scroll', handleLfeScroll, { passive: true });
         isLfeScrollAttached = true;
     }
 }
@@ -1270,58 +1328,52 @@ function filterMatches(input) {
 function updateTimers() { 
     if (!showLiveSlider) return;
     
-    const liveWrapper = document.getElementById("liveWrapper");
-    let visibleCount = 0;
+    const now = Date.now();
+    const cards = document.querySelectorAll("#liveSliderContainer .card");
+    if (!cards || cards.length === 0) return;
 
-    document.querySelectorAll("#liveSliderContainer .card").forEach(card => { 
-        let el = card.querySelector(".status");
-        if (!el) return;
+    for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        const timerEl = card.querySelector(".timer");
+        if (!timerEl) continue;
 
-        let startStr = card.getAttribute("data-start");
-        let start = parseMatchDate(startStr); 
-        let now = new Date().getTime(); 
-        let diff = start - now; 
-        let timerEl = el.querySelector(".timer"); 
-        let dateObj = new Date(start); 
-                         
-        let league = card.querySelector(".league-header").innerText.toUpperCase(); 
-        
-        let maxDuration = 10800000; 
-        if (league.includes("ODI")) maxDuration = 36000000; 
-        else if (league.includes("TEST")) maxDuration = 432000000; 
-         
-        el.querySelector(".start-time").innerText = dateObj.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit", hour12: true}); 
-        el.querySelector(".start-date").innerText = dateObj.toLocaleDateString("en-GB"); 
+        const startStr = card.getAttribute("data-start");
+        if (!startStr) continue;
 
-        let elapsed = Math.abs(diff);
+        const start = parseMatchDate(startStr);
+        if (!start) continue;
+
+        const diff = start - now;
+        const elapsed = Math.abs(diff);
+        const maxDuration = parseInt(card.getAttribute("data-max-dur"), 10) || 10800000;
+        const isTest = card.getAttribute("data-test") === "1";
 
         if (diff < 0) { 
-            if (league.includes("TEST")) {
+            if (isTest) {
                 let testDayDuration = 21600000; 
                 let totalDayCycle = 86400000;  
-                
                 let currentDayNumber = Math.floor(elapsed / totalDayCycle) + 1;
                 let daySessionMod = elapsed % totalDayCycle;
 
                 if (currentDayNumber <= 5 && daySessionMod <= testDayDuration) {
-                    timerEl.className = "timer text-red"; 
+                    if (timerEl.className !== "timer text-red") timerEl.className = "timer text-red";
                     timerEl.innerHTML = `<div class="dot"></div> Day ${currentDayNumber} | Live Session`;
                 } else if (currentDayNumber <= 5) {
-                    timerEl.className = "timer text-orange"; 
-                    timerEl.innerText = `Day ${Math.min(currentDayNumber, 5)} | Stumps / Break`;
+                    if (timerEl.className !== "timer text-orange") timerEl.className = "timer text-orange";
+                    timerEl.textContent = `Day ${Math.min(currentDayNumber, 5)} | Stumps / Break`;
                 } else {
-                    timerEl.className = "timer"; 
-                    timerEl.innerText = "Finished";
+                    if (timerEl.className !== "timer") timerEl.className = "timer";
+                    timerEl.textContent = "Finished";
                 }
             } else if (elapsed <= maxDuration) {
                 let h = Math.floor(elapsed / 3600000); 
                 let m = Math.floor((elapsed % 3600000) / 60000); 
                 let s = Math.floor((elapsed % 60000) / 1000); 
-                timerEl.className = "timer text-red"; 
+                if (timerEl.className !== "timer text-red") timerEl.className = "timer text-red";
                 timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`; 
             } else { 
-                timerEl.className = "timer"; 
-                timerEl.innerText = "Finished"; 
+                if (timerEl.className !== "timer") timerEl.className = "timer";
+                timerEl.textContent = "Finished"; 
             }
         } else { 
             let h = Math.floor(diff / 3600000); 
@@ -1331,25 +1383,19 @@ function updateTimers() {
             if (h > 24) {
                 let days = Math.floor(h / 24);
                 let remHours = h % 24;
-                timerEl.className = "timer text-orange";
-                timerEl.innerText = `Start in: ${days}d ${remHours}h`;
+                if (timerEl.className !== "timer text-orange") timerEl.className = "timer text-orange";
+                timerEl.textContent = `Start in: ${days}d ${remHours}h`;
             } else if (h >= 1) {
-                timerEl.className = "timer text-orange";
-                timerEl.innerText = `Start in: ${h}h ${m}m`;
+                if (timerEl.className !== "timer text-orange") timerEl.className = "timer text-orange";
+                timerEl.textContent = `Start in: ${h}h ${m}m`;
             } else {
-                timerEl.className = "timer text-green";
-                timerEl.innerText = `Start in: ${h}h ${m}m ${s}s`;
+                if (timerEl.className !== "timer text-green") timerEl.className = "timer text-green";
+                timerEl.textContent = `Start in: ${h}h ${m}m ${s}s`;
             }
         } 
-
-        card.style.display = "block";
-        visibleCount++;
-    });
-
-    if (liveWrapper && currentSearch === "") {
-        liveWrapper.style.display = (allLiveMatches && allLiveMatches.length > 0) ? "block" : "none";
     }
 }
+
 
 function sendData(url) { 
     if (window.AppInventor) window.AppInventor.setWebViewString(url); 
