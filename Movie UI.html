@@ -812,7 +812,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const forceHideTimer = setTimeout(hideLoader, 1500);
 
     if (showLiveSlider) {
-        fetch('https://raw.githubusercontent.com/raselmia9/footystream_Live_Event/refs/heads/main/live_event_card.json')
+        fetch('https://raw.githubusercontent.com/raselmia9/Event_match/refs/heads/main/matches.json')
             .then(res => res.json())
             .then(data => loadLiveMatches(data))
             .catch(err => console.log('Manual Live error:', err));
