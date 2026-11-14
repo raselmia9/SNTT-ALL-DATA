@@ -1336,9 +1336,11 @@ function parseVideoLinks(raw) {
 /* EXTRACT VIDEO URL */
 
 function parseVideoURL(raw) {
-  const parts = raw.split("|");
-  const videoUrl = parts[0].trim();
-  return { videoUrl };
+  const parts = String(raw || "").split("|").map(p => p.trim()).filter(Boolean);
+  const videoUrl = parts[0] || "";
+  // Keep every header (Referer, Cookie, ...) after the URL, joined with & as the player reads them
+  const headers = parts.slice(1).join("&");
+  return { videoUrl: headers ? videoUrl + "|" + headers : videoUrl };
 }
 
 /* APPLY VIEW */
