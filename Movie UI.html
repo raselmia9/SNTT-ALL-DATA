@@ -996,9 +996,13 @@ function loadLiveMatches(matches) {
 }
 
 
+const LFE_BATCH_SIZE = 5;
 let lfeAllChannels = [];
 let lfeCategories = new Set();
 let lfeActiveCategory = "All";
+let lfeCurrentFiltered = [];
+let lfeRenderedCount = 0;
+let isLfeScrollAttached = false;
 
 async function initMultiPlaylists() {
     const sliderContainer = document.getElementById('lfeSliderContainer');
@@ -1126,70 +1130,106 @@ function renderLfeCategories() {
 
 
 
-    function renderLfeSlider() {
+    function buildLfeCard(ch) {
+    let siteIcon = 'https://i.ibb.co/3W68Z93/shield.png'; 
+    let source = (ch.source || '').toLowerCase();
+    let groupLower = (ch.group || '').toLowerCase();
+    let nameLower = (ch.name || '').toLowerCase();
+
+    if (source === 'fancode' || groupLower.includes('fancode') || nameLower.includes('fancode')) {
+        siteIcon = 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6c/FanCode_logo.svg/500px-FanCode_logo.svg.png';
+    } else if (source === 'tapmad' || groupLower.includes('tapmad') || nameLower.includes('tapmad')) {
+        siteIcon = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/tapmad%20icon.png';
+    } else if (source === 'sonyliv' || groupLower.includes('sony') || nameLower.includes('sonyliv')) {
+        siteIcon = 'https://www.freelogovectors.net/wp-content/uploads/2021/12/sonyliv-logo-freelogovectors.net_.png';
+    } else if (source === 'willow' || groupLower.includes('willow') || nameLower.includes('willow')) {
+        siteIcon = 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png';
+    } else if (source === 'prime' || source === 'amazon' || groupLower.includes('prime') || nameLower.includes('prime')) {
+        siteIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/1920px-Amazon_Prime_Video_logo.svg.png';
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => sendData(ch.url);
+    card.innerHTML = `
+        <div class="lfe-logo-box">
+            <div class="lfe-live-indicator">
+                <div class="lfe-dot"></div>
+                <span class="lfe-live-text">LIVE</span>
+            </div>
+            
+            <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+                <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
+            </div>
+
+            <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
+            <div class="lfe-card-title">${ch.name}</div>
+        </div>
+    `;
+    return card;
+}
+
+function renderNextLfeBatch() {
+    const sliderContainer = document.getElementById('lfeSliderContainer');
+    if (!sliderContainer) return;
+
+    const oldLoadMore = document.getElementById('lfeLoadMoreCard');
+    if (oldLoadMore) oldLoadMore.remove();
+
+    const nextBatch = lfeCurrentFiltered.slice(lfeRenderedCount, lfeRenderedCount + LFE_BATCH_SIZE);
+    if (nextBatch.length === 0) return;
+
+    nextBatch.forEach(ch => {
+        sliderContainer.appendChild(buildLfeCard(ch));
+    });
+    lfeRenderedCount += nextBatch.length;
+
+    if (lfeRenderedCount < lfeCurrentFiltered.length) {
+        const remaining = lfeCurrentFiltered.length - lfeRenderedCount;
+        const loadMoreCard = document.createElement('div');
+        loadMoreCard.id = 'lfeLoadMoreCard';
+        loadMoreCard.className = 'card';
+        loadMoreCard.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; height:80px; text-align:center; box-sizing:border-box;';
+        loadMoreCard.innerHTML = `
+            <div style="font-size:18px; color:#10b981; line-height:1;">➕</div>
+            <div style="font-size:11px; font-weight:bold; color:#10b981; margin-top:2px;">Load More (5)</div>
+            <div style="font-size:9px; color:#8b949e;">${remaining} more</div>
+        `;
+        loadMoreCard.onclick = function() {
+            renderNextLfeBatch();
+        };
+        sliderContainer.appendChild(loadMoreCard);
+    }
+}
+
+function renderLfeSlider() {
     const sliderContainer = document.getElementById('lfeSliderContainer');
     if (!sliderContainer) return;
 
     sliderContainer.innerHTML = '';
+    sliderContainer.scrollLeft = 0;
     
-    const filtered = lfeActiveCategory === 'All' 
+    lfeCurrentFiltered = lfeActiveCategory === 'All' 
         ? lfeAllChannels 
         : lfeAllChannels.filter(ch => ch.group === lfeActiveCategory);
 
-    if (filtered.length === 0) {
+    if (lfeCurrentFiltered.length === 0) {
         sliderContainer.innerHTML = '<div style="color: #8b949e; font-size: 12px; padding: 10px;">কোনো চ্যানেল পাওয়া যায়নি</div>';
         return;
     }
 
-    filtered.forEach((ch) => {
-        let siteIcon = 'https://i.ibb.co/3W68Z93/shield.png'; 
-        let source = (ch.source || '').toLowerCase();
-        let groupLower = (ch.group || '').toLowerCase();
-        let nameLower = (ch.name || '').toLowerCase();
+    lfeRenderedCount = 0;
+    renderNextLfeBatch();
 
-        if (source === 'fancode' || groupLower.includes('fancode') || nameLower.includes('fancode') || nameLower.includes('fancode')) {
-            siteIcon = 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6c/FanCode_logo.svg/500px-FanCode_logo.svg.png';
-        } else if (source === 'tapmad' || groupLower.includes('tapmad') || nameLower.includes('tapmad')) {
-            siteIcon = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/tapmad%20icon.png';
-        } else if (source === 'sonyliv' || groupLower.includes('sony') || nameLower.includes('sonyliv')) {
-            siteIcon = 'https://www.freelogovectors.net/wp-content/uploads/2021/12/sonyliv-logo-freelogovectors.net_.png';
-        } else if (source === 'willow' || groupLower.includes('willow') || nameLower.includes('willow')) {
-            siteIcon = 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png';
-        }
-
-
-
-else if (source === 'prime' || source === 'amazon' || groupLower.includes('prime') || nameLower.includes('prime')) {
-            siteIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/1920px-Amazon_Prime_Video_logo.svg.png';
-        }
-
-
-
-
-
-
-
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.onclick = () => sendData(ch.url);
-        card.innerHTML = `
-            <div class="lfe-logo-box">
-                <div class="lfe-live-indicator">
-                    <div class="lfe-dot"></div>
-                    <span class="lfe-live-text">LIVE</span>
-                </div>
-                
-                <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
-                    <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
-                </div>
-
-                <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
-                <div class="lfe-card-title">${ch.name}</div>
-            </div>
-        `;
-        sliderContainer.appendChild(card);
-    });
+    if (!isLfeScrollAttached) {
+        sliderContainer.addEventListener('scroll', () => {
+            if (lfeRenderedCount >= lfeCurrentFiltered.length) return;
+            if (sliderContainer.scrollLeft + sliderContainer.clientWidth >= sliderContainer.scrollWidth - 150) {
+                renderNextLfeBatch();
+            }
+        }, { passive: true });
+        isLfeScrollAttached = true;
+    }
 }
 
 window.lfeFilterCat = function(cat) {
