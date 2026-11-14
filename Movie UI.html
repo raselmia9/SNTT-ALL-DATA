@@ -1047,7 +1047,7 @@ function filterMatches(input) {
         if (categoryContainer) categoryContainer.style.display = 'none';
         if (categoryTitleMain) categoryTitleMain.style.display = 'none';
     } else {
-        if (liveWrapper) liveWrapper.style.display = 'block';
+        if (liveWrapper) liveWrapper.style.display = showLiveSlider ? 'block' : 'none';
         if (lfeWrapper) lfeWrapper.style.display = 'block';
         if (categoryContainer) categoryContainer.style.display = 'flex';
         if (categoryTitleMain) categoryTitleMain.style.display = 'block';
