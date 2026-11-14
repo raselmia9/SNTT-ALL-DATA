@@ -751,7 +751,7 @@ const showLiveSlider = false ;
 
 let currentSearch = '';
 
-window.addEventListener('load', () => { 
+document.addEventListener('DOMContentLoaded', () => { 
     const forceHideTimer = setTimeout(hideLoader, 1500);
 
     if (showLiveSlider) {
@@ -1231,9 +1231,11 @@ async function loadMovies() {
 
     allMovieItems = movies.slice();
     renderMovies();
+    hideLoader();
   } catch(error) {
     grid.innerHTML = '<div class="empty">Unable to load movies.<br>Check your internet connection.</div>';
     console.error("Movie loading error:", error);
+    hideLoader();
   }
 }
 
