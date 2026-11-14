@@ -835,56 +835,164 @@ function hideLoader() {
     }
 }
 
+let allLiveMatches = [];
+let liveMatchesRendered = 0;
+const LIVE_BATCH_SIZE = 5;
+let isLiveScrollAttached = false;
+
+function parseMatchDate(str) {
+    if (!str) return 0;
+    let d = new Date(str.replace(" ", "T")).getTime();
+    if (isNaN(d)) d = new Date(str).getTime();
+    return isNaN(d) ? 0 : d;
+}
+
+function getMatchState(match, now) {
+    if (!now) now = Date.now();
+    const start = parseMatchDate(match.matchTime);
+    if (!start) return 1;
+
+    const diff = start - now;
+    const elapsed = Math.abs(diff);
+    const league = (match.eventTitle || "").toUpperCase();
+
+    let maxDuration = 10800000; // 3h default
+    if (league.includes("ODI")) maxDuration = 36000000;
+    else if (league.includes("TEST")) maxDuration = 432000000;
+
+    if (diff <= 0) {
+        if (elapsed <= maxDuration) return 0; // Live
+        return 2; // Finished
+    } else {
+        return 1; // Upcoming
+    }
+}
+
+function sortMatches(list) {
+    const now = Date.now();
+    return list.slice().sort((a, b) => {
+        const stateA = getMatchState(a, now);
+        const stateB = getMatchState(b, now);
+
+        if (stateA !== stateB) {
+            return stateA - stateB; // 0: Live, 1: Upcoming, 2: Finished
+        }
+
+        const timeA = parseMatchDate(a.matchTime);
+        const timeB = parseMatchDate(b.matchTime);
+
+        if (stateA === 0) {
+            // Live: HOT matches first, then earliest start time
+            if (a.isHot && !b.isHot) return -1;
+            if (!a.isHot && b.isHot) return 1;
+            return timeA - timeB;
+        } else if (stateA === 1) {
+            // Upcoming: soonest starting first
+            return timeA - timeB;
+        } else {
+            // Finished: most recently finished first
+            return timeB - timeA;
+        }
+    });
+}
+
+function buildMatchCard(match) {
+    const defaultLogoUrl = "Http://logocdn.wapsite.me/images/DEFAULT.png"; 
+    let card = document.createElement("div");
+    card.className = "card";
+    card.setAttribute("data-start", match.matchTime);
+    card.onclick = function() { sendData(match.streamLink); };
+    card.innerHTML = `
+        ${match.isHot ? '<div class="hot-badge">HOT 🔥</div>' : ""}
+        <div class="league-header">${match.eventTitle}</div>         
+        <div class="match-row">             
+            <div class="team">
+                <div class="logo-box">
+                    <img src="${match.team1Logo}" onerror="this.src='${defaultLogoUrl}'">
+                </div>
+                <div style="font-size:11px; margin-top:5px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team1Title}">${match.team1Title}</div>
+            </div>             
+            <div class="status" data-start="${match.matchTime}">
+                <div class="timer">--:--:--</div>
+                <div class="start-time"></div>
+                <div class="start-date"></div>
+            </div>             
+            <div class="team">
+                <div class="logo-box">
+                    <img src="${match.team2Logo}" onerror="this.src='${defaultLogoUrl}'">
+                </div>
+                <div style="font-size:11px; margin-top:5px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team2Title}">${match.team2Title}</div>
+            </div>         
+        </div>
+    `;
+    return card;
+}
+
+function renderNextLiveBatch() {
+    const container = document.getElementById("liveSliderContainer");
+    if (!container) return;
+
+    const oldLoadMore = document.getElementById("liveLoadMoreCard");
+    if (oldLoadMore) oldLoadMore.remove();
+
+    const nextBatch = allLiveMatches.slice(liveMatchesRendered, liveMatchesRendered + LIVE_BATCH_SIZE);
+    if (nextBatch.length === 0) return;
+
+    nextBatch.forEach(match => {
+        container.appendChild(buildMatchCard(match));
+    });
+    liveMatchesRendered += nextBatch.length;
+
+    if (liveMatchesRendered < allLiveMatches.length) {
+        const remaining = allLiveMatches.length - liveMatchesRendered;
+        const loadMoreCard = document.createElement("div");
+        loadMoreCard.id = "liveLoadMoreCard";
+        loadMoreCard.className = "card";
+        loadMoreCard.style.cssText = "display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; min-height:120px; text-align:center; padding:15px;";
+        loadMoreCard.innerHTML = `
+            <div style="font-size:24px; color:#10b981; margin-bottom:6px;">➕</div>
+            <div style="font-size:13px; font-weight:bold; color:#10b981;">Load More (5)</div>
+            <div style="font-size:11px; color:#8b949e; margin-top:4px;">${remaining} more matches</div>
+        `;
+        loadMoreCard.onclick = function() {
+            renderNextLiveBatch();
+        };
+        container.appendChild(loadMoreCard);
+    }
+
+    updateTimers();
+}
+
 function loadLiveMatches(matches) {
-    const container = document.getElementById('liveSliderContainer');
-    const liveWrapper = document.getElementById('liveWrapper');
+    const container = document.getElementById("liveSliderContainer");
+    const liveWrapper = document.getElementById("liveWrapper");
     if (!container || !liveWrapper) return;
     
     if (!showLiveSlider || !Array.isArray(matches) || matches.length === 0) {
-        liveWrapper.style.display = 'none';
+        liveWrapper.style.display = "none";
         return;
     }
 
-    // খেলা শুরু হওয়ার সময় অনুযায়ী সিরিয়ালী সাজানো (Ascending Order)
-    matches.sort((a, b) => new Date(a.matchTime) - new Date(b.matchTime));
+    // লাইভ ম্যাচ শুরুতে, এরপর আপকামিং ম্যাচ, সবার শেষে ফিনিশড ম্যাচ
+    allLiveMatches = sortMatches(matches);
+    liveMatchesRendered = 0;
 
-    liveWrapper.style.display = 'block';
-    container.innerHTML = '';
-    
-    // ডিফল্ট লোগোর লিংক
-    const defaultLogoUrl = 'Http://logocdn.wapsite.me/images/DEFAULT.png'; 
+    liveWrapper.style.display = "block";
+    container.innerHTML = "";
 
-    matches.forEach(match => {
-        let card = document.createElement('div');
-        card.className = 'card';
-        card.setAttribute('data-start', match.matchTime);
-        card.setAttribute('onclick', `sendData('${match.streamLink}')`);
-        card.innerHTML = `
-            ${match.isHot ? '<div class="hot-badge">HOT 🔥</div>' : ''}
-            <div class="league-header">${match.eventTitle}</div>         
-            <div class="match-row">             
-                <div class="team">
-                    <div class="logo-box">
-                        <img src="${match.team1Logo}" onerror="this.src='${defaultLogoUrl}'">
-                    </div>
-                    <div style="font-size:11px; margin-top:5px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team1Title}">${match.team1Title}</div>
-                </div>             
-                <div class="status" data-start="${match.matchTime}">
-                    <div class="timer">--:--:--</div>
-                    <div class="start-time"></div>
-                    <div class="start-date"></div>
-                </div>             
-                <div class="team">
-                    <div class="logo-box">
-                        <img src="${match.team2Logo}" onerror="this.src='${defaultLogoUrl}'">
-                    </div>
-                    <div style="font-size:11px; margin-top:5px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team2Title}">${match.team2Title}</div>
-                </div>         
-            </div>
-        `;
-        container.appendChild(card);
-    });
-    updateTimers();
+    // ৫টি করে ম্যাচ লোড
+    renderNextLiveBatch();
+
+    // স্ক্রল করে শেষে পৌঁছালে অটো পরবর্তী ৫টি ম্যাচ লোড হবে
+    if (!isLiveScrollAttached) {
+        container.addEventListener("scroll", () => {
+            if (liveMatchesRendered >= allLiveMatches.length) return;
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 150) {
+                renderNextLiveBatch();
+            }
+        }, { passive: true });
+        isLiveScrollAttached = true;
+    }
 }
 
 
@@ -1117,36 +1225,33 @@ function filterMatches(input) {
 function updateTimers() { 
     if (!showLiveSlider) return;
     
-    const liveWrapper = document.getElementById('liveWrapper');
+    const liveWrapper = document.getElementById("liveWrapper");
     let visibleCount = 0;
 
-    document.querySelectorAll('#liveSliderContainer .card').forEach(card => { 
-        let el = card.querySelector('.status');
+    document.querySelectorAll("#liveSliderContainer .card").forEach(card => { 
+        let el = card.querySelector(".status");
         if (!el) return;
 
-        let startStr = card.getAttribute('data-start');
-        let start = new Date(startStr).getTime(); 
+        let startStr = card.getAttribute("data-start");
+        let start = parseMatchDate(startStr); 
         let now = new Date().getTime(); 
         let diff = start - now; 
-        let timerEl = el.querySelector('.timer'); 
+        let timerEl = el.querySelector(".timer"); 
         let dateObj = new Date(start); 
                          
-        let league = card.querySelector('.league-header').innerText.toUpperCase(); 
+        let league = card.querySelector(".league-header").innerText.toUpperCase(); 
         
-        let maxDuration = 28800000; 
-        if (league.includes('ODI')) maxDuration = 36000000; 
-        else if (league.includes('TEST')) maxDuration = 432000000; 
-        else if (!league.includes('TEST')) maxDuration = 10800000; 
+        let maxDuration = 10800000; 
+        if (league.includes("ODI")) maxDuration = 36000000; 
+        else if (league.includes("TEST")) maxDuration = 432000000; 
          
-        el.querySelector('.start-time').innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}); 
-        el.querySelector('.start-date').innerText = dateObj.toLocaleDateString('en-GB'); 
+        el.querySelector(".start-time").innerText = dateObj.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit", hour12: true}); 
+        el.querySelector(".start-date").innerText = dateObj.toLocaleDateString("en-GB"); 
 
         let elapsed = Math.abs(diff);
-        let shouldHide = false;
-        let hideBufferTime = 7200000; // ম্যাচ শেষ হওয়ার পর অতিরিক্ত ২ ঘণ্টা (7200000 ms) দৃশ্যমান থাকবে
 
         if (diff < 0) { 
-            if (league.includes('TEST')) {
+            if (league.includes("TEST")) {
                 let testDayDuration = 21600000; 
                 let totalDayCycle = 86400000;  
                 
@@ -1156,13 +1261,12 @@ function updateTimers() {
                 if (currentDayNumber <= 5 && daySessionMod <= testDayDuration) {
                     timerEl.className = "timer text-red"; 
                     timerEl.innerHTML = `<div class="dot"></div> Day ${currentDayNumber} | Live Session`;
-                } else {
+                } else if (currentDayNumber <= 5) {
                     timerEl.className = "timer text-orange"; 
                     timerEl.innerText = `Day ${Math.min(currentDayNumber, 5)} | Stumps / Break`;
-                }
-
-                if (elapsed > (432000000 + hideBufferTime)) { 
-                    shouldHide = true;
+                } else {
+                    timerEl.className = "timer"; 
+                    timerEl.innerText = "Finished";
                 }
             } else if (elapsed <= maxDuration) {
                 let h = Math.floor(elapsed / 3600000); 
@@ -1171,16 +1275,10 @@ function updateTimers() {
                 timerEl.className = "timer text-red"; 
                 timerEl.innerHTML = `<div class="dot"></div> Live | Playing ${h}h ${m}m ${s}s`; 
             } else { 
-                let finishExcess = elapsed - maxDuration;
-                if (finishExcess <= hideBufferTime) {
-                    timerEl.className = "timer"; 
-                    timerEl.innerText = "Finished"; 
-                } else {
-                    shouldHide = true; // খেলা শেষ হওয়ার ২ ঘণ্টা পর অটো হাইড
-                }
+                timerEl.className = "timer"; 
+                timerEl.innerText = "Finished"; 
             }
         } else { 
-            // এখানে ৩০ ঘন্টার লিমিট শর্তটি পুরোপুরি বাদ দেওয়া হয়েছে, ফলে সব আপকামিং ম্যাচ দেখাবে
             let h = Math.floor(diff / 3600000); 
             let m = Math.floor((diff % 3600000) / 60000); 
             let s = Math.floor((diff % 60000) / 1000); 
@@ -1199,22 +1297,14 @@ function updateTimers() {
             }
         } 
 
-        if (!league.includes('TEST') && diff < 0 && elapsed > (maxDuration + hideBufferTime)) {
-            shouldHide = true;
-        }
-
-        if (shouldHide) {
-            card.style.display = "none";
-        } else {
-            card.style.display = "block";
-            visibleCount++;
-        }
+        card.style.display = "block";
+        visibleCount++;
     });
 
-    if (liveWrapper && currentSearch === '') {
-        liveWrapper.style.display = visibleCount > 0 ? "block" : "none";
+    if (liveWrapper && currentSearch === "") {
+        liveWrapper.style.display = (allLiveMatches && allLiveMatches.length > 0) ? "block" : "none";
     }
-} 
+}
 
 function sendData(url) { 
     if (window.AppInventor) window.AppInventor.setWebViewString(url); 
