@@ -263,9 +263,12 @@
 
 .section-title {
   display:flex;
-  justify-content:space-between;
+  flex-direction:column;
+  justify-content:center;
   align-items:center;
+  gap:10px;
   margin:5px 3px 14px;
+  text-align:center;
 }
 
 .section-title h2 {font-size:15px; font-weight:800;}
@@ -290,6 +293,25 @@
   background:#147d50;
   color:white;
   border-color:#20d68a;
+}
+
+/* LOAD MORE */
+
+.movie-load-more {
+  display:none;
+  text-align:center;
+  margin-top:16px;
+}
+
+.movie-load-more button {
+  padding:8px 18px;
+  border-radius:8px;
+  background:#1c2638;
+  border:1px solid #2c3a50;
+  color:#b7c1d1;
+  font-size:12px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 /* MOVIE GRID */
@@ -707,6 +729,11 @@
       <div class="spinner"></div>
       Loading movies...
     </div>
+  </div>
+
+  <div id="movieLoadMore" class="movie-load-more">
+    <button id="movieLoadMoreBtn" type="button">আরও মুভি দেখুন</button>
+    <div id="movieSentinel" style="height:1px;"></div>
   </div>
 
 </div>
@@ -1230,6 +1257,9 @@ async function loadMovies() {
     );
 
     allMovieItems = movies.slice();
+    allMovieItems.forEach(m => {
+      m._k = (m.title + " " + (m.details || "")).toLowerCase();
+    });
     renderMovies();
     hideLoader();
   } catch(error) {
@@ -1301,75 +1331,115 @@ let allMovieItems = [];
 function applyMovieSearch(input) {
   const q = (input || "").toLowerCase().trim();
   movies = q
-    ? allMovieItems.filter(m => (m.title + " " + (m.details || "")).toLowerCase().includes(q))
+    ? allMovieItems.filter(m => m._k.includes(q))
     : allMovieItems.slice();
   renderMovies();
 };
 
+const MOVIE_PAGE_SIZE = 50;
+let renderedMovieCount = 0;
+const movieLoadMore = document.getElementById("movieLoadMore");
+const movieLoadMoreBtn = document.getElementById("movieLoadMoreBtn");
+const movieSentinel = document.getElementById("movieSentinel");
+
+function buildMovieCard(movie, originalIndex) {
+  const links = parseVideoLinks(movie.link);
+
+  const card = document.createElement("div");
+  card.className = "movie-card";
+
+  const poster = document.createElement("div");
+  poster.className = "poster";
+
+  const img = document.createElement("img");
+  img.src = movie.img;
+  img.alt = movie.title;
+  img.loading = "lazy";
+  img.onerror = function() { this.style.opacity = "0"; };
+
+  const overlay = document.createElement("div");
+  overlay.className = "poster-overlay";
+
+  const play = document.createElement("div");
+  play.className = "play-icon";
+  play.textContent = "▶";
+
+  const tag = document.createElement("div");
+  tag.className = "quality-tag";
+  tag.textContent = links.length > 1 ? links.length + " OPTIONS" : "PLAY";
+
+  poster.append(img, overlay, play, tag);
+
+  const info = document.createElement("div");
+  info.className = "movie-info";
+
+  const title = document.createElement("div");
+  title.className = "movie-title";
+  title.textContent = movie.title;
+
+  const desc = document.createElement("div");
+  desc.className = "movie-desc";
+  desc.textContent = movie.details || "";
+
+  const date = document.createElement("div");
+  date.className = "movie-date";
+  date.textContent = movie.date || "Popular";
+
+  info.append(title, desc, date);
+  card.append(poster, info);
+
+  card.addEventListener("click", () => {
+    openMovie(originalIndex);
+  });
+
+  return card;
+}
+
+function updateMovieLoadMore() {
+  movieLoadMore.style.display = renderedMovieCount < movies.length ? "block" : "none";
+}
+
+// Renders the next 50 movies only, so the page never builds thousands of cards at once
+function appendMoviePage() {
+  const end = Math.min(renderedMovieCount + MOVIE_PAGE_SIZE, movies.length);
+  if (end <= renderedMovieCount) {
+    updateMovieLoadMore();
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  for (let i = renderedMovieCount; i < end; i++) {
+    fragment.appendChild(buildMovieCard(movies[i], i));
+  }
+
+  grid.appendChild(fragment);
+  renderedMovieCount = end;
+  applyView();
+  updateMovieLoadMore();
+}
+
 function renderMovies() {
+  renderedMovieCount = 0;
+
   if (!movies.length) {
     grid.innerHTML = '<div class="empty">No movies found.</div>';
+    movieLoadMore.style.display = "none";
     return;
   }
 
   grid.innerHTML = "";
-  const fragment = document.createDocumentFragment();
+  appendMoviePage();
+}
 
-  movies.forEach((movie, originalIndex) => {
-    const links = parseVideoLinks(movie.link);
+movieLoadMoreBtn.addEventListener("click", appendMoviePage);
 
-    const card = document.createElement("div");
-    card.className = "movie-card";
-
-    const poster = document.createElement("div");
-    poster.className = "poster";
-
-    const img = document.createElement("img");
-    img.src = movie.img;
-    img.alt = movie.title;
-    img.loading = "lazy";
-    img.onerror = function() { this.style.opacity = "0"; };
-
-    const overlay = document.createElement("div");
-    overlay.className = "poster-overlay";
-
-    const play = document.createElement("div");
-    play.className = "play-icon";
-    play.textContent = "▶";
-
-    const tag = document.createElement("div");
-    tag.className = "quality-tag";
-    tag.textContent = links.length > 1 ? links.length + " OPTIONS" : "PLAY";
-
-    poster.append(img, overlay, play, tag);
-
-    const info = document.createElement("div");
-    info.className = "movie-info";
-
-    const title = document.createElement("div");
-    title.className = "movie-title";
-    title.textContent = movie.title;
-
-    const desc = document.createElement("div");
-    desc.className = "movie-desc";
-    desc.textContent = movie.details || "";
-
-    const date = document.createElement("div");
-    date.className = "movie-date";
-    date.textContent = movie.date || "Popular";
-
-    info.append(title, desc, date);
-    card.append(poster, info);
-
-    card.addEventListener("click", () => {
-      openMovie(originalIndex);
-    });
-
-    fragment.appendChild(card);
-  });
-
-  grid.appendChild(fragment);
-  applyView();
+if ("IntersectionObserver" in window) {
+  const movieObserver = new IntersectionObserver(entries => {
+    if (entries.some(e => e.isIntersecting) && renderedMovieCount < movies.length) {
+      appendMoviePage();
+    }
+  }, { rootMargin: "300px 0px" });
+  movieObserver.observe(movieSentinel);
 }
 
 /* GRID BUTTON */
