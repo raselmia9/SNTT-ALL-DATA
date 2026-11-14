@@ -1,7 +1,8 @@
 <!DOCTYPE html> 
 <html> 
 <head>     
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer"> 
     <style>     
         body { 
             background-color: #0d1117; 
@@ -31,6 +32,10 @@
         .live-slider-container .card {
             flex: 0 0 85% !important;
             max-width: 320px !important;
+            height: 82px !important;
+            padding: 6px 8px !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
             scroll-snap-align: start;
             margin-bottom: 0 !important;
         }
@@ -127,7 +132,7 @@
             100% { background-position: 0% 50%; } 
         }             
 
-        .league-header { font-size: 6px; font-weight: bold; margin-bottom: 6px; text-align: center; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
+        .league-header { font-size: 7px; font-weight: bold; margin-bottom: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 25px; box-sizing: border-box; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */        
         .match-row { display: flex; align-items: center; justify-content: space-between; }         
         .team { display: flex; flex-direction: column; align-items: center; width: 35%; }         
         .logo-box { width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; }        
@@ -897,20 +902,20 @@ function sortMatches(list) {
 }
 
 function buildMatchCard(match) {
-    const defaultLogoUrl = "Http://logocdn.wapsite.me/images/DEFAULT.png"; 
+    const defaultLogoUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='%231e293b'/%3E%3Cpath d='M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z' fill='%2310b981'/%3E%3C/svg%3E"; 
     let card = document.createElement("div");
     card.className = "card";
     card.setAttribute("data-start", match.matchTime);
     card.onclick = function() { sendData(match.streamLink); };
     card.innerHTML = `
         ${match.isHot ? '<div class="hot-badge">HOT 🔥</div>' : ""}
-        <div class="league-header">${match.eventTitle}</div>         
+        <div class="league-header" title="${match.eventTitle}">${match.eventTitle}</div>         
         <div class="match-row">             
             <div class="team">
                 <div class="logo-box">
-                    <img src="${match.team1Logo}" onerror="this.src='${defaultLogoUrl}'">
+                    <img src="${match.team1Logo || defaultLogoUrl}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultLogoUrl}';">
                 </div>
-                <div style="font-size:11px; margin-top:5px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team1Title}">${match.team1Title}</div>
+                <div style="font-size:10px; margin-top:3px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team1Title}">${match.team1Title}</div>
             </div>             
             <div class="status" data-start="${match.matchTime}">
                 <div class="timer">--:--:--</div>
@@ -919,9 +924,9 @@ function buildMatchCard(match) {
             </div>             
             <div class="team">
                 <div class="logo-box">
-                    <img src="${match.team2Logo}" onerror="this.src='${defaultLogoUrl}'">
+                    <img src="${match.team2Logo || defaultLogoUrl}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultLogoUrl}';">
                 </div>
-                <div style="font-size:11px; margin-top:5px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team2Title}">${match.team2Title}</div>
+                <div style="font-size:10px; margin-top:3px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${match.team2Title}">${match.team2Title}</div>
             </div>         
         </div>
     `;
@@ -948,11 +953,11 @@ function renderNextLiveBatch() {
         const loadMoreCard = document.createElement("div");
         loadMoreCard.id = "liveLoadMoreCard";
         loadMoreCard.className = "card";
-        loadMoreCard.style.cssText = "display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; min-height:120px; text-align:center; padding:15px;";
+        loadMoreCard.style.cssText = "display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:rgba(16,185,129,0.08); border:1px dashed #10b981; height:82px; text-align:center; box-sizing:border-box;";
         loadMoreCard.innerHTML = `
-            <div style="font-size:24px; color:#10b981; margin-bottom:6px;">➕</div>
-            <div style="font-size:13px; font-weight:bold; color:#10b981;">Load More (5)</div>
-            <div style="font-size:11px; color:#8b949e; margin-top:4px;">${remaining} more matches</div>
+            <div style="font-size:18px; color:#10b981; line-height:1;">➕</div>
+            <div style="font-size:11px; font-weight:bold; color:#10b981; margin-top:2px;">Load More (5)</div>
+            <div style="font-size:9px; color:#8b949e;">${remaining} more matches</div>
         `;
         loadMoreCard.onclick = function() {
             renderNextLiveBatch();
@@ -1159,10 +1164,10 @@ function renderLfeCategories() {
             </div>
             
             <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
-                <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
+                <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' rx=\'20\' fill=\'%231e293b\'/%3E%3Cpath d=\'M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z\' fill=\'%2310b981\'/%3E%3C/svg%3E';">
             </div>
 
-            <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" onerror="this.src='https://i.ibb.co/3W68Z93/shield.png'">
+            <img src="${ch.logo || 'https://i.ibb.co/3W68Z93/shield.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 40 40\'%3E%3Crect width=\'40\' height=\'40\' rx=\'20\' fill=\'%231e293b\'/%3E%3Cpath d=\'M20 10l8 4v6c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11v-6l8-4z\' fill=\'%2310b981\'/%3E%3C/svg%3E';">
             <div class="lfe-card-title">${ch.name}</div>
         </div>
     `;
