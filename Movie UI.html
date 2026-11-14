@@ -279,14 +279,28 @@
 }
 
 .view-icon-btn {
-  padding:5px 9px;
+  width:38px;
+  height:32px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   border-radius:6px;
   background:#1c2638;
   border:1px solid #2c3a50;
   color:#b7c1d1;
-  font-size:12px;
-  font-weight:bold;
   cursor:pointer;
+}
+
+.view-icon-btn svg {
+  width:18px;
+  height:18px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 .view-icon-btn.active {
@@ -315,6 +329,18 @@
 }
 
 /* MOVIE GRID */
+
+.movie-grid > .loading,
+.movie-grid > .empty {
+  grid-column:1 / -1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  padding:40px 10px;
+  text-align:center;
+}
 
 .movie-grid {
   display:grid;
@@ -719,8 +745,8 @@
   <div class="section-title">
     <h2>Popular Collection</h2>
     <div class="header-view-buttons">
-      <button class="view-icon-btn active" id="gridBtn" title="Grid View">▦</button>
-      <button class="view-icon-btn" id="listBtn" title="List View">☰</button>
+      <button class="view-icon-btn active" id="gridBtn" title="Grid View" aria-label="Grid View"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+      <button class="view-icon-btn" id="listBtn" title="List View" aria-label="List View"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><line x1="3.5" y1="6" x2="4.5" y2="6"/><line x1="3.5" y1="12" x2="4.5" y2="12"/><line x1="3.5" y1="18" x2="4.5" y2="18"/></svg></button>
     </div>
   </div>
 
