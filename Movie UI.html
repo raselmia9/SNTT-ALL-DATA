@@ -527,6 +527,7 @@ async function loadMovies() {
       typeof item.link === "string"
     );
 
+    allMovieItems = movies.slice();
     renderMovies();
   } catch(error) {
     grid.innerHTML = '<div class="empty">Unable to load movies.<br>Check your internet connection.</div>';
@@ -589,6 +590,17 @@ function applyView() {
 }
 
 /* RENDER MOVIES */
+
+let allMovieItems = [];
+
+// App search box calls this on every keystroke
+window.filterMatches = function(input) {
+  const q = (input || "").toLowerCase().trim();
+  movies = q
+    ? allMovieItems.filter(m => (m.title + " " + (m.details || "")).toLowerCase().includes(q))
+    : allMovieItems.slice();
+  renderMovies();
+};
 
 function renderMovies() {
   if (!movies.length) {
