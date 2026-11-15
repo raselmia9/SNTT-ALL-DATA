@@ -154,8 +154,8 @@ input,select{padding:7px 4px;font-size:10px}
 .screenshot-modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px}
 .screenshot-modal-header h4{margin:0;color:#38bdf8;font-size:13px;font-weight:800}
 .screenshot-modal-close{background:#dc2626;border:0;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:800;font-size:11px}
-.screenshot-preview-container{max-height:55vh;overflow-y:auto;border:1.5px solid rgba(56,189,248,.3);border-radius:8px;background:#020617;padding:4px;text-align:center}
-.screenshot-preview-container img{width:100%;height:auto;display:block;border-radius:5px}
+.screenshot-preview-container{max-height:55vh;overflow-y:auto;border:none;border-radius:6px;background:#020617;padding:0;text-align:center}
+.screenshot-preview-container img{width:100%;height:auto;display:block;border:none;border-radius:0;box-shadow:none;outline:none}
 .screenshot-tip{font-size:10px;color:#94a3b8;text-align:center;line-height:1.4}
 .screenshot-modal-actions{display:flex;gap:8px}
 .screenshot-action-download{flex:1;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:1px solid rgba(52,211,153,.4);padding:9px;border-radius:6px;font-weight:800;font-size:12px;cursor:pointer;text-align:center}
@@ -1146,17 +1146,49 @@ function takeScreenshot() {
 
     if (screenshotRow) screenshotRow.style.display = 'none';
 
+    var origBorder = container.style.border;
+    var origBoxShadow = container.style.boxShadow;
+    var origOutline = container.style.outline;
+    var origBorderRadius = container.style.borderRadius;
+
+    container.style.border = 'none';
+    container.style.boxShadow = 'none';
+    container.style.outline = 'none';
+    container.style.borderRadius = '0';
+
+    var restoreStyles = function() {
+        container.style.border = origBorder;
+        container.style.boxShadow = origBoxShadow;
+        container.style.outline = origOutline;
+        container.style.borderRadius = origBorderRadius;
+        if (screenshotRow) screenshotRow.style.display = '';
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    };
+
     setTimeout(function() {
         try {
             html2canvas(container, {
                 scale: window.devicePixelRatio && window.devicePixelRatio > 1 ? Math.min(window.devicePixelRatio, 2.5) : 2,
                 useCORS: true,
                 allowTaint: true,
-                backgroundColor: '#0b1324',
+                backgroundColor: '#050b14',
                 logging: false,
                 scrollX: 0,
-                scrollY: 0
+                scrollY: 0,
+                onclone: function(clonedDoc) {
+                    var c = clonedDoc.querySelector('.container');
+                    if (c) {
+                        c.style.border = 'none';
+                        c.style.boxShadow = 'none';
+                        c.style.outline = 'none';
+                        c.style.borderRadius = '0';
+                    }
+                    var sRow = clonedDoc.getElementById('screenshotRow');
+                    if (sRow) sRow.style.display = 'none';
+                }
             }).then(function(canvas) {
+                restoreStyles();
                 try {
                     var dataUrl = canvas.toDataURL('image/png');
                     var now = new Date();
@@ -1173,24 +1205,16 @@ function takeScreenshot() {
                 } catch (err) {
                     console.error('Screenshot error:', err);
                     alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : err));
-                } finally {
-                    if (screenshotRow) screenshotRow.style.display = '';
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
                 }
             }).catch(function(err) {
+                restoreStyles();
                 console.error('Screenshot error:', err);
                 alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : err));
-                if (screenshotRow) screenshotRow.style.display = '';
-                btn.innerHTML = originalText;
-                btn.disabled = false;
             });
         } catch (err) {
+            restoreStyles();
             console.error('Screenshot error:', err);
             alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : err));
-            if (screenshotRow) screenshotRow.style.display = '';
-            btn.innerHTML = originalText;
-            btn.disabled = false;
         }
     }, 60);
 }
