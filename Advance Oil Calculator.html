@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Advanced Oil Calculator - Pump Shutoff Estimator</title>
+<style>
+:root{
+--bg-color:#050b14;--card-bg:rgba(15,23,42,.97);
+--border-color:rgba(56,189,248,.4);--text-main:#fff;
+--text-muted:#38bdf8;--accent-gradient:linear-gradient(135deg,#2563eb,#1d4ed8);
+--add-btn-bg:#059669;--del-btn-bg:#dc2626;
+--shadow-3d:0 12px 24px rgba(0,0,0,.7),inset 0 1px 1px rgba(255,255,255,.3)
+}
+*{box-sizing:border-box}
+body{
+font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+background:linear-gradient(135deg,#090d16,#111827);color:var(--text-main);
+margin:0;padding:8px;min-height:100vh;display:flex;justify-content:center;align-items:flex-start
+}
+.container{
+width:100%;max-width:440px;background:var(--card-bg);
+border:1.5px solid var(--border-color);padding:12px;border-radius:14px;
+box-shadow:var(--shadow-3d);overflow:hidden;position:relative
+}
+.app-header{
+display:flex;align-items:center;justify-content:space-between;gap:5px;
+margin:0 0 12px;min-width:0
+}
+h2{
+color:#fff;margin:0;font-size:15px;font-weight:800;
+text-shadow:0 2px 4px #000;letter-spacing:.2px;white-space:nowrap
+}
+.header-clock{
+color:#facc15;font-size:10px;font-weight:800;text-align:right;
+white-space:nowrap;flex-shrink:0
+}
+.form-row{display:flex;gap:6px;margin-bottom:8px;align-items:flex-end;width:100%}
+.form-group{flex:1;min-width:0;margin-bottom:0}
+.tank-pump-row{display:flex;align-items:flex-end;gap:6px;width:100%}
+.tank-pump-row .tank-selector-group{flex:0 0 30%;min-width:0}
+.tank-pump-row .ship-name-group{flex:1 1 0;min-width:0}
+.tank-pump-row .pump-start-group{flex:0 0 20%;min-width:0}
+.tank-pump-row .pump-start-group input{padding-left:2px;padding-right:2px;font-size:10px}
+.tank-pump-row .tank-info-group{display:none}
+.dip-row{gap:6px}
+.dip-row .form-group,.liter-row .form-group{flex:1;min-width:0}
+.liter-row{gap:6px;margin-top:2px}
+.liter-row input{text-align:center;font-size:11px;padding:7px 3px}
+#openingLiter,#closingLiter{color:#7dd3fc;border-color:rgba(56,189,248,.55);background:#082f49}
+#differenceLiter{color:#34d399;border-color:rgba(52,211,153,.55);background:#022c22;font-weight:800}
+#literDataStatus{display:none}
+label{
+display:block;margin-bottom:3px;font-weight:700;color:var(--text-muted);
+font-size:9px;text-transform:uppercase;letter-spacing:.5px;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+input,select{
+width:100%;min-width:0;padding:5px 6px;background:#020617;
+border:1.5px solid rgba(56,189,248,.3);border-radius:6px;
+color:#fff;font-size:12px;font-weight:800;box-shadow:inset 0 2px 4px #000
+}
+input:focus,select:focus{outline:none;border-color:#38bdf8;box-shadow:0 0 8px rgba(56,189,248,.6)}
+input[readonly]{cursor:default}
+#totalDrop{color:#34d399;border-color:rgba(52,211,153,.55);background:#022c22;text-align:center;font-weight:800}
+.rough-section,.power-section{margin-top:10px;border-top:1px dashed rgba(56,189,248,.3);padding-top:10px}
+.section-header{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px}
+.section-title{font-size:10px;color:#38bdf8;font-weight:800;text-transform:uppercase;margin:0;white-space:nowrap}
+.btn-add{background:var(--add-btn-bg);color:#fff;border:0;padding:5px 9px;font-size:10px;font-weight:bold;border-radius:5px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.btn-delete{
+background:var(--del-btn-bg);color:#fff;border:0;padding:0;font-size:11px;font-weight:bold;
+border-radius:6px;cursor:pointer;height:29px;width:29px;display:flex;
+align-items:center;justify-content:center;flex-shrink:0
+}
+.action-row{display:flex;gap:8px;width:100%;margin-top:10px;align-items:stretch}
+.reset-btn{
+flex:0 0 30%;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;
+border:1px solid rgba(248,113,113,.45);padding:9px 8px;font-size:12px;
+font-weight:800;border-radius:6px;cursor:pointer;white-space:nowrap
+}
+button.calculate-btn{
+flex:1;min-width:0;background:var(--accent-gradient);color:#fff;border:0;
+padding:9px 7px;font-size:12px;font-weight:800;border-radius:6px;
+cursor:pointer;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap
+}
+button:active{transform:translateY(1px)}
+.liter-progress-section{margin:10px 0 0;padding:0;border:0;background:transparent}
+.liter-progress-row{
+margin:0 0 7px;padding:7px;border-radius:6px;background:rgba(2,6,23,.85);
+border:1px solid rgba(148,163,184,.12)
+}
+.liter-progress-row:last-child{margin-bottom:0}
+.liter-progress-heading{
+display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+margin-bottom:5px;font-size:10.5px;font-weight:700
+}
+.liter-progress-heading .progress-label{color:#cbd5e1;min-width:0;overflow-wrap:anywhere}
+.liter-progress-heading strong{white-space:nowrap;text-align:right;font-size:10.5px}
+#alreadyGoneValue{color:#34d399}
+#remainingLiterValue{color:#fbbf24}
+.progress-line{display:flex;align-items:center;gap:7px;width:100%}
+.progress-track{
+flex:1 1 auto;min-width:0;width:auto;height:11px;padding:2px;overflow:hidden;
+border-radius:999px;background:#01040b;border:1px solid rgba(148,163,184,.35);
+box-shadow:inset 0 3px 5px #000
+}
+.progress-fill{width:0%;height:100%;border-radius:999px;position:relative;overflow:hidden;transition:width .7s ease}
+.progress-fill:before{
+content:"";position:absolute;left:2px;right:2px;top:1px;height:35%;
+border-radius:999px;background:rgba(255,255,255,.45)
+}
+.progress-gone{color:#10b981;background:linear-gradient(180deg,#6ee7b7,#10b981 45%,#047857)}
+.progress-remaining{color:#f59e0b;background:linear-gradient(180deg,#fde68a,#f59e0b 45%,#b45309)}
+.liter-progress-percent{flex:0 0 37px;width:37px;margin:0;color:#e2e8f0;font-size:10px;font-weight:800;text-align:right;white-space:nowrap}
+.result-box{
+margin-top:12px;background:#020617;border:1.5px solid rgba(56,189,248,.4);
+border-left:4px solid #38bdf8;padding:10px;border-radius:6px;overflow:hidden
+}
+.result-box h3{margin-top:0;color:#38bdf8;font-size:12px;font-weight:800;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:4px}
+.result-item{margin:6px 0;font-size:10.5px;font-weight:600;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.result-item span{color:#94a3b8;font-weight:700;flex-shrink:0}
+.result-item strong{text-align:right;overflow-wrap:anywhere}
+.hidden-result-name,.hide-result-item{display:none!important}
+.app-signature{margin-top:12px;text-align:center;font-size:9.5px;font-weight:700;color:#64748b;border-top:1px solid rgba(255,255,255,.08);padding-top:8px;letter-spacing:.5px}
+.app-signature span{color:#38bdf8;font-weight:800}
+@media(max-width:350px){
+.container{padding:9px}
+h2{font-size:13px}
+.header-clock{font-size:9px}
+.form-row{gap:4px}
+.tank-pump-row .tank-selector-group{flex-basis:20%}
+.tank-pump-row .ship-name-group{flex:1 1 0}
+.tank-pump-row .pump-start-group{flex-basis:10%}
+.tank-pump-row .pump-start-group input{padding-left:1px;padding-right:1px;font-size:9px}
+.dip-row,.liter-row{gap:4px}
+input,select{padding:7px 4px;font-size:10px}
+.section-title{font-size:9px}
+.result-item{font-size:10px}
+.reset-btn,button.calculate-btn{font-size:10px;padding:9px 5px}
+.liter-row input{font-size:9px;padding:7px 2px}
+.liter-progress-heading,.liter-progress-heading strong{font-size:9.5px}
+.liter-progress-row{padding:6px}
+.liter-progress-percent{flex-basis:34px;width:34px;font-size:9px}
+.progress-line{gap:5px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="app-header">
+        <h2>⚡ Advanced Oil Calculator</h2>
+        <div class="header-clock" id="headerClock">--:--:--</div>
+    </div>
+    <div class="form-row tank-pump-row">
+        <div class="form-group tank-selector-group">
+            <label for="tankSelector">Tank</label>
+            <select id="tankSelector">
+                <option value="Default">Default</option>
+                <option value="Tank 01">Tank 01</option>
+                <option value="Tank 02">Tank 02</option>
+                <option value="Tank 03">Tank 03</option>
+                <option value="Tank 04" selected>Tank 04</option>
+                <option value="Tank 05">Tank 05</option>
+            </select>
+        </div>
+        <div class="form-group ship-name-group">
+            <label for="shipSelector">Ship</label>
+            <select id="shipSelector">
+                <option value="Default">Default</option>
+                <option value="O.T. Mesra">O.T. Mesra</option>
+                <option value="O.T. Kingfisher 03" selected>O.T. Kingfisher 03</option>
+                <option value="O.T. Kingfisher 08">O.T. Kingfisher 08</option>
+                <option value="O.T. Binzaman 01">O.T. Binzaman 01</option>
+                <option value="O.T. Binzaman 02">O.T. Binzaman 02</option>
+                <option value="O.T. Binzaman 03">O.T. Binzaman 03</option>
+                <option value="O.T. Binzaman 04">O.T. Binzaman 04</option>
+                <option value="O.T. Binzaman 08">O.T. Binzaman 08</option>
+                <option value="O.T. BAT 01">O.T. BAT 01</option>
+                <option value="O.T. BAT 02">O.T. BAT 02</option>
+                <option value="O.T. BAT 03">O.T. BAT 03</option>
+            </select>
+        </div>
+        <div class="form-group pump-start-group">
+            <label for="pumpStart">Pump Start</label>
+            <input type="time" id="pumpStart" value="18:07">
+        </div>
+        <div class="form-group tank-info-group">
+            <label for="tankName">Tank Info</label>
+            <input type="text" id="tankName" value="Tank 04 - O.T. Kingfisher 03" readonly>
+        </div>
+    </div>
+    <div class="form-row dip-row">
+        <div class="form-group">
+            <label for="openingDip">Opening Dip (mm)</label>
+            <input type="number" id="openingDip" value="4066" step="any">
+        </div>
+        <div class="form-group">
+            <label for="closingDip">Closing Dip (mm)</label>
+            <input type="number" id="closingDip" value="3050" step="any">
+        </div>
+        <div class="form-group">
+            <label for="totalDrop">Total Drop (mm)</label>
+            <input type="text" id="totalDrop" value="1016" readonly>
+        </div>
+    </div>
+    <div class="form-row liter-row">
+        <div class="form-group">
+            <label for="openingLiter">Opening Liter</label>
+            <input type="text" id="openingLiter" value="Loading..." readonly>
+        </div>
+        <div class="form-group">
+            <label for="closingLiter">Closing Liter</label>
+            <input type="text" id="closingLiter" value="Loading..." readonly>
+        </div>
+        <div class="form-group">
+            <label for="differenceLiter">Total Drop Liter</label>
+            <input type="text" id="differenceLiter" value="Loading..." readonly>
+        </div>
+    </div>
+    <div id="literDataStatus" role="status" aria-live="polite">লিটার ডেটা লোড হচ্ছে...</div>
+    <div class="rough-section">
+        <div class="section-header">
+            <div class="section-title">Live / Ruff Dip Tracking (Optional)</div>
+            <button type="button" class="btn-add" onclick="addRuffDipRow()">+ Add</button>
+        </div>
+        <div id="ruffDipContainer"></div>
+    </div>
+    <div class="power-section">
+        <div class="section-header">
+            <div class="section-title">Pump Interruption / Power Cuts</div>
+            <button type="button" class="btn-add" onclick="addPowerCutRow()">+ Add</button>
+        </div>
+        <div id="powerCutContainer"></div>
+    </div>
+    <div class="action-row">
+        <button type="button" class="reset-btn" onclick="resetCalculator()">↻ Reset</button>
+        <button type="button" class="calculate-btn" onclick="calculatePumpTime()">হিসাব করুন (Calculate)</button>
+    </div>
+    <div class="result-box" id="resultBox" style="display:none">
+        <h3>ফলাফল (Estimation Results)</h3>
+        <div class="result-item hidden-result-name"><span>ট্যাংক:</span><strong id="resTank"></strong></div>
+        <div class="result-item hidden-result-name"><span>Ship:</span><strong id="resShip"></strong></div>
+        <div class="result-item hide-result-item"><span>মোট নামাতে হবে:</span><strong id="resTotalDrop"></strong></div>
+        <div class="result-item"><span>ড্রপ রেট:</span><strong id="resRate" style="color:#fff"></strong></div>
+        <div class="result-item"><span>পাম্প বন্ধের বিরতি:</span><strong id="resDowntime" style="color:#38bdf8">0 ঘণ্টা 0 মিনিট 0 সেকেন্ড</strong></div>
+        <div class="result-item"><span>পাম্প রানিং টাইম:</span><strong id="resRunningTime" style="color:#34d399">0 ঘণ্টা 0 মিনিট 0 সেকেন্ড</strong></div>
+        <div class="result-item"><span>বর্তমান ডিপ (Current Dip):</span><strong id="resCurrentDip" style="color:#c084fc">-- mm</strong></div>
+        <div class="result-item"><span>কাউন্টডাউন (বাকি সময়):</span><strong id="resCountdown" style="color:#f43f5e">--</strong></div>
+        <div class="result-item"><span>চূড়ান্ত বন্ধ হবে:</span><strong id="resShutoff" style="color:#fb7185;font-size:11px"></strong></div>
+        <div class="liter-progress-section" id="literProgressSection">
+            <div class="liter-progress-row">
+                <div class="liter-progress-heading">
+                    <span class="progress-label" id="remainingProgressLabel">Tank 04</span>
+                    <strong id="remainingLiterValue">-- লিটার</strong>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-track" role="progressbar" aria-label="Tank-এর অবশিষ্ট লিটার" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="remainingLiterTrack">
+                        <div class="progress-fill progress-remaining" id="remainingLiterBar" style="width:100%"></div>
+                    </div>
+                    <div class="liter-progress-percent"><span id="remainingLiterPercent">100%</span></div>
+                </div>
+            </div>
+            <div class="liter-progress-row">
+                <div class="liter-progress-heading">
+                    <span class="progress-label" id="alreadyGoneProgressLabel">O.T. Kingfisher 03</span>
+                    <strong id="alreadyGoneValue">-- লিটার</strong>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-track" role="progressbar" aria-label="ইতোমধ্যে যাওয়া লিটার" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="alreadyGoneTrack">
+                        <div class="progress-fill progress-gone" id="alreadyGoneBar" style="width:0%"></div>
+                    </div>
+                    <div class="liter-progress-percent"><span id="alreadyGonePercent">0%</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="app-signature">Developed by <span>Md. Rasel Rana</span></div>
+</div>
+<script>
+'use strict';
+const STORAGE_KEY = 'advanced_oil_calculator_state_v1';
+const LITER_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20FINAL.txt';
+const CORRECTION_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20CORRECTION.txt';
+const LITER_CACHE_KEY = 'sntt_all_tank_liter_cache_v1';
+const CORRECTION_CACHE_KEY = 'sntt_all_tank_correction_cache_v1';
+let literTableData = null;
+let correctionTableData = null;
+let literDataLoading = false;
+let globalShutoffTotalMins = 0;
+let globalRatePerMinute = 0;
+let globalPumpStartMins = 0;
+let globalTotalDowntimeMins = 0;
+let globalOpeningDip = 0;
+let globalClosingDip = 0;
+let globalTotalRunningMinutes = 0;
+let globalTotalDropLiters = null;
+let timerInterval = null;
+let clockInterval = null;
+let isRestoring = false;
+let calculationReady = false;
+function $(id) {
+    return document.getElementById(id);
+}
+function safeSetText(id, value) {
+    const el = $(id);
+    if (el) el.textContent = value;
+}
+function safeSetValue(id, value) {
+    const el = $(id);
+    if (el) el.value = value;
+}
+function getTankCode() {
+    const el = $('tankSelector');
+    if (!el) return null;
+    const match = el.value.match(/^Tank\s+0?([1-5])$/i);
+    return match ? 'T' + match[1] : null;
+}
+function readJsonCache(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed['SNTT ALL TANK']) return parsed;
+    } catch (error) {
+        console.warn('Could not read data cache:', error);
+    }
+    return null;
+}
+async function fetchTankData(url, cacheKey) {
+    try {
+        const response = await fetch(url, { cache: 'no-cache' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        if (!data || !data['SNTT ALL TANK']) throw new Error('Unexpected tank data format');
+        try {
+            localStorage.setItem(cacheKey, JSON.stringify(data));
+        } catch (error) {
+            console.warn('Could not save data cache:', error);
+        }
+        return data;
+    } catch (error) {
+        console.warn('Remote tank data fetch failed:', error);
+        const cached = readJsonCache(cacheKey);
+        if (cached) return cached;
+        throw error;
+    }
+}
+async function loadTankData() {
+    const status = $('literDataStatus');
+    literTableData = readJsonCache(LITER_CACHE_KEY);
+    correctionTableData = readJsonCache(CORRECTION_CACHE_KEY);
+    if (literTableData && correctionTableData) {
+        status.textContent = 'ক্যাশ করা লিটার ডেটা ব্যবহার হচ্ছে';
+        updateLiterValues();
+    } else {
+        status.textContent = 'লিটার ডেটা লোড হচ্ছে...';
+    }
+    if (literDataLoading) return;
+    literDataLoading = true;
+    try {
+        const results = await Promise.all([
+            fetchTankData(LITER_DATA_URL, LITER_CACHE_KEY),
+            fetchTankData(CORRECTION_DATA_URL, CORRECTION_CACHE_KEY)
+        ]);
+        literTableData = results[0];
+        correctionTableData = results[1];
+        status.textContent = 'লিটার ডেটা আপডেট হয়েছে';
+        updateLiterValues();
+    } catch (error) {
+        if (literTableData && correctionTableData) {
+            status.textContent = 'অফলাইন: ক্যাশ করা ডেটা ব্যবহার হচ্ছে';
+            updateLiterValues();
+        } else {
+            status.textContent = 'লিটার ডেটা পাওয়া যায়নি — ইন্টারনেট সংযোগ পরীক্ষা করুন';
+            clearLiterValues();
+        }
+    } finally {
+        literDataLoading = false;
+    }
+}
+function getLitersForDip(dipValue) {
+    const tankCode = getTankCode();
+    if (!tankCode || !literTableData || !correctionTableData) return null;
+    if (dipValue === '' || dipValue === null || dipValue === undefined) return null;
+    const dip = Number(dipValue);
+    if (!Number.isFinite(dip) || dip < 0) return null;
+    const wholeDip = Math.floor(dip + 1e-9);
+    const baseDip = Math.floor(wholeDip / 10) * 10;
+    const correctionDigit = wholeDip - baseDip;
+    const tankLiterData = literTableData['SNTT ALL TANK'][tankCode];
+    const tankCorrectionData = correctionTableData['SNTT ALL TANK'][tankCode];
+    if (!tankLiterData || !tankCorrectionData) return null;
+    const baseKey = tankCode + '=' + baseDip;
+    if (!Object.prototype.hasOwnProperty.call(tankLiterData, baseKey)) return null;
+    const baseLiters = Number(tankLiterData[baseKey]);
+    if (!Number.isFinite(baseLiters)) return null;
+    let correctionLiters = 0;
+    if (correctionDigit > 0) {
+        const correctionKey = tankCode + '=C' + correctionDigit;
+        if (!Object.prototype.hasOwnProperty.call(tankCorrectionData, correctionKey)) return null;
+        correctionLiters = Number(tankCorrectionData[correctionKey]);
+        if (!Number.isFinite(correctionLiters)) return null;
+    }
+    return baseLiters + correctionLiters;
+}
+function formatLiters(value) {
+    if (!Number.isFinite(value)) return '--';
+    return String(Math.round(value));
+}
+function formatNumberWithoutExtraZeros(value, maxDecimals) {
+    if (maxDecimals === undefined) maxDecimals = 2;
+    if (!Number.isFinite(value)) return '';
+    return value.toFixed(maxDecimals).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+}
+function clearLiterValues() {
+    safeSetValue('openingLiter', '--');
+    safeSetValue('closingLiter', '--');
+    safeSetValue('differenceLiter', '--');
+    if (calculationReady) {
+        globalTotalDropLiters = null;
+        updateLiterProgress();
+    }
+}
+function updateLiterValues() {
+    const openingInput = $('openingDip');
+    const closingInput = $('closingDip');
+    const openingOutput = $('openingLiter');
+    const closingOutput = $('closingLiter');
+    const differenceOutput = $('differenceLiter');
+    if (!literTableData || !correctionTableData) {
+        openingOutput.value = 'Loading...';
+        closingOutput.value = 'Loading...';
+        differenceOutput.value = 'Loading...';
+        return;
+    }
+    const tankCode = getTankCode();
+    if (!tankCode) {
+        openingOutput.value = '--';
+        closingOutput.value = '--';
+        differenceOutput.value = '--';
+        $('literDataStatus').textContent = 'লিটার দেখতে Tank 01–Tank 05 নির্বাচন করুন';
+        return;
+    }
+    const openingLiters = getLitersForDip(openingInput.value);
+    const closingLiters = getLitersForDip(closingInput.value);
+    openingOutput.value = openingLiters === null ? '--' : formatLiters(openingLiters);
+    closingOutput.value = closingLiters === null ? '--' : formatLiters(closingLiters);
+    if (openingLiters !== null && closingLiters !== null) {
+        differenceOutput.value = formatLiters(openingLiters - closingLiters);
+    } else {
+        differenceOutput.value = '--';
+    }
+    if (calculationReady) {
+        const currentTotal = Number(differenceOutput.value);
+        globalTotalDropLiters =
+            differenceOutput.value !== '--' && Number.isFinite(currentTotal)
+            ? Math.max(0, currentTotal) : null;
+        updateLiterProgress();
+    }
+}
+function timeToMinutes(timeStr) {
+    if (!timeStr || !/^\d{2}:\d{2}$/.test(timeStr)) return NaN;
+    const parts = timeStr.split(':');
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes) ||
+        hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return NaN;
+    return hours * 60 + minutes;
+}
+function minutesToTime(totalMinutes) {
+    const secondsInDay = 24 * 60 * 60;
+    let totalSeconds = Math.floor(totalMinutes * 60 + 1e-7);
+    totalSeconds = ((totalSeconds % secondsInDay) + secondsInDay) % secondsInDay;
+    const hours24 = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const period = hours24 >= 12 ? 'PM' : 'AM';
+    let hours12 = hours24 % 12;
+    if (hours12 === 0) hours12 = 12;
+    return String(hours12).padStart(2, '0') + ':' +
+        String(minutes).padStart(2, '0') + ':' +
+        String(seconds).padStart(2, '0') + ' ' + period;
+}
+function updateTotalDrop() {
+    const openingText = $('openingDip').value;
+    const closingText = $('closingDip').value;
+    const output = $('totalDrop');
+    if (openingText === '' || closingText === '') {
+        output.value = '';
+        return;
+    }
+    const opening = Number(openingText);
+    const closing = Number(closingText);
+    if (!Number.isFinite(opening) || !Number.isFinite(closing)) {
+        output.value = '';
+        return;
+    }
+    output.value = formatNumberWithoutExtraZeros(opening - closing, 2);
+}
+function updateProgressLabels() {
+    const tank = $('tankSelector').value;
+    const ship = $('shipSelector').value;
+    safeSetText('remainingProgressLabel', tank || 'Tank');
+    safeSetText('alreadyGoneProgressLabel', ship || 'Ship');
+    safeSetText('resTank', tank && ship ? tank + ' - ' + ship : '');
+    safeSetText('resShip', ship || '');
+}
+function updateTankInfo() {
+    const tank = $('tankSelector').value;
+    const ship = $('shipSelector').value;
+    $('tankName').value = tank && ship ? tank + ' - ' + ship : '';
+    updateProgressLabels();
+    updateLiterValues();
+    if (!isRestoring) {
+        invalidateCalculation();
+        saveFormData();
+    }
+}
+function saveFormData() {
+    if (isRestoring) return;
+    try {
+        const data = { version: 1, fields: {}, ruffRows: [], powerRows: [] };
+        document.querySelectorAll('#tankSelector, #shipSelector, #tankName, #openingDip, #closingDip, #pumpStart')
+        .forEach(function(input) {
+            data.fields[input.id] = input.value;
+        });
+        document.querySelectorAll('#ruffDipContainer .form-row').forEach(function(row) {
+            const timeInput = row.querySelector('.ruffTimeInput');
+            const dipInput = row.querySelector('.ruffDipInput');
+            data.ruffRows.push({
+                time: timeInput ? timeInput.value : '',
+                dip: dipInput ? dipInput.value : ''
+            });
+        });
+        document.querySelectorAll('#powerCutContainer .form-row').forEach(function(row) {
+            const offInput = row.querySelector('.powerOffInput');
+            const onInput = row.querySelector('.powerOnInput');
+            data.powerRows.push({
+                off: offInput ? offInput.value : '',
+                on: onInput ? onInput.value : ''
+            });
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+        console.warn('Local Storage save failed:', error);
+    }
+}
+function readSavedFormData() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || data.version !== 1 || typeof data !== 'object') return null;
+        return data;
+    } catch (error) {
+        console.warn('Local Storage read failed:', error);
+        return null;
+    }
+}
+function invalidateCalculation() {
+    calculationReady = false;
+    $('resultBox').style.display = 'none';
+    if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+function addRuffDipRow(timeVal, dipVal, shouldSave) {
+    if (timeVal === undefined) timeVal = '';
+    if (dipVal === undefined) dipVal = '';
+    if (shouldSave === undefined) shouldSave = true;
+    invalidateCalculation();
+    const container = $('ruffDipContainer');
+    const rowId = 'ruffRow_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'form-row';
+    rowDiv.id = rowId;
+    const timeGroup = document.createElement('div');
+    timeGroup.className = 'form-group';
+    const timeLabel = document.createElement('label');
+    timeLabel.textContent = 'Ruff Time';
+    const timeInput = document.createElement('input');
+    timeInput.type = 'time';
+    timeInput.className = 'ruffTimeInput';
+    timeInput.value = timeVal;
+    timeGroup.appendChild(timeLabel);
+    timeGroup.appendChild(timeInput);
+    const dipGroup = document.createElement('div');
+    dipGroup.className = 'form-group';
+    const dipLabel = document.createElement('label');
+    dipLabel.textContent = 'Ruff Dip (mm)';
+    const dipInput = document.createElement('input');
+    dipInput.type = 'number';
+    dipInput.step = 'any';
+    dipInput.className = 'ruffDipInput';
+    dipInput.value = dipVal;
+    dipInput.placeholder = 'e.g. 3343';
+    dipGroup.appendChild(dipLabel);
+    dipGroup.appendChild(dipInput);
+    const deleteGroup = document.createElement('div');
+    deleteGroup.style.display = 'flex';
+    deleteGroup.style.alignItems = 'flex-end';
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'btn-delete';
+    deleteButton.textContent = '✕';
+    deleteButton.setAttribute('aria-label', 'Delete Ruff Dip row');
+    deleteButton.addEventListener('click', function() { removeRuffRow(rowId); });
+    deleteGroup.appendChild(deleteButton);
+    rowDiv.appendChild(timeGroup);
+    rowDiv.appendChild(dipGroup);
+    rowDiv.appendChild(deleteGroup);
+    container.appendChild(rowDiv);
+    if (shouldSave) saveFormData();
+}
+function removeRuffRow(rowId) {
+    const row = $(rowId);
+    if (row) {
+        row.parentNode.removeChild(row);
+        invalidateCalculation();
+        saveFormData();
+    }
+}
+function addPowerCutRow(offVal, onVal, shouldSave) {
+    if (offVal === undefined) offVal = '';
+    if (onVal === undefined) onVal = '';
+    if (shouldSave === undefined) shouldSave = true;
+    invalidateCalculation();
+    const container = $('powerCutContainer');
+    const rowId = 'powerRow_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'form-row';
+    rowDiv.id = rowId;
+    const offGroup = document.createElement('div');
+    offGroup.className = 'form-group';
+    const offLabel = document.createElement('label');
+    offLabel.textContent = 'Power Off Time';
+    const offInput = document.createElement('input');
+    offInput.type = 'time';
+    offInput.className = 'powerOffInput';
+    offInput.value = offVal;
+    offGroup.appendChild(offLabel);
+    offGroup.appendChild(offInput);
+    const onGroup = document.createElement('div');
+    onGroup.className = 'form-group';
+    const onLabel = document.createElement('label');
+    onLabel.textContent = 'Power On Time';
+    const onInput = document.createElement('input');
+    onInput.type = 'time';
+    onInput.className = 'powerOnInput';
+    onInput.value = onVal;
+    onGroup.appendChild(onLabel);
+    onGroup.appendChild(onInput);
+    const deleteGroup = document.createElement('div');
+    deleteGroup.style.display = 'flex';
+    deleteGroup.style.alignItems = 'flex-end';
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'btn-delete';
+    deleteButton.textContent = '✕';
+    deleteButton.setAttribute('aria-label', 'Delete Power Cut row');
+    deleteButton.addEventListener('click', function() { removePowerRow(rowId); });
+    deleteGroup.appendChild(deleteButton);
+    rowDiv.appendChild(offGroup);
+    rowDiv.appendChild(onGroup);
+    rowDiv.appendChild(deleteGroup);
+    container.appendChild(rowDiv);
+    if (shouldSave) saveFormData();
+}
+function removePowerRow(rowId) {
+    const row = $(rowId);
+    if (row) {
+        row.parentNode.removeChild(row);
+        invalidateCalculation();
+        saveFormData();
+    }
+}
+function clearChildren(element) {
+    while (element && element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+function restoreFormData() {
+    const data = readSavedFormData();
+    isRestoring = true;
+    try {
+        if (data && data.fields) {
+            Object.keys(data.fields).forEach(function(id) {
+                const input = $(id);
+                if (input && typeof data.fields[id] === 'string') {
+                    if (input.tagName === 'SELECT') {
+                        let exists = false;
+                        Array.from(input.options).forEach(function(option) {
+                            if (option.value === data.fields[id]) exists = true;
+                        });
+                        if (exists) input.value = data.fields[id];
+                    } else {
+                        input.value = data.fields[id];
+                    }
+                }
+            });
+        }
+        const tank = $('tankSelector').value;
+        const ship = $('shipSelector').value;
+        $('tankName').value = tank && ship ? tank + ' - ' + ship : '';
+        updateProgressLabels();
+        clearChildren($('ruffDipContainer'));
+        clearChildren($('powerCutContainer'));
+        if (data && Array.isArray(data.ruffRows)) {
+            data.ruffRows.forEach(function(row) {
+                addRuffDipRow(row.time || '', row.dip || '', false);
+            });
+        }
+        if (data && Array.isArray(data.powerRows)) {
+            data.powerRows.forEach(function(row) {
+                addPowerCutRow(row.off || '', row.on || '', false);
+            });
+        }
+    } catch (error) {
+        console.warn('Restore form failed:', error);
+    } finally {
+        isRestoring = false;
+    }
+    updateTotalDrop();
+    updateLiterValues();
+    invalidateCalculation();
+    $('resultBox').style.display = 'none';
+}
+function resetCalculator() {
+    if (!confirm('সব ইনপুট মুছে রিসেট করতে চান?')) return;
+    isRestoring = true;
+    invalidateCalculation();
+    try {
+        $('tankSelector').selectedIndex = -1;
+        $('shipSelector').selectedIndex = -1;
+        $('tankName').value = '';
+        $('openingDip').value = '';
+        $('closingDip').value = '';
+        $('pumpStart').value = '';
+        clearChildren($('ruffDipContainer'));
+        clearChildren($('powerCutContainer'));
+        $('resultBox').style.display = 'none';
+        updateProgressLabels();
+        globalShutoffTotalMins = 0;
+        globalRatePerMinute = 0;
+        globalPumpStartMins = 0;
+        globalTotalDowntimeMins = 0;
+        globalOpeningDip = 0;
+        globalClosingDip = 0;
+        globalTotalRunningMinutes = 0;
+        globalTotalDropLiters = null;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        updateTotalDrop();
+        updateLiterValues();
+        updateLiterProgress();
+    } catch (error) {
+        console.warn('Reset failed:', error);
+        alert('রিসেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    } finally {
+        isRestoring = false;
+    }
+}
+$('tankSelector').addEventListener('change', updateTankInfo);
+$('shipSelector').addEventListener('change', updateTankInfo);
+document.addEventListener('input', function(event) {
+    if (event.target.matches('input, select, textarea')) {
+        if (event.target.id === 'openingDip' || event.target.id === 'closingDip') {
+            updateTotalDrop();
+            updateLiterValues();
+        }
+        if (!isRestoring) {
+            invalidateCalculation();
+            saveFormData();
+        }
+    }
+});
+document.addEventListener('change', function(event) {
+    if (event.target.matches('input, select, textarea')) {
+        if (event.target.id === 'openingDip' || event.target.id === 'closingDip') {
+            updateTotalDrop();
+            updateLiterValues();
+        }
+        if (!isRestoring) {
+            invalidateCalculation();
+            saveFormData();
+        }
+    }
+});
+function format12HourDuration(totalMins) {
+    const totalSecs = Math.max(0, Math.floor(totalMins * 60 + 1e-7));
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+    return hrs + ' ঘণ্টা ' + mins + ' মিনিট ' + secs + ' সেকেন্ড';
+}
+function getTimelineMinutes(timeStr, startMinutes) {
+    let value = timeToMinutes(timeStr);
+    if (!Number.isFinite(value)) return NaN;
+    if (value < startMinutes) value += 24 * 60;
+    return value;
+}
+function getPowerCutIntervals() {
+    const offInputs = document.querySelectorAll('.powerOffInput');
+    const onInputs = document.querySelectorAll('.powerOnInput');
+    const intervals = [];
+    for (let i = 0; i < offInputs.length; i++) {
+        const offStr = offInputs[i].value;
+        const onStr = onInputs[i].value;
+        if (!offStr && !onStr) continue;
+        if (!offStr || !onStr) {
+            return { error: 'প্রতিটি Power Cut-এর Off Time ও On Time দুটিই পূরণ করুন।' };
+        }
+        const offMins = getTimelineMinutes(offStr, globalPumpStartMins);
+        let onMins = timeToMinutes(onStr);
+        if (!Number.isFinite(offMins) || !Number.isFinite(onMins)) {
+            return { error: 'Power Cut-এর সময় সঠিকভাবে নির্বাচন করুন।' };
+        }
+        if (onMins < globalPumpStartMins) onMins += 24 * 60;
+        if (onMins < offMins) onMins += 24 * 60;
+        if (onMins === offMins) {
+            return { error: 'Power Off ও Power On একই সময় হতে পারবে না।' };
+        }
+        intervals.push({ start: offMins, end: onMins });
+    }
+    intervals.sort(function(a, b) { return a.start - b.start; });
+    const merged = [];
+    intervals.forEach(function(interval) {
+        const last = merged[merged.length - 1];
+        if (!last || interval.start > last.end) {
+            merged.push({ start: interval.start, end: interval.end });
+        } else if (interval.end > last.end) {
+            last.end = interval.end;
+        }
+    });
+    return { intervals: merged };
+}
+function updateLiterProgress() {
+    const goneValue = $('alreadyGoneValue');
+    const remainingValue = $('remainingLiterValue');
+    const goneBar = $('alreadyGoneBar');
+    const remainingBar = $('remainingLiterBar');
+    const gonePercentText = $('alreadyGonePercent');
+    const remainingPercentText = $('remainingLiterPercent');
+    const goneTrack = $('alreadyGoneTrack');
+    const remainingTrack = $('remainingLiterTrack');
+    let progress = 0;
+    if (calculationReady &&
+        Number.isFinite(globalTotalRunningMinutes) &&
+        globalTotalRunningMinutes > 0 &&
+        Number.isFinite(globalPumpStartMins)) {
+        const now = new Date();
+        let currentTotalMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+        if (currentTotalMins < globalPumpStartMins) currentTotalMins += 24 * 60;
+        const elapsedFromStart = Math.max(0, currentTotalMins - globalPumpStartMins);
+        const powerResult = getPowerCutIntervals();
+        let downtimeSoFar = 0;
+        if (!powerResult.error && Array.isArray(powerResult.intervals)) {
+            powerResult.intervals.forEach(function(interval) {
+                if (currentTotalMins >= interval.end) downtimeSoFar += interval.end - interval.start;
+                else if (currentTotalMins > interval.start) downtimeSoFar += currentTotalMins - interval.start;
+            });
+        }
+        const actualRunningMinutes = Math.max(0, elapsedFromStart - downtimeSoFar);
+        progress = Math.min(1, Math.max(0, actualRunningMinutes / globalTotalRunningMinutes));
+    }
+    const gonePct = progress * 100;
+    const remainingPct = 100 - gonePct;
+    goneBar.style.width = gonePct + '%';
+    remainingBar.style.width = remainingPct + '%';
+    gonePercentText.textContent = gonePct.toFixed(1).replace(/\.0$/, '') + '%';
+    remainingPercentText.textContent = remainingPct.toFixed(1).replace(/\.0$/, '') + '%';
+    goneTrack.setAttribute('aria-valuenow', String(Math.round(gonePct)));
+    remainingTrack.setAttribute('aria-valuenow', String(Math.round(remainingPct)));
+    const total = globalTotalDropLiters;
+    if (!Number.isFinite(total) || total < 0) {
+        goneValue.textContent = '-- লিটার';
+        remainingValue.textContent = '-- লিটার';
+        return;
+    }
+    goneValue.textContent = formatLiters(total * progress) + ' লিটার';
+    remainingValue.textContent = formatLiters(Math.max(0, total - total * progress)) + ' লিটার';
+}
+function calculatePumpTime() {
+    const tankName = $('tankName').value.trim();
+    const openingValue = $('openingDip').value;
+    const closingValue = $('closingDip').value;
+    const pumpStartValue = $('pumpStart').value;
+    globalOpeningDip = parseFloat(openingValue);
+    globalClosingDip = parseFloat(closingValue);
+    globalPumpStartMins = timeToMinutes(pumpStartValue);
+    updateTotalDrop();
+    updateLiterValues();
+    updateProgressLabels();
+    if (!tankName || openingValue === '' || closingValue === '' ||
+        !Number.isFinite(globalOpeningDip) || !Number.isFinite(globalClosingDip)) {
+        alert('দয়া করে Tank/Ship নির্বাচন করে সঠিক Opening ও Closing Dip দিন।');
+        return;
+    }
+    if (globalOpeningDip <= globalClosingDip) {
+        alert('Opening Dip অবশ্যই Closing Dip-এর চেয়ে বেশি হতে হবে।');
+        return;
+    }
+    if (!Number.isFinite(globalPumpStartMins)) {
+        alert('দয়া করে সঠিক Pump Start Time নির্বাচন করুন।');
+        return;
+    }
+    const totalDipToCover = globalOpeningDip - globalClosingDip;
+    const validRuffs = [];
+    const ruffTimeInputs = document.querySelectorAll('.ruffTimeInput');
+    const ruffDipInputs = document.querySelectorAll('.ruffDipInput');
+    let previousRuffTime = -Infinity;
+    for (let i = 0; i < ruffTimeInputs.length; i++) {
+        const timeStr = ruffTimeInputs[i].value;
+        const dipStr = ruffDipInputs[i].value;
+        if (!timeStr && dipStr === '') continue;
+        if (!timeStr || dipStr === '') {
+            alert('প্রতিটি Ruff Dip-এর Time ও Dip দুটিই পূরণ করুন।');
+            return;
+        }
+        const dipValue = parseFloat(dipStr);
+        if (!Number.isFinite(dipValue) || dipValue <= 0) {
+            alert('Ruff Dip-এর মান শূন্যের চেয়ে বেশি হতে হবে।');
+            return;
+        }
+        let rMins = getTimelineMinutes(timeStr, globalPumpStartMins);
+        if (!Number.isFinite(rMins)) {
+            alert('Ruff Dip-এর সময় সঠিকভাবে নির্বাচন করুন।');
+            return;
+        }
+        while (rMins <= previousRuffTime) rMins += 24 * 60;
+        validRuffs.push({ mins: rMins, dip: dipValue });
+        previousRuffTime = rMins;
+    }
+    globalRatePerMinute = 0;
+    if (validRuffs.length >= 2) {
+        for (let i = validRuffs.length - 1; i >= 1; i--) {
+            const previous = validRuffs[i - 1];
+            const latest = validRuffs[i];
+            const elapsed = latest.mins - previous.mins;
+            const dipChange = previous.dip - latest.dip;
+            if (elapsed > 0 && dipChange > 0) {
+                globalRatePerMinute = dipChange / elapsed;
+                break;
+            }
+        }
+    } else if (validRuffs.length === 1) {
+        const first = validRuffs[0];
+        const elapsed = first.mins - globalPumpStartMins;
+        const dipChange = globalOpeningDip - first.dip;
+        if (elapsed > 0 && dipChange > 0) globalRatePerMinute = dipChange / elapsed;
+    }
+    if (!Number.isFinite(globalRatePerMinute) || globalRatePerMinute <= 0) globalRatePerMinute = 5.2;
+    const totalRunningMinutes = totalDipToCover / globalRatePerMinute;
+    globalTotalRunningMinutes = totalRunningMinutes;
+    const powerResult = getPowerCutIntervals();
+    if (powerResult.error) {
+        alert(powerResult.error);
+        return;
+    }
+    const powerIntervals = powerResult.intervals;
+    globalTotalDowntimeMins = powerIntervals.reduce(function(total, interval) {
+        return total + interval.end - interval.start;
+    }, 0);
+    globalShutoffTotalMins = globalPumpStartMins + totalRunningMinutes + globalTotalDowntimeMins;
+    const differenceText = $('differenceLiter').value;
+    const parsedTotalLiters = Number(differenceText);
+    globalTotalDropLiters =
+        differenceText !== '' && differenceText !== '--' && Number.isFinite(parsedTotalLiters)
+        ? Math.max(0, parsedTotalLiters) : null;
+    $('resTank').textContent = tankName;
+    $('resShip').textContent = $('shipSelector').value;
+    $('resTotalDrop').textContent = formatNumberWithoutExtraZeros(totalDipToCover, 2) + ' mm';
+    $('resRate').textContent = globalRatePerMinute.toFixed(4) + ' mm/মিনিট';
+    $('resDowntime').textContent = format12HourDuration(globalTotalDowntimeMins);
+    $('resRunningTime').textContent = format12HourDuration(totalRunningMinutes);
+    $('resShutoff').textContent = minutesToTime(globalShutoffTotalMins);
+    $('resultBox').style.display = 'block';
+    calculationReady = true;
+    saveFormData();
+    updateLiterProgress();
+    if (timerInterval !== null) clearInterval(timerInterval);
+    updateLiveClockAndCountdown();
+    timerInterval = setInterval(function() {
+        if (calculationReady) updateLiveClockAndCountdown();
+    }, 1000);
+}
+function updateHeaderClock() {
+    const now = new Date();
+    let h = now.getHours();
+    const period = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    if (h === 0) h = 12;
+    $('headerClock').textContent =
+        String(h).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0') + ':' +
+        String(now.getSeconds()).padStart(2, '0') + ' ' + period;
+}
+function updateLiveClockAndCountdown() {
+    if (!calculationReady) return;
+    updateHeaderClock();
+    const now = new Date();
+    let currentTotalMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    if (currentTotalMins < globalPumpStartMins) currentTotalMins += 24 * 60;
+    const powerResult = getPowerCutIntervals();
+    if (powerResult.error) {
+        $('resCurrentDip').textContent = '-- mm';
+        $('resCountdown').textContent = '--';
+        updateLiterProgress();
+        return;
+    }
+    let activeDowntimeSoFar = 0;
+    powerResult.intervals.forEach(function(interval) {
+        if (currentTotalMins >= interval.end) activeDowntimeSoFar += interval.end - interval.start;
+        else if (currentTotalMins > interval.start) activeDowntimeSoFar += currentTotalMins - interval.start;
+    });
+    const elapsedFromStart = Math.max(0, currentTotalMins - globalPumpStartMins);
+    const netRunningMins = Math.max(0, elapsedFromStart - activeDowntimeSoFar);
+    let calculatedCurrentDip = globalOpeningDip - netRunningMins * globalRatePerMinute;
+    if (calculatedCurrentDip < globalClosingDip) calculatedCurrentDip = globalClosingDip;
+    $('resCurrentDip').textContent = calculatedCurrentDip.toFixed(2) + ' mm';
+    $('resCountdown').textContent = format12HourDuration(Math.max(0, globalShutoffTotalMins - currentTotalMins));
+    updateLiterProgress();
+}
+window.addEventListener('DOMContentLoaded', function() {
+    try {
+        updateHeaderClock();
+        clockInterval = setInterval(updateHeaderClock, 1000);
+        restoreFormData();
+        updateTotalDrop();
+        updateProgressLabels();
+        updateLiterValues();
+        loadTankData();
+    } catch (error) {
+        console.error('Calculator initialization error:', error);
+        const status = $('literDataStatus');
+        if (status) status.textContent = 'প্রাথমিক সেটআপে সমস্যা হয়েছে। পেজটি পুনরায় লোড করুন।';
+    }
+});
+</script>
+</body>
+</html>
