@@ -420,21 +420,13 @@ th:last-child,td:last-child{width:29%}
 .ship-section.is-vertical .ship-track{display:flex;flex-direction:column;width:100%;box-sizing:border-box;padding:6px 12px 12px;gap:8px}
 .ship-section.is-vertical .ship-card{flex:0 0 auto;width:100%;box-sizing:border-box;scroll-snap-align:none}
 .ship-section.is-vertical .ship-dots{display:none}
-.ship-section.is-vertical #shipPrev,.ship-section.is-vertical #shipNext{opacity:0.3;pointer-events:none;cursor:default}
-.ship-section.is-vertical #shipToggleView{background:#2563eb}
-.ship-section.is-vertical #shipToggleIconList{display:none!important}
-.ship-section.is-vertical #shipToggleIconGrid{display:block!important}
+.ship-section.is-vertical .nav-arrow,.ship-section.is-vertical #shipPrev,.ship-section.is-vertical #shipNext{opacity:0.3;pointer-events:none;cursor:default}
+.ship-section.is-vertical .toggle-view-btn,.ship-section.is-vertical #shipToggleView{background:#2563eb}
+.ship-section.is-vertical .icon-list,.ship-section.is-vertical #shipToggleIconList{display:none!important}
+.ship-section.is-vertical .icon-grid,.ship-section.is-vertical #shipToggleIconGrid{display:block!important}
 
 
-.tools-section{margin-top:14px}
-.tools-heading{margin:0 2px 8px}
-.tools-heading h2{font-size:10.2px;margin:0;color:#173f68}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;padding:0 1px}
-.tool-card{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-height:78px;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:linear-gradient(135deg,#ffffff,#eff6ff);color:#173f68;text-align:left;box-shadow:0 4px 12px #173f6818;cursor:pointer}
-.tool-card:active{transform:translateY(1px)}
-.tool-icon{font-size:19px;line-height:1}
-.tool-name{font-size:11px;font-weight:800}
-.tool-description{font-size:8px;color:#64748b}
+
 
 </style>
 </head>
@@ -445,34 +437,31 @@ th:last-child,td:last-child{width:29%}
  <div class="subtitle">Madanganj Tank Terminal, Narayanganj</div>
 </header>
 
-<section class="tools-section" aria-labelledby="toolsHeading">
- <div class="cards-heading tools-heading"><h2 id="toolsHeading">TOOLS</h2></div>
- <div class="tools-grid">
-  <button class="tool-card" type="button" onclick="openTool('Advance Oil Calculator.html')" aria-label="Open Advance Oil Calculator">
-   <span class="tool-icon" aria-hidden="true">🛢</span>
-   <span class="tool-name">Advance Oil Calculator</span>
-   <span class="tool-description">Pump shutoff estimator</span>
-  </button>
+<section class="ship-section" id="toolsSection">
+ <div class="ship-head">
+  <h2>TOOLS</h2>
+  <div class="ship-nav">
+   <button id="toolPrev" class="nav-arrow" type="button" aria-label="Previous tool">&#8249;</button>
+   <button id="toolNext" class="nav-arrow" type="button" aria-label="Next tool">&#8250;</button>
+   <button id="toolToggleView" class="toggle-view-btn" type="button" aria-label="Toggle vertical view" title="Toggle vertical view">
+    <svg id="toolToggleIconList" class="icon-list" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+    <svg id="toolToggleIconGrid" class="icon-grid" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;margin:auto;"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M8 4v16"></path><path d="M16 4v16"></path></svg>
+   </button>
+  </div>
  </div>
+ <div class="ship-view" id="toolView"><div class="ship-track" id="toolTrack"></div></div>
+ <div class="ship-dots" id="toolDots"></div>
 </section>
-
-
-
-
-
-
-
-
 
 <section class="ship-section" id="shipSection">
  <div class="ship-head">
   <h2>ALL SHIP AND TANK CALIBRATION</h2>
   <div class="ship-nav">
-   <button id="shipPrev" type="button" aria-label="Previous ship">&#8249;</button>
-   <button id="shipNext" type="button" aria-label="Next ship">&#8250;</button>
-   <button id="shipToggleView" type="button" aria-label="Toggle vertical view" title="Toggle vertical view">
-    <svg id="shipToggleIconList" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-    <svg id="shipToggleIconGrid" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;margin:auto;"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M8 4v16"></path><path d="M16 4v16"></path></svg>
+   <button id="shipPrev" class="nav-arrow" type="button" aria-label="Previous ship">&#8249;</button>
+   <button id="shipNext" class="nav-arrow" type="button" aria-label="Next ship">&#8250;</button>
+   <button id="shipToggleView" class="toggle-view-btn" type="button" aria-label="Toggle vertical view" title="Toggle vertical view">
+    <svg id="shipToggleIconList" class="icon-list" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+    <svg id="shipToggleIconGrid" class="icon-grid" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;margin:auto;"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M8 4v16"></path><path d="M16 4v16"></path></svg>
    </button>
   </div>
  </div>
@@ -559,6 +548,87 @@ function openTool(tag){
   }
   alert("Open this tool inside the SNTT Android app.");
  }catch(e){alert("Could not open the tool. Please download it first.");}
+}
+
+
+// ============================================================================
+// 🛠️ TOOLS LIST & CAROUSEL (ডুপ্লিকেট টুলস সেকশন)
+// নতুন যেকোনো টুল যুক্ত করতে নিচে শুধুমাত্র name, label এবং tag যোগ করলেই হবে
+// ============================================================================
+const tools = [
+  {
+    name: "Advance Oil Calculator",
+    label: "TOOL 01",
+    tag: "Advance Oil Calculator.html"
+  }
+];
+
+const toolView = document.getElementById("toolView");
+const toolTrack = document.getElementById("toolTrack");
+const toolDots = document.getElementById("toolDots");
+
+if (toolTrack && toolDots) {
+  tools.forEach((t, i) => {
+    const c = document.createElement("button");
+    c.type = "button";
+    c.className = "ship-card";
+    c.setAttribute("aria-label", t.name);
+
+    const n = document.createElement("span");
+    n.className = "ship-num";
+    n.textContent = t.label || ("TOOL " + String(i + 1).padStart(2, "0"));
+
+    const title = document.createElement("span");
+    title.className = "ship-name";
+    title.textContent = t.name;
+
+    c.append(n, title);
+    c.onclick = () => openTool(t.tag);
+    toolTrack.append(c);
+
+    const d = document.createElement("button");
+    d.type = "button";
+    d.className = "ship-dot" + (i === 0 ? " active" : "");
+    d.setAttribute("aria-label", "Tool " + (i + 1));
+    d.onclick = () => c.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    toolDots.append(d);
+  });
+}
+
+const toolStep = () => ((toolTrack?.firstElementChild?.offsetWidth) || 190) + 9;
+const toolPrevBtn = document.getElementById("toolPrev");
+const toolNextBtn = document.getElementById("toolNext");
+if (toolPrevBtn && toolView) toolPrevBtn.onclick = () => toolView.scrollBy({ left: -toolStep(), behavior: "smooth" });
+if (toolNextBtn && toolView) toolNextBtn.onclick = () => toolView.scrollBy({ left: toolStep(), behavior: "smooth" });
+
+const toolsSection = document.getElementById("toolsSection");
+const toolToggleBtn = document.getElementById("toolToggleView");
+function toggleToolLayout(forceVertical) {
+  if (!toolsSection) return;
+  const isVert = forceVertical !== undefined ? forceVertical : !toolsSection.classList.contains("is-vertical");
+  toolsSection.classList.toggle("is-vertical", isVert);
+  try { localStorage.setItem("toolViewLayout", isVert ? "vertical" : "horizontal"); } catch(e) {}
+}
+if (toolToggleBtn) {
+  toolToggleBtn.onclick = () => toggleToolLayout();
+}
+try {
+  if (localStorage.getItem("toolViewLayout") === "vertical") toggleToolLayout(true);
+} catch(e) {}
+
+let toolTimer;
+if (toolView && toolDots && toolTrack) {
+  toolView.addEventListener("scroll", () => {
+    cancelAnimationFrame(toolTimer);
+    toolTimer = requestAnimationFrame(() => {
+      let best = 0, dist = Infinity;
+      [...toolTrack.children].forEach((c, i) => {
+        const x = Math.abs(c.getBoundingClientRect().left - toolView.getBoundingClientRect().left);
+        if (x < dist) { dist = x; best = i; }
+      });
+      [...toolDots.children].forEach((d, i) => d.classList.toggle("active", i === best));
+    });
+  });
 }
 
 const ships=[
