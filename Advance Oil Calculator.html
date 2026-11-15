@@ -1231,7 +1231,22 @@ function closeScreenshotModal() {
     if (overlay) overlay.style.display = 'none';
 }
 
+function getScreenshotBase64(dataUrl) {
+    return String(dataUrl || '').replace(/^data:image\/png;base64,/, '');
+}
+
 function downloadScreenshotImage(dataUrl, fileName) {
+    // The custom Android WebView does not reliably handle HTML anchor downloads.
+    // Use the app's native save bridge so the image is actually written to Pictures/SNTT.
+    if (window.Android && typeof window.Android.saveImage === 'function') {
+        try {
+            window.Android.saveImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
+            return;
+        } catch (e) {
+            console.warn('Native image save failed; trying browser download:', e);
+        }
+    }
+
     try {
         const link = document.createElement('a');
         link.download = fileName;
@@ -1249,6 +1264,14 @@ function downloadScreenshotImage(dataUrl, fileName) {
 }
 
 async function shareScreenshotImage(canvas, dataUrl, fileName) {
+    if (window.Android && typeof window.Android.shareImage === 'function') {
+        try {
+            window.Android.shareImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
+            return;
+        } catch (e) {
+            console.warn('Native image share failed; trying browser share:', e);
+        }
+    }
     if (navigator.share && canvas && canvas.toBlob) {
         try {
             canvas.toBlob(async function(blob) {
