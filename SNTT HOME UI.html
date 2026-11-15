@@ -593,8 +593,64 @@ const shiftTimes=["07:00–15:00","15:00–23:00","23:00–07:00"];
 const referenceSerial=Date.UTC(2026,9,1)/86400000;
 const holidays={};
 
+// ==========================================
+// ছুটি বা বিশেষ ইভেন্টের তারিখ তালিকা (Duty Pause Ranges)
+// ভবিষ্যতে বন্ধ বা ছুটির দিনগুলো আসলে নিচের ব্র্যাকেটের ভেতর start এবং end তারিখ (YYYY-MM-DD ফরম্যাটে) বসিয়ে দিন।
+// স্ক্রিপ্ট স্বয়ংক্রিয়ভাবে সেই দিনগুলোকে হিসাব থেকে মাইনাস করে ডিউটি পজ রাখবে এবং ছুটি শেষ হওয়ার পর
+// যেখান থেকে ডিউটি বন্ধ হয়েছিল ঠিক সেখান থেকেই আবার মাসের রোস্টার স্বাভাবিকভাবে চালু করবে।
+//
+// উদাহরণ:
+// const dutyPauseRanges = [
+//   { start: "2026-11-20", end: "2026-11-25", note: "ঈদ উল ফিতর ছুটি" }
+// ];
+// ==========================================
+const dutyPauseRanges = [
+  // { start: "YYYY-MM-DD", end: "YYYY-MM-DD", note: "ছুটির বিবরণ" }
+];
+
 function serial(y,m,d){return Date.UTC(y,m,d)/86400000}
-function dateOffset(y,m,d){return serial(y,m,d)-referenceSerial}
+
+function parseDateStrToSerial(str){
+ if(!str)return null;
+ const p=str.split("-");
+ if(p.length!==3)return null;
+ return serial(+p[0],+p[1]-1,+p[2]);
+}
+
+function getPauseInfoForDate(y,m,d){
+ const cur=serial(y,m,d);
+ for(let i=0;i<dutyPauseRanges.length;i++){
+  const r=dutyPauseRanges[i];
+  if(!r.start||!r.end)continue;
+  const s=parseDateStrToSerial(r.start),e=parseDateStrToSerial(r.end);
+  if(s!==null&&e!==null&&cur>=s&&cur<=e){
+   return {isPaused:true,note:r.note||"ছুটি / বিশেষ ডিউটি"};
+  }
+ }
+ return {isPaused:false,note:""};
+}
+
+function getDeductedDaysUntil(y,m,d){
+ const cur=serial(y,m,d);
+ let deducted=0;
+ for(let i=0;i<dutyPauseRanges.length;i++){
+  const r=dutyPauseRanges[i];
+  if(!r.start||!r.end)continue;
+  const s=parseDateStrToSerial(r.start),e=parseDateStrToSerial(r.end);
+  if(s===null||e===null)continue;
+  const effStart=Math.max(s,referenceSerial);
+  const effEnd=Math.min(e,cur-1);
+  if(effEnd>=effStart){
+   deducted+=(effEnd-effStart+1);
+  }
+ }
+ return deducted;
+}
+
+function dateOffset(y,m,d){
+ return (serial(y,m,d)-referenceSerial)-getDeductedDaysUntil(y,m,d);
+}
+
 function getShiftIndex(y,m,d){return ((Math.floor((dateOffset(y,m,d)+1)/2)%4)+4)%4}
 function getOffIndex(y,m,d){
  const offset=dateOffset(y,m,d);
@@ -604,7 +660,13 @@ function getOffIndex(y,m,d){
  return sequence[((block-1)%4+4)%4];
 }
 function getRosterForDate(y,m,d){
- return {shiftTeams:shiftPatterns[getShiftIndex(y,m,d)],offIndex:getOffIndex(y,m,d)};
+ const pauseInfo=getPauseInfoForDate(y,m,d);
+ return {
+  shiftTeams:shiftPatterns[getShiftIndex(y,m,d)],
+  offIndex:getOffIndex(y,m,d),
+  isPaused:pauseInfo.isPaused,
+  note:pauseInfo.note
+ };
 }
 function pad(n){return String(n).padStart(2,"0")}
 function dateKey(y,m,d){return y+"-"+pad(m+1)+"-"+pad(d)}
@@ -657,8 +719,12 @@ function renderSchedule(){
   if(date.getDay()===5)dateText="🕌 "+dateText;
   html+='<tr><td><span class="date-cell '+(date.getDay()===5?"friday":"")+'">'+dateText+'</span>'+
    (holidays[key]?'<span class="holiday">'+holidays[key]+'</span>':"")+'</td>';
-  roster.shiftTeams.forEach(index=>html+='<td>'+teamHTML(index)+'</td>');
-  html+='<td class="off-cell">'+teamHTML(roster.offIndex)+'</td></tr>';
+  if(roster.isPaused){
+   html+='<td colspan="4" style="text-align:center;font-weight:700;color:#c2410c;background:#fff7ed;padding:8px 6px;letter-spacing:.3px;">⛱️ '+roster.note+'</td></tr>';
+  }else{
+   roster.shiftTeams.forEach(index=>html+='<td>'+teamHTML(index)+'</td>');
+   html+='<td class="off-cell">'+teamHTML(roster.offIndex)+'</td></tr>';
+  }
  }
  body.innerHTML=html;
 }
@@ -708,6 +774,12 @@ function updateCards(){
  document.getElementById("cardTime3").textContent="Scheduled day off · "+formatDate(now);
  const nextDuty=findNextDuty(offTeamIndex,now);
  document.getElementById("cardCountdown3").textContent=nextDuty?"Next Duty in "+formatDuration(nextDuty-now):"Next Duty time unavailable";
+ if(todayRoster.isPaused){
+  const label=todayRoster.note||"Duty Paused / ছুটি";
+  document.getElementById("shiftLabel0").textContent=label;
+  document.getElementById("cardTime0").textContent="Scheduled duty paused · "+formatDate(now);
+  document.getElementById("cardCountdown0").textContent="Duty Paused / ছুটি";
+ }
  updateCardDots();
 }
 function updateCardDots(){
