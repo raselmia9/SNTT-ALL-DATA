@@ -1129,10 +1129,10 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-async function takeScreenshot() {
-    const btn = $('screenshotBtn');
-    const screenshotRow = $('screenshotRow');
-    const container = document.querySelector('.container');
+function takeScreenshot() {
+    var btn = $('screenshotBtn');
+    var screenshotRow = $('screenshotRow');
+    var container = document.querySelector('.container');
     if (!container) return;
 
     if (typeof html2canvas !== 'function') {
@@ -1140,51 +1140,63 @@ async function takeScreenshot() {
         return;
     }
 
-    const originalText = btn.innerHTML;
+    var originalText = btn.innerHTML;
     btn.innerHTML = '⏳ স্ক্রিনশট তৈরি হচ্ছে...';
     btn.disabled = true;
 
     if (screenshotRow) screenshotRow.style.display = 'none';
 
-    try {
-        await new Promise(function(resolve) { setTimeout(resolve, 60); });
+    setTimeout(function() {
+        try {
+            html2canvas(container, {
+                scale: window.devicePixelRatio && window.devicePixelRatio > 1 ? Math.min(window.devicePixelRatio, 2.5) : 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#0b1324',
+                logging: false,
+                scrollX: 0,
+                scrollY: 0
+            }).then(function(canvas) {
+                try {
+                    var dataUrl = canvas.toDataURL('image/png');
+                    var now = new Date();
+                    var pad = function(n) { return (n < 10 ? '0' : '') + n; };
+                    var dateStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+                    var timeStr = pad(now.getHours()) + '-' + pad(now.getMinutes());
+                    var fileName = 'Advance_Oil_Calculator_' + dateStr + '_' + timeStr + '.png';
 
-        const canvas = await html2canvas(container, {
-            scale: window.devicePixelRatio && window.devicePixelRatio > 1 ? Math.min(window.devicePixelRatio, 2.5) : 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#0b1324',
-            logging: false,
-            scrollX: 0,
-            scrollY: 0
-        });
+                    if (window.TinyDB && typeof window.TinyDB.showToast === 'function') {
+                        try { window.TinyDB.showToast('স্ক্রিনশট তৈরি সম্পন্ন!'); } catch (e) {}
+                    }
 
-        const dataUrl = canvas.toDataURL('image/png');
-        const now = new Date();
-        const dateStr = now.getFullYear() + '-' +
-            String(now.getMonth() + 1).padStart(2, '0') + '-' +
-            String(now.getDate()).padStart(2, '0');
-        const timeStr = String(now.getHours()).padStart(2, '0') + '-' +
-            String(now.getMinutes()).padStart(2, '0');
-        const fileName = 'Advance_Oil_Calculator_' + dateStr + '_' + timeStr + '.png';
-
-        if (window.TinyDB && typeof window.TinyDB.showToast === 'function') {
-            try { window.TinyDB.showToast('স্ক্রিনশট তৈরি সম্পন্ন!'); } catch (e) {}
+                    showScreenshotModal(dataUrl, fileName, canvas);
+                } catch (err) {
+                    console.error('Screenshot error:', err);
+                    alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : err));
+                } finally {
+                    if (screenshotRow) screenshotRow.style.display = '';
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }).catch(function(err) {
+                console.error('Screenshot error:', err);
+                alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : err));
+                if (screenshotRow) screenshotRow.style.display = '';
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        } catch (err) {
+            console.error('Screenshot error:', err);
+            alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : err));
+            if (screenshotRow) screenshotRow.style.display = '';
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
-
-        showScreenshotModal(dataUrl, fileName, canvas);
-    } catch (err) {
-        console.error('Screenshot error:', err);
-        alert('স্ক্রিনশট তৈরিতে সমস্যা হয়েছে: ' + (err.message || err));
-    } finally {
-        if (screenshotRow) screenshotRow.style.display = '';
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }
+    }, 60);
 }
 
 function showScreenshotModal(dataUrl, fileName, canvas) {
-    let overlay = $('screenshotModalOverlay');
+    var overlay = $('screenshotModalOverlay');
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'screenshotModalOverlay';
@@ -1211,23 +1223,23 @@ function showScreenshotModal(dataUrl, fileName, canvas) {
         '</div>';
     overlay.style.display = 'flex';
 
-    const dlBtn = overlay.querySelector('#screenshotDownloadBtn');
+    var dlBtn = overlay.querySelector('#screenshotDownloadBtn');
     if (dlBtn) {
         dlBtn.onclick = function() {
             downloadScreenshotImage(dataUrl, fileName);
         };
     }
 
-    const shareBtn = overlay.querySelector('#screenshotShareBtn');
+    var shareBtn = overlay.querySelector('#screenshotShareBtn');
     if (shareBtn) {
-        shareBtn.onclick = async function() {
-            await shareScreenshotImage(canvas, dataUrl, fileName);
+        shareBtn.onclick = function() {
+            shareScreenshotImage(canvas, dataUrl, fileName);
         };
     }
 }
 
 function closeScreenshotModal() {
-    const overlay = $('screenshotModalOverlay');
+    var overlay = $('screenshotModalOverlay');
     if (overlay) overlay.style.display = 'none';
 }
 
@@ -1236,8 +1248,7 @@ function getScreenshotBase64(dataUrl) {
 }
 
 function downloadScreenshotImage(dataUrl, fileName) {
-    const bridge = window.Android || window.TinyDB;
-    // Android App native save bridge
+    var bridge = window.Android || window.TinyDB;
     if (bridge && typeof bridge.saveImage === 'function') {
         try {
             bridge.saveImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
@@ -1251,21 +1262,19 @@ function downloadScreenshotImage(dataUrl, fileName) {
         }
     }
 
-    // Inside Android WebView but older app version without saveImage
     if (bridge) {
         if (bridge.showToast) {
-            bridge.showToast('ছবি সেভ হয়নি: অ্যাপ আপডেট (v1.0.12+) প্রয়োজন');
+            bridge.showToast('ছবি সেভ হয়নি: অ্যাপ আপডেট প্রয়োজন');
         }
-        const tip = document.querySelector('.screenshot-tip');
+        var tip = document.querySelector('.screenshot-tip');
         if (tip) {
-            tip.innerHTML = '<span style="color:#ef4444;font-weight:700;">ছবি সেভ হয়নি: অ্যাপ আপডেট (v1.0.12+) প্রয়োজন। সেভ করতে ছবির উপর চেপে ধরে রাখুন (Tap & hold)।</span>';
+            tip.innerHTML = '<span style="color:#ef4444;font-weight:700;">ছবি সেভ হয়নি: অ্যাপ আপডেট প্রয়োজন। সেভ করতে ছবির উপর চেপে ধরে রাখুন (Tap & hold)।</span>';
         }
         return;
     }
 
-    // Regular browser fallback (Chrome/Firefox/Safari)
     try {
-        const link = document.createElement('a');
+        var link = document.createElement('a');
         link.download = fileName || 'Advance_Oil_Calculator.png';
         link.href = dataUrl;
         document.body.appendChild(link);
@@ -1277,8 +1286,8 @@ function downloadScreenshotImage(dataUrl, fileName) {
     }
 }
 
-async function shareScreenshotImage(canvas, dataUrl, fileName) {
-    const bridge = window.Android || window.TinyDB;
+function shareScreenshotImage(canvas, dataUrl, fileName) {
+    var bridge = window.Android || window.TinyDB;
     if (bridge && typeof bridge.shareImage === 'function') {
         try {
             bridge.shareImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
@@ -1293,23 +1302,20 @@ async function shareScreenshotImage(canvas, dataUrl, fileName) {
     }
     if (navigator.share && canvas && canvas.toBlob) {
         try {
-            canvas.toBlob(async function(blob) {
+            canvas.toBlob(function(blob) {
                 if (!blob) {
                     downloadScreenshotImage(dataUrl, fileName);
                     return;
                 }
-                const file = new File([blob], fileName, { type: 'image/png' });
+                var file = new File([blob], fileName, { type: 'image/png' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: 'Advance Oil Calculator',
-                            text: 'Advance Oil Calculator Estimation'
-                        });
-                        return;
-                    } catch (err) {
-                        if (err.name !== 'AbortError') console.warn('Share error:', err);
-                    }
+                    navigator.share({
+                        files: [file],
+                        title: 'Advance Oil Calculator',
+                        text: 'Advance Oil Calculator Estimation'
+                    }).catch(function(err) {
+                        if (err && err.name !== 'AbortError') console.warn('Share error:', err);
+                    });
                 } else {
                     downloadScreenshotImage(dataUrl, fileName);
                 }
