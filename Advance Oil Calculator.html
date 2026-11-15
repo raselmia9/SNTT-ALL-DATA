@@ -540,18 +540,48 @@ function saveFormData() {
                 on: onInput ? onInput.value : ''
             });
         });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        const serialized = JSON.stringify(data);
+        try {
+            localStorage.setItem(STORAGE_KEY, serialized);
+        } catch (error) {
+            console.warn('Local Storage save failed:', error);
+        }
+        // The Android WebView bridge stores a second copy in SharedPreferences,
+        // so entered values survive app restarts even if WebView storage is cleared.
+        try {
+            if (window.TinyDB && typeof window.TinyDB.storeValue === 'function') {
+                window.TinyDB.storeValue(STORAGE_KEY, serialized);
+            }
+        } catch (error) {
+            console.warn('Android form save failed:', error);
+        }
     } catch (error) {
-        console.warn('Local Storage save failed:', error);
+        console.warn('Form save failed:', error);
     }
 }
-function readSavedFormData() {
+function parseSavedFormData(raw) {
+    if (!raw) return null;
     try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
         const data = JSON.parse(raw);
         if (!data || data.version !== 1 || typeof data !== 'object') return null;
         return data;
+    } catch (error) {
+        return null;
+    }
+}
+function readSavedFormData() {
+    // Prefer the native copy in Android; fall back to browser storage for web use
+    // and for existing data saved before native persistence was added.
+    try {
+        if (window.TinyDB && typeof window.TinyDB.getValue === 'function') {
+            const nativeData = parseSavedFormData(window.TinyDB.getValue(STORAGE_KEY));
+            if (nativeData) return nativeData;
+        }
+    } catch (error) {
+        console.warn('Android form read failed:', error);
+    }
+    try {
+        return parseSavedFormData(localStorage.getItem(STORAGE_KEY));
     } catch (error) {
         console.warn('Local Storage read failed:', error);
         return null;
@@ -750,6 +780,14 @@ function resetCalculator() {
         globalTotalRunningMinutes = 0;
         globalTotalDropLiters = null;
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        // Clear the Android SharedPreferences copy too, otherwise it would be restored after reset.
+        try {
+            if (window.TinyDB && typeof window.TinyDB.storeValue === 'function') {
+                window.TinyDB.storeValue(STORAGE_KEY, '');
+            }
+        } catch (e) {
+            console.warn('Android saved form reset failed:', e);
+        }
         updateTotalDrop();
         updateLiterValues();
         updateLiterProgress();
