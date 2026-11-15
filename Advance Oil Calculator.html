@@ -1236,40 +1236,59 @@ function getScreenshotBase64(dataUrl) {
 }
 
 function downloadScreenshotImage(dataUrl, fileName) {
-    // The custom Android WebView does not reliably handle HTML anchor downloads.
-    // Use the app's native save bridge so the image is actually written to Pictures/SNTT.
-    if (window.Android && typeof window.Android.saveImage === 'function') {
+    const bridge = window.Android || window.TinyDB;
+    // Android App native save bridge
+    if (bridge && typeof bridge.saveImage === 'function') {
         try {
-            window.Android.saveImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
+            bridge.saveImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
             return;
         } catch (e) {
-            console.warn('Native image save failed; trying browser download:', e);
+            console.warn('Native image save failed:', e);
+            if (bridge.showToast) {
+                bridge.showToast('ছবি সেভ হয়নি: ' + (e && e.message ? e.message : e));
+            }
+            return;
         }
     }
 
+    // Inside Android WebView but older app version without saveImage
+    if (bridge) {
+        if (bridge.showToast) {
+            bridge.showToast('ছবি সেভ হয়নি: অ্যাপ আপডেট (v1.0.12+) প্রয়োজন');
+        }
+        const tip = document.querySelector('.screenshot-tip');
+        if (tip) {
+            tip.innerHTML = '<span style="color:#ef4444;font-weight:700;">ছবি সেভ হয়নি: অ্যাপ আপডেট (v1.0.12+) প্রয়োজন। সেভ করতে ছবির উপর চেপে ধরে রাখুন (Tap & hold)।</span>';
+        }
+        return;
+    }
+
+    // Regular browser fallback (Chrome/Firefox/Safari)
     try {
         const link = document.createElement('a');
-        link.download = fileName;
+        link.download = fileName || 'Advance_Oil_Calculator.png';
         link.href = dataUrl;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        if (window.TinyDB && typeof window.TinyDB.showToast === 'function') {
-            try { window.TinyDB.showToast('ডাউনলোড শুরু হয়েছে'); } catch (e) {}
-        }
     } catch (e) {
         console.warn('Direct download failed:', e);
-        window.open(dataUrl, '_blank');
+        alert('ছবি সেভ হয়নি: ' + (e && e.message ? e.message : e));
     }
 }
 
 async function shareScreenshotImage(canvas, dataUrl, fileName) {
-    if (window.Android && typeof window.Android.shareImage === 'function') {
+    const bridge = window.Android || window.TinyDB;
+    if (bridge && typeof bridge.shareImage === 'function') {
         try {
-            window.Android.shareImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
+            bridge.shareImage(getScreenshotBase64(dataUrl), fileName || 'Advance_Oil_Calculator.png');
             return;
         } catch (e) {
-            console.warn('Native image share failed; trying browser share:', e);
+            console.warn('Native image share failed:', e);
+            if (bridge.showToast) {
+                bridge.showToast('শেয়ার খোলা যায়নি: ' + (e && e.message ? e.message : e));
+            }
+            return;
         }
     }
     if (navigator.share && canvas && canvas.toBlob) {
