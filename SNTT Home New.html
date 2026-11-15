@@ -444,7 +444,7 @@ th:last-child,td:last-child{width:29%}
 
 <section>
  <div class="cards-heading">
-  <h2>Shift Overview</h2>
+  <h2 id="overviewHeading">Shift Overview</h2>
   <div class="nav">
    <button id="cardPrev" type="button">&#8249;</button>
    <button id="cardNext" type="button">&#8250;</button>
@@ -453,7 +453,7 @@ th:last-child,td:last-child{width:29%}
  <div class="cards-viewport" id="cardsViewport">
   <div class="cards-track">
    <div class="shift-card" id="shiftCard0">
-    <div class="card-title"><span class="running-dot"></span> Running Shift</div>
+    <div class="card-title" id="cardTitle0"><span class="running-dot"></span> Running Shift</div>
     <div class="running-shift-label" id="shiftLabel0">Shift: A</div>
     <div class="card-team" id="cardTeam0">—</div>
     <div class="card-time" id="cardTime0">—</div>
@@ -855,25 +855,79 @@ function findNextDuty(teamIndex,now){
  }
  return null;
 }
-function updateCards(){
- const now=new Date(),current=getCurrentShiftInfo(now);
- const todayRoster=getRosterForDate(now.getFullYear(),now.getMonth(),now.getDate());
+function findNextResumeDate(now){
+ for(let offset=1;offset<=365;offset++){
+  const d=new Date(now);
+  d.setDate(d.getDate()+offset);
+  const r=getRosterForDate(d.getFullYear(),d.getMonth(),d.getDate());
+  if(!r.isPaused)return d;
+ }
+ return null;
+}
 
- for(let i=0;i<3;i++){
-  const start=new Date(current.start.getTime()+i*8*3600000);
-  const end=new Date(start.getTime()+8*3600000);
-  const index=start.getHours()===7?0:start.getHours()===15?1:2;
-  const shiftRoster=getRosterForDate(start.getFullYear(),start.getMonth(),start.getDate());
-  
-  if(shiftRoster.isPaused){
-   const card=document.getElementById("shiftCard"+i);
-   card.style.background="#78350f";
-   card.style.color="#fff";
-   document.getElementById("cardTeam"+i).innerHTML='<span class="member-chip">🎉 '+(shiftRoster.festivalName||shiftRoster.note||"উৎসবের ছুটি")+'</span>';
-   document.getElementById("shiftLabel"+i).textContent=shiftRoster.festivalName||"ছুটি";
-   document.getElementById("cardTime"+i).textContent=(shiftRoster.rangeText||"উৎসব কালীন ছুটি")+" • "+formatDate(start);
-   document.getElementById("cardCountdown"+i).textContent="Duty Paused / উৎসবের ছুটি";
-  }else{
+function updateCards(){
+ const now=new Date();
+ const todayRoster=getRosterForDate(now.getFullYear(),now.getMonth(),now.getDate());
+ const heading=document.getElementById("overviewHeading");
+
+ if(todayRoster.isPaused){
+  const resumeDate=findNextResumeDate(now);
+  const festName=todayRoster.festivalName||todayRoster.note||"ছুটি";
+  if(heading)heading.textContent="Shift Overview (🎉 "+festName+" – পরবর্তী ডিউটি)";
+
+  if(resumeDate){
+   const y=resumeDate.getFullYear(),m=resumeDate.getMonth(),d=resumeDate.getDate();
+   const resumeRoster=getRosterForDate(y,m,d);
+   const shiftStarts=[
+    new Date(y,m,d,7,0,0,0),
+    new Date(y,m,d,15,0,0,0),
+    new Date(y,m,d,23,0,0,0)
+   ];
+   const titles=[
+    '<span class="running-dot"></span> 🚀 ছুটি পরবর্তী ১ম ডিউটি',
+    '◐ ছুটি পরবর্তী ২য় ডিউটি',
+    '◓ ছুটি পরবর্তী ৩য় ডিউটি'
+   ];
+
+   for(let i=0;i<3;i++){
+    const teamIndex=resumeRoster.shiftTeams[i];
+    const team=teams[teamIndex];
+    applyTeamColor(i,teamIndex);
+    const titleEl=document.getElementById("cardTitle"+i);
+    if(titleEl)titleEl.innerHTML=titles[i];
+    document.getElementById("cardTeam"+i).innerHTML=memberCardsHTML(team);
+    document.getElementById("shiftLabel"+i).textContent="Shift: "+team.shift;
+    document.getElementById("cardTime"+i).textContent=shiftNames[i]+" • "+shiftTimes[i]+" • "+formatDate(shiftStarts[i]);
+    document.getElementById("cardCountdown"+i).textContent="Starts in "+formatDuration(shiftStarts[i]-now);
+   }
+
+   const offTeamIndex=resumeRoster.offIndex;
+   const offTeam=teams[offTeamIndex];
+   applyTeamColor(3,offTeamIndex);
+   const titleEl3=document.getElementById("cardTitle3");
+   if(titleEl3)titleEl3.innerHTML="✨ ছুটি পরবর্তী Day Off";
+   document.getElementById("cardTeam3").innerHTML=memberCardsHTML(offTeam);
+   document.getElementById("shiftLabel3").textContent="Shift: "+offTeam.shift;
+   document.getElementById("cardTime3").textContent="Scheduled day off • "+formatDate(shiftStarts[0]);
+   const nextDuty=findNextDuty(offTeamIndex,shiftStarts[0]);
+   document.getElementById("cardCountdown3").textContent=nextDuty?"Next Duty in "+formatDuration(nextDuty-now):"Next Duty time unavailable";
+  }
+ }else{
+  if(heading)heading.textContent="Shift Overview";
+  const titleEl0=document.getElementById("cardTitle0");
+  if(titleEl0)titleEl0.innerHTML='<span class="running-dot"></span> Running Shift';
+  const titleEl1=document.getElementById("cardTitle1");
+  if(titleEl1)titleEl1.innerHTML='◐ Next Shift';
+  const titleEl2=document.getElementById("cardTitle2");
+  if(titleEl2)titleEl2.innerHTML='◓ Upcoming Shift';
+  const titleEl3=document.getElementById("cardTitle3");
+  if(titleEl3)titleEl3.innerHTML='✨ Day Off';
+
+  const current=getCurrentShiftInfo(now);
+  for(let i=0;i<3;i++){
+   const start=new Date(current.start.getTime()+i*8*3600000);
+   const end=new Date(start.getTime()+8*3600000);
+   const index=start.getHours()===7?0:start.getHours()===15?1:2;
    const teamIndex=shiftAt(start,index),team=teams[teamIndex];
    applyTeamColor(i,teamIndex);
    document.getElementById("cardTeam"+i).innerHTML=memberCardsHTML(team);
@@ -881,20 +935,15 @@ function updateCards(){
    document.getElementById("cardTime"+i).textContent=shiftNames[index]+" • "+shiftTimes[index]+" • "+formatDate(start);
    document.getElementById("cardCountdown"+i).textContent=i===0?"Ends in "+formatDuration(end-now):"Starts in "+formatDuration(start-now);
   }
- }
 
- const offTeamIndex=todayRoster.offIndex,offTeam=teams[offTeamIndex];
- applyTeamColor(3,offTeamIndex);
- document.getElementById("cardTeam3").innerHTML=memberCardsHTML(offTeam);
- document.getElementById("shiftLabel3").textContent="Shift: "+offTeam.shift;
- document.getElementById("cardTime3").textContent="Scheduled day off • "+formatDate(now);
- const nextDuty=findNextDuty(offTeamIndex,now);
- document.getElementById("cardCountdown3").textContent=nextDuty?"Next Duty in "+formatDuration(nextDuty-now):"Next Duty time unavailable";
- if(todayRoster.isPaused){
-  const label="🎉 "+(todayRoster.festivalName||todayRoster.note||"উৎসবের ছুটি");
-  document.getElementById("shiftLabel0").textContent=label;
-  document.getElementById("cardTime0").textContent="Scheduled duty paused • "+(todayRoster.rangeText||formatDate(now));
-  document.getElementById("cardCountdown0").textContent="Duty Paused / উৎসবের ছুটি";
+  const todayRoster=getRosterForDate(now.getFullYear(),now.getMonth(),now.getDate());
+  const offTeamIndex=todayRoster.offIndex,offTeam=teams[offTeamIndex];
+  applyTeamColor(3,offTeamIndex);
+  document.getElementById("cardTeam3").innerHTML=memberCardsHTML(offTeam);
+  document.getElementById("shiftLabel3").textContent="Shift: "+offTeam.shift;
+  document.getElementById("cardTime3").textContent="Scheduled day off • "+formatDate(now);
+  const nextDuty=findNextDuty(offTeamIndex,now);
+  document.getElementById("cardCountdown3").textContent=nextDuty?"Next Duty in "+formatDuration(nextDuty-now):"Next Duty time unavailable";
  }
  updateCardDots();
 }
