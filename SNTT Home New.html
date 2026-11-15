@@ -39,7 +39,8 @@ body{
 
 .ship-nav button{
  width:30px;height:29px;border:0;border-radius:9px;
- background:#193f66;color:white;font-size:11.4px;cursor:pointer
+ background:#193f66;color:white;font-size:11.4px;cursor:pointer;
+ display:inline-flex;align-items:center;justify-content:center
 }
 
 .ship-view{
@@ -414,6 +415,16 @@ th:last-child,td:last-child{width:29%}
 
 
 
+
+.ship-section.is-vertical .ship-view{overflow:visible;scroll-snap-type:none}
+.ship-section.is-vertical .ship-track{display:flex;flex-direction:column;width:100%;box-sizing:border-box;padding:6px 12px 12px;gap:8px}
+.ship-section.is-vertical .ship-card{flex:0 0 auto;width:100%;box-sizing:border-box;scroll-snap-align:none}
+.ship-section.is-vertical .ship-dots{display:none}
+.ship-section.is-vertical #shipPrev,.ship-section.is-vertical #shipNext{opacity:0.3;pointer-events:none;cursor:default}
+.ship-section.is-vertical #shipToggleView{background:#2563eb}
+.ship-section.is-vertical #shipToggleIconList{display:none!important}
+.ship-section.is-vertical #shipToggleIconGrid{display:block!important}
+
 </style>
 </head>
 <body>
@@ -430,12 +441,16 @@ th:last-child,td:last-child{width:29%}
 
 
 
-<section class="ship-section">
+<section class="ship-section" id="shipSection">
  <div class="ship-head">
   <h2>ALL SHIP AND TANK CALIBRATION</h2>
   <div class="ship-nav">
-   <button id="shipPrev" type="button">&#8249;</button>
-   <button id="shipNext" type="button">&#8250;</button>
+   <button id="shipPrev" type="button" aria-label="Previous ship">&#8249;</button>
+   <button id="shipNext" type="button" aria-label="Next ship">&#8250;</button>
+   <button id="shipToggleView" type="button" aria-label="Toggle vertical view" title="Toggle vertical view">
+    <svg id="shipToggleIconList" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+    <svg id="shipToggleIconGrid" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;margin:auto;"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M8 4v16"></path><path d="M16 4v16"></path></svg>
+   </button>
   </div>
  </div>
  <div class="ship-view" id="shipView"><div class="ship-track" id="shipTrack"></div></div>
@@ -561,6 +576,19 @@ ships.forEach((s,i)=>{
 const shipStep=()=>((shipTrack.firstElementChild?.offsetWidth)||190)+9;
 document.getElementById("shipPrev").onclick=()=>shipView.scrollBy({left:-shipStep(),behavior:"smooth"});
 document.getElementById("shipNext").onclick=()=>shipView.scrollBy({left:shipStep(),behavior:"smooth"});
+const shipSection=document.getElementById("shipSection");
+const shipToggleBtn=document.getElementById("shipToggleView");
+function toggleShipLayout(forceVertical){
+ const isVert = forceVertical !== undefined ? forceVertical : !shipSection.classList.contains("is-vertical");
+ shipSection.classList.toggle("is-vertical", isVert);
+ try{localStorage.setItem("shipViewLayout", isVert ? "vertical" : "horizontal");}catch(e){}
+}
+if(shipToggleBtn){
+ shipToggleBtn.onclick=()=>toggleShipLayout();
+}
+try{
+ if(localStorage.getItem("shipViewLayout")==="vertical") toggleShipLayout(true);
+}catch(e){}
 let shipTimer;
 shipView.addEventListener("scroll",()=>{
  cancelAnimationFrame(shipTimer);
