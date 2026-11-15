@@ -278,7 +278,8 @@ input,select{padding:7px 4px;font-size:10px}
 </div>
 <script>
 'use strict';
-const STORAGE_KEY = 'advanced_oil_calculator_state_v1';
+const SCRIPT_NAME = 'Advance Oil Calculator.html';
+const STORAGE_KEY = SCRIPT_NAME + '_state_v1';
 const LITER_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20FINAL.txt';
 const CORRECTION_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20CORRECTION.txt';
 const LITER_CACHE_KEY = 'sntt_all_tank_liter_cache_v1';
@@ -546,14 +547,12 @@ function saveFormData() {
         } catch (error) {
             console.warn('Local Storage save failed:', error);
         }
-        // The Android WebView bridge stores a second copy in SharedPreferences,
-        // so entered values survive app restarts even if WebView storage is cleared.
         try {
             if (window.TinyDB && typeof window.TinyDB.storeValue === 'function') {
                 window.TinyDB.storeValue(STORAGE_KEY, serialized);
             }
         } catch (error) {
-            console.warn('Android form save failed:', error);
+            console.warn('Android bridge save failed:', error);
         }
     } catch (error) {
         console.warn('Form save failed:', error);
@@ -570,22 +569,29 @@ function parseSavedFormData(raw) {
     }
 }
 function readSavedFormData() {
-    // Prefer the native copy in Android; fall back to browser storage for web use
-    // and for existing data saved before native persistence was added.
+    // 1. Primary: script-name scoped localStorage
+    try {
+        const localData = parseSavedFormData(localStorage.getItem(STORAGE_KEY));
+        if (localData) return localData;
+    } catch (error) {
+        console.warn('Local Storage read failed:', error);
+    }
+    // 2. Fallback: legacy key if previous version saved it
+    try {
+        const legacyData = parseSavedFormData(localStorage.getItem('advanced_oil_calculator_state_v1'));
+        if (legacyData) return legacyData;
+    } catch (error) {}
+    // 3. Fallback: Android TinyDB if available
     try {
         if (window.TinyDB && typeof window.TinyDB.getValue === 'function') {
-            const nativeData = parseSavedFormData(window.TinyDB.getValue(STORAGE_KEY));
+            const nativeData = parseSavedFormData(window.TinyDB.getValue(STORAGE_KEY))
+                || parseSavedFormData(window.TinyDB.getValue('advanced_oil_calculator_state_v1'));
             if (nativeData) return nativeData;
         }
     } catch (error) {
-        console.warn('Android form read failed:', error);
+        console.warn('Android bridge read failed:', error);
     }
-    try {
-        return parseSavedFormData(localStorage.getItem(STORAGE_KEY));
-    } catch (error) {
-        console.warn('Local Storage read failed:', error);
-        return null;
-    }
+    return null;
 }
 function invalidateCalculation() {
     calculationReady = false;
@@ -779,15 +785,16 @@ function resetCalculator() {
         globalClosingDip = 0;
         globalTotalRunningMinutes = 0;
         globalTotalDropLiters = null;
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-        // Clear the Android SharedPreferences copy too, otherwise it would be restored after reset.
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem('advanced_oil_calculator_state_v1');
+        } catch (e) {}
         try {
             if (window.TinyDB && typeof window.TinyDB.storeValue === 'function') {
                 window.TinyDB.storeValue(STORAGE_KEY, '');
+                window.TinyDB.storeValue('advanced_oil_calculator_state_v1', '');
             }
-        } catch (e) {
-            console.warn('Android saved form reset failed:', e);
-        }
+        } catch (e) {}
         updateTotalDrop();
         updateLiterValues();
         updateLiterProgress();
