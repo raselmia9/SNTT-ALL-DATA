@@ -593,20 +593,60 @@ const shiftTimes=["07:00–15:00","15:00–23:00","23:00–07:00"];
 const referenceSerial=Date.UTC(2026,9,1)/86400000;
 const holidays={};
 
-// ==========================================
-// ছুটি বা বিশেষ ইভেন্টের তারিখ তালিকা (Duty Pause Ranges)
-// ভবিষ্যতে বন্ধ বা ছুটির দিনগুলো আসলে নিচের ব্র্যাকেটের ভেতর start এবং end তারিখ (YYYY-MM-DD ফরম্যাটে) বসিয়ে দিন।
-// স্ক্রিপ্ট স্বয়ংক্রিয়ভাবে সেই দিনগুলোকে হিসাব থেকে মাইনাস করে ডিউটি পজ রাখবে এবং ছুটি শেষ হওয়ার পর
-// যেখান থেকে ডিউটি বন্ধ হয়েছিল ঠিক সেখান থেকেই আবার মাসের রোস্টার স্বাভাবিকভাবে চালু করবে।
+// ============================================================================
+// 🎊 উৎসব ও ছুটির তালিকা (FESTIVAL & HOLIDAY JSON LIST)
+// ============================================================================
+// ভবিষ্যতে যেকোনো উৎসব বা ছুটির সময়সূচি নিচের JSON লিস্টে বসিয়ে দিন।
+// উৎসব চলাকালীন শিডিউল টেবিলে স্বয়ংক্রিয়ভাবে উৎসবের নাম ও কত তারিখ থেকে কত তারিখ পর্যন্ত তা দেখাবে।
+// ছুটি শেষ হওয়ার পর যেখান থেকে ডিউটি বন্ধ হয়েছিল ঠিক সেখান থেকেই রেগুলার রোস্টার পুনরায় চালু হবে।
 //
-// উদাহরণ:
-// const dutyPauseRanges = [
-//   { start: "2026-11-20", end: "2026-11-25", note: "ঈদ উল ফিতর ছুটি" }
+// 📌 ফরম্যাট (Format):
+// [
+//   {
+//     "festivalName": "উৎসবের নাম",
+//     "startDate": "YYYY-MM-DD",   // শুরুর তারিখ (বছর-মাস-দিন)
+//     "endDate": "YYYY-MM-DD"      // শেষের তারিখ (বছর-মাস-দিন)
+//   }
+// ]
+//
+// 💡 উদাহরণ:
+// const festivalHolidays = [
+//   {
+//     "festivalName": "পবিত্র ঈদুল ফিতর",
+//     "startDate": "2026-03-20",
+//     "endDate": "2026-03-25"
+//   },
+//   {
+//     "festivalName": "পবিত্র ঈদুল আযহা",
+//     "startDate": "2026-05-27",
+//     "endDate": "2026-06-02"
+//   }
 // ];
-// ==========================================
-const dutyPauseRanges = [
-  // { start: "YYYY-MM-DD", end: "YYYY-MM-DD", note: "ছুটির বিবরণ" }
+// ============================================================================
+
+const festivalHolidays = [
+  // প্রয়োজন মতো নতুন উৎসব এখানে যুক্ত করতে পারবেন:
 ];
+
+// পেছনের সামঞ্জস্যের জন্য:
+const dutyPauseRanges = [];
+
+function getAllPauseRanges(){
+ const list=[];
+ const source=[...(typeof festivalHolidays!=="undefined"&&Array.isArray(festivalHolidays)?festivalHolidays:[]),
+               ...(typeof dutyPauseRanges!=="undefined"&&Array.isArray(dutyPauseRanges)?dutyPauseRanges:[])];
+ for(let i=0;i<source.length;i++){
+  const item=source[i];
+  if(!item)continue;
+  const name=item.festivalName||item.name||item.title||item.note||"উৎসবের ছুটি";
+  const start=item.startDate||item.start||item.from;
+  const end=item.endDate||item.end||item.to;
+  if(start&&end){
+   list.push({name,start,end});
+  }
+ }
+ return list;
+}
 
 function serial(y,m,d){return Date.UTC(y,m,d)/86400000}
 
@@ -617,27 +657,80 @@ function parseDateStrToSerial(str){
  return serial(+p[0],+p[1]-1,+p[2]);
 }
 
+function pad(n){return String(n).padStart(2,"0")}
+function dateKey(y,m,d){return y+"-"+pad(m+1)+"-"+pad(d)}
+
+function formatShortDate(y,m,d){
+ const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+ return pad(d)+" "+months[m];
+}
+
+function formatRangeText(startStr,endStr){
+ const p1=startStr.split("-"),p2=endStr.split("-");
+ if(p1.length!==3||p2.length!==3)return startStr+" to "+endStr;
+ const y1=+p1[0],m1=+p1[1]-1,d1=+p1[2];
+ const y2=+p2[0],m2=+p2[1]-1,d2=+p2[2];
+ if(y1===y2&&m1===m2&&d1===d2){
+  return formatShortDate(y1,m1,d1)+" "+y1;
+ }
+ if(y1===y2){
+  return formatShortDate(y1,m1,d1)+" – "+formatShortDate(y2,m2,d2)+" "+y1;
+ }
+ return formatShortDate(y1,m1,d1)+" "+y1+" – "+formatShortDate(y2,m2,d2)+" "+y2;
+}
+
 function getPauseInfoForDate(y,m,d){
  const cur=serial(y,m,d);
- for(let i=0;i<dutyPauseRanges.length;i++){
-  const r=dutyPauseRanges[i];
-  if(!r.start||!r.end)continue;
+ const ranges=getAllPauseRanges();
+ for(let i=0;i<ranges.length;i++){
+  const r=ranges[i];
   const s=parseDateStrToSerial(r.start),e=parseDateStrToSerial(r.end);
   if(s!==null&&e!==null&&cur>=s&&cur<=e){
-   return {isPaused:true,note:r.note||"ছুটি / বিশেষ ডিউটি"};
+   return {
+    isPaused:true,
+    festivalName:r.name,
+    note:r.name,
+    startDate:r.start,
+    endDate:r.end,
+    rangeText:formatRangeText(r.start,r.end)
+   };
   }
  }
- return {isPaused:false,note:""};
+ return {isPaused:false,festivalName:"",note:"",startDate:"",endDate:"",rangeText:""};
+}
+
+function getMergedPauseIntervals(){
+ const ranges=getAllPauseRanges();
+ const intervals=[];
+ for(let i=0;i<ranges.length;i++){
+  const s=parseDateStrToSerial(ranges[i].start);
+  const e=parseDateStrToSerial(ranges[i].end);
+  if(s!==null&&e!==null&&e>=s){
+   intervals.push([s,e]);
+  }
+ }
+ if(intervals.length<=1)return intervals;
+ intervals.sort((a,b)=>a[0]-b[0]);
+ const merged=[intervals[0]];
+ for(let i=1;i<intervals.length;i++){
+  const last=merged[merged.length-1];
+  const cur=intervals[i];
+  if(cur[0]<=last[1]+1){
+   last[1]=Math.max(last[1],cur[1]);
+  }else{
+   merged.push(cur);
+  }
+ }
+ return merged;
 }
 
 function getDeductedDaysUntil(y,m,d){
  const cur=serial(y,m,d);
  let deducted=0;
- for(let i=0;i<dutyPauseRanges.length;i++){
-  const r=dutyPauseRanges[i];
-  if(!r.start||!r.end)continue;
-  const s=parseDateStrToSerial(r.start),e=parseDateStrToSerial(r.end);
-  if(s===null||e===null)continue;
+ const intervals=getMergedPauseIntervals();
+ for(let i=0;i<intervals.length;i++){
+  const s=intervals[i][0];
+  const e=intervals[i][1];
   const effStart=Math.max(s,referenceSerial);
   const effEnd=Math.min(e,cur-1);
   if(effEnd>=effStart){
@@ -665,11 +758,14 @@ function getRosterForDate(y,m,d){
   shiftTeams:shiftPatterns[getShiftIndex(y,m,d)],
   offIndex:getOffIndex(y,m,d),
   isPaused:pauseInfo.isPaused,
-  note:pauseInfo.note
+  festivalName:pauseInfo.festivalName,
+  note:pauseInfo.note,
+  startDate:pauseInfo.startDate,
+  endDate:pauseInfo.endDate,
+  rangeText:pauseInfo.rangeText
  };
 }
-function pad(n){return String(n).padStart(2,"0")}
-function dateKey(y,m,d){return y+"-"+pad(m+1)+"-"+pad(d)}
+
 function formatDate(date){
  return date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
@@ -720,7 +816,12 @@ function renderSchedule(){
   html+='<tr><td><span class="date-cell '+(date.getDay()===5?"friday":"")+'">'+dateText+'</span>'+
    (holidays[key]?'<span class="holiday">'+holidays[key]+'</span>':"")+'</td>';
   if(roster.isPaused){
-   html+='<td colspan="4" style="text-align:center;font-weight:700;color:#c2410c;background:#fff7ed;padding:8px 6px;letter-spacing:.3px;">⛱️ '+roster.note+'</td></tr>';
+   const festivalTitle=roster.festivalName||roster.note||"উৎসবের ছুটি";
+   const rangeHtml=roster.rangeText?'<div style="font-size:clamp(5px,1.3vw,7.2px);color:#b45309;font-weight:700;margin-top:2px;">📅 '+roster.rangeText+'</div>':'';
+   html+='<td colspan="4" style="text-align:center;font-weight:700;color:#9a3412;background:#fffbeb;padding:7px 4px;border:1px solid rgba(245,158,11,.3);">' +
+     '<div style="font-size:clamp(6.5px,1.7vw,9.5px);line-height:1.25;"><span style="display:inline-block;margin-right:4px;">🎉</span>'+festivalTitle+'</div>' +
+     rangeHtml +
+     '</td></tr>';
   }else{
    roster.shiftTeams.forEach(index=>html+='<td>'+teamHTML(index)+'</td>');
    html+='<td class="off-cell">'+teamHTML(roster.offIndex)+'</td></tr>';
@@ -742,10 +843,11 @@ function shiftAt(start,index){
  return roster.shiftTeams[index];
 }
 function findNextDuty(teamIndex,now){
- for(let dayOffset=0;dayOffset<=8;dayOffset++){
+ for(let dayOffset=0;dayOffset<=30;dayOffset++){
   const date=new Date(now);date.setDate(date.getDate()+dayOffset);
   const y=date.getFullYear(),m=date.getMonth(),d=date.getDate();
   const roster=getRosterForDate(y,m,d);
+  if(roster.isPaused)continue;
   for(let shift=0;shift<3;shift++){
    const start=new Date(y,m,d,[7,15,23][shift],0,0,0);
    if(start>now&&roster.shiftTeams[shift]===teamIndex)return start;
@@ -755,30 +857,44 @@ function findNextDuty(teamIndex,now){
 }
 function updateCards(){
  const now=new Date(),current=getCurrentShiftInfo(now);
+ const todayRoster=getRosterForDate(now.getFullYear(),now.getMonth(),now.getDate());
+
  for(let i=0;i<3;i++){
   const start=new Date(current.start.getTime()+i*8*3600000);
   const end=new Date(start.getTime()+8*3600000);
   const index=start.getHours()===7?0:start.getHours()===15?1:2;
-  const teamIndex=shiftAt(start,index),team=teams[teamIndex];
-  applyTeamColor(i,teamIndex);
-  document.getElementById("cardTeam"+i).innerHTML=memberCardsHTML(team);
-  document.getElementById("shiftLabel"+i).textContent="Shift: "+team.shift;
-  document.getElementById("cardTime"+i).textContent=shiftNames[index]+" · "+shiftTimes[index]+" · "+formatDate(start);
-  document.getElementById("cardCountdown"+i).textContent=i===0?"Ends in "+formatDuration(end-now):"Starts in "+formatDuration(start-now);
+  const shiftRoster=getRosterForDate(start.getFullYear(),start.getMonth(),start.getDate());
+  
+  if(shiftRoster.isPaused){
+   const card=document.getElementById("shiftCard"+i);
+   card.style.background="#78350f";
+   card.style.color="#fff";
+   document.getElementById("cardTeam"+i).innerHTML='<span class="member-chip">🎉 '+(shiftRoster.festivalName||shiftRoster.note||"উৎসবের ছুটি")+'</span>';
+   document.getElementById("shiftLabel"+i).textContent=shiftRoster.festivalName||"ছুটি";
+   document.getElementById("cardTime"+i).textContent=(shiftRoster.rangeText||"উৎসব কালীন ছুটি")+" • "+formatDate(start);
+   document.getElementById("cardCountdown"+i).textContent="Duty Paused / উৎসবের ছুটি";
+  }else{
+   const teamIndex=shiftAt(start,index),team=teams[teamIndex];
+   applyTeamColor(i,teamIndex);
+   document.getElementById("cardTeam"+i).innerHTML=memberCardsHTML(team);
+   document.getElementById("shiftLabel"+i).textContent="Shift: "+team.shift;
+   document.getElementById("cardTime"+i).textContent=shiftNames[index]+" • "+shiftTimes[index]+" • "+formatDate(start);
+   document.getElementById("cardCountdown"+i).textContent=i===0?"Ends in "+formatDuration(end-now):"Starts in "+formatDuration(start-now);
+  }
  }
- const todayRoster=getRosterForDate(now.getFullYear(),now.getMonth(),now.getDate());
+
  const offTeamIndex=todayRoster.offIndex,offTeam=teams[offTeamIndex];
  applyTeamColor(3,offTeamIndex);
  document.getElementById("cardTeam3").innerHTML=memberCardsHTML(offTeam);
  document.getElementById("shiftLabel3").textContent="Shift: "+offTeam.shift;
- document.getElementById("cardTime3").textContent="Scheduled day off · "+formatDate(now);
+ document.getElementById("cardTime3").textContent="Scheduled day off • "+formatDate(now);
  const nextDuty=findNextDuty(offTeamIndex,now);
  document.getElementById("cardCountdown3").textContent=nextDuty?"Next Duty in "+formatDuration(nextDuty-now):"Next Duty time unavailable";
  if(todayRoster.isPaused){
-  const label=todayRoster.note||"Duty Paused / ছুটি";
+  const label="🎉 "+(todayRoster.festivalName||todayRoster.note||"উৎসবের ছুটি");
   document.getElementById("shiftLabel0").textContent=label;
-  document.getElementById("cardTime0").textContent="Scheduled duty paused · "+formatDate(now);
-  document.getElementById("cardCountdown0").textContent="Duty Paused / ছুটি";
+  document.getElementById("cardTime0").textContent="Scheduled duty paused • "+(todayRoster.rangeText||formatDate(now));
+  document.getElementById("cardCountdown0").textContent="Duty Paused / উৎসবের ছুটি";
  }
  updateCardDots();
 }
