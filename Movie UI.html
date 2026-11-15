@@ -246,10 +246,12 @@
         .lfe-logo-box { width: 100%; height: 100%; background: #21262d; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin: 0; border-radius: 0; }         
         .lfe-logo-box img { width: 100%; height: 100%; object-fit: cover; } 
         .lfe-card-title { position: absolute; bottom: 0; left: 0; width: 100%; font-size: 5px; font-weight: bold; color: #ffffff; background: rgba(13, 17, 23, 0.55); backdrop-filter: blur(3px); padding: 2px 3px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; border-top: 1px solid rgba(255, 255, 255, 0.15); } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
-        .lfe-live-indicator { position: absolute; top: 5px; right: 5px; display: flex; align-items: center; gap: 4px; background: rgba(13, 17, 23, 0.75); backdrop-filter: blur(4px); padding: 2px 5px; border-radius: 5px; border: 1px solid rgba(244, 63, 94, 0.6); z-index: 2; }
-        .lfe-dot { height: 3px; width: 3px; background-color: #f43f5e; border-radius: 50%; animation: lfe-pulse 1s infinite; display: inline-block; }         
-        @keyframes lfe-pulse { 0% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8); } 70% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); } 100% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
-        .lfe-live-text { font-size: 5px; font-weight: bold; color: #f43f5e; letter-spacing: 0.5px; } /* ফন্ট সাইজ আরও ২০% কমানো হয়েছে */
+        .lfe-header-row { display: flex; align-items: center; gap: 8px; margin: 5px 0 10px 5px; }
+        .lfe-header-title { font-size: 13px; font-weight: bold; color: #10b981; text-transform: uppercase; }
+        .lfe-live-indicator { display: inline-flex; align-items: center; gap: 5px; background: rgba(244, 63, 94, 0.15); padding: 2px 7px; border-radius: 10px; border: 1px solid rgba(244, 63, 94, 0.45); }
+        .lfe-dot { height: 6px; width: 6px; background-color: #f43f5e; border-radius: 50%; animation: lfe-pulse 1.2s infinite; display: inline-block; }         
+        @keyframes lfe-pulse { 0% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8); } 70% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 0 4px rgba(244, 63, 94, 0); } 100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
+        .lfe-live-text { font-size: 9px; font-weight: bold; color: #f43f5e; letter-spacing: 0.6px; line-height: 1; }
     
 /* ===== MOVIE SECTION (from Movie UI) ===== */
 
@@ -712,7 +714,13 @@
 </div>
 
 <div class="lfe-wrapper" style="margin-bottom: 15px;">
-    <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">popular Live Events (Auto)</div>
+    <div class="lfe-header-row">
+        <span class="lfe-header-title">popular Live Events (Auto)</span>
+        <div class="lfe-live-indicator">
+            <span class="lfe-dot"></span>
+            <span class="lfe-live-text">LIVE</span>
+        </div>
+    </div>
     <div id="lfeCatContainer" class="category-bar"></div>
     <div class="lfe-slider-container" id="lfeSliderContainer"><div style="color: #8b949e; font-size: 12px; padding: 10px;">Loading live events...</div></div>
 </div>
@@ -1203,11 +1211,6 @@ function renderLfeCategories() {
     card.onclick = () => sendData(ch.url);
     card.innerHTML = `
         <div class="lfe-logo-box">
-            <div class="lfe-live-indicator">
-                <div class="lfe-dot"></div>
-                <span class="lfe-live-text">LIVE</span>
-            </div>
-            
             <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
                 <img src="${siteIcon}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${defaultSvg}';">
             </div>
