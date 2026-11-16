@@ -1264,7 +1264,12 @@ button:active {
 
     window.closeScreenshotModal = function() {
         var overlay = $('screenshotModalOverlay');
-        if (overlay) overlay.style.display = 'none';
+        if (overlay) {
+            overlay.style.display = 'none';
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+        }
 
         var bridge = window.Android || window.TinyDB;
         if (bridge && typeof bridge.setModalOpen === 'function') {
