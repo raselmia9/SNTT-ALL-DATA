@@ -262,6 +262,159 @@ button:active {
   font-weight: 800;
 }
 
+
+/* 3D Intertek seal card */
+.seal-card {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 8px 12px;
+    margin: 12px 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.05) 55%,
+        rgba(15, 23, 42, 0.5)
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+}
+
+.seal-title {
+    text-align: center;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    padding: 7px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 3px 0 #1e3a8a, 0 5px 8px rgba(0, 0, 0, 0.25);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.seal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    align-items: center;
+}
+
+.seal-grid .input-group {
+    min-width: 0;
+    margin-top: 6px;
+}
+
+/* ASTM title banner */
+.astm-title {
+    position: relative;
+    text-align: center;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    padding: 8px 7px;
+    margin: 14px 0 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(145deg, #f59e0b, #d97706 55%, #b45309);
+    box-shadow: 0 3px 0 #78350f, 0 6px 12px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* 2-column grid for ASTM */
+.grid-section {
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 6px;
+    padding: 10px 8px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.04) 55%,
+        rgba(15, 23, 42, 0.5)
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    margin-top: 6px;
+}
+
+/* 3D input & output fields with floating labels */
+.input-field, .output-field {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 38px;
+    padding: 7px 4px 2px;
+    border-radius: 7px;
+    border: 1.5px solid #93c5fd;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #0f172a;
+    background: linear-gradient(145deg, #ffffff, #e2e8f0);
+    box-shadow: 0 2px 0 #94a3b8, inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input-field:focus {
+    border-color: #38bdf8;
+    background: linear-gradient(145deg, #ffffff, #e0f2fe);
+    box-shadow: 0 2px 0 #0284c7, 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.output-field {
+    cursor: default;
+    color: #064e3b;
+    border-color: #6ee7b7;
+    background: linear-gradient(145deg, #d1fae5, #a7f3d0);
+    box-shadow: 0 2px 0 #059669, inset 0 1px 2px rgba(255, 255, 255, 0.85);
+}
+
+.floating-label {
+    position: absolute;
+    z-index: 2;
+    top: -8px;
+    left: 6px;
+    max-width: calc(100% - 12px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 13px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    letter-spacing: 0.3px;
+}
+
 /* Modal for Screenshot preview */
 .screenshot-modal-overlay {
   position: fixed;
@@ -442,10 +595,87 @@ button:active {
         </div>
     </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="action-row">
-        <button type="button" class="reset-btn" id="resetBtn" onclick="resetForm()">↺ Reset</button>
-        <button type="button" class="calculate-btn" id="calcBtn" onclick="calculateAll()">হিসাব করুন (CALCULATE)</button>
+    <!-- INTERTEK SEAL CARD -->
+    <div class="seal-card">
+        <div class="seal-title">INTERTEK SEAL</div>
+        <div class="seal-grid">
+            <div class="input-group">
+                <span class="floating-label">Start Seal Number</span>
+                <input
+                    type="number"
+                    id="startSeal"
+                    class="input-field"
+                    inputmode="numeric"
+                    step="1"
+                    placeholder="0"
+                    oninput="calculateSeals()">
+            </div>
+            <div class="input-group">
+                <span class="floating-label">End Seal Number</span>
+                <input
+                    type="number"
+                    id="endSeal"
+                    class="input-field"
+                    inputmode="numeric"
+                    step="1"
+                    placeholder="0"
+                    oninput="calculateSeals()">
+            </div>
+            <div class="input-group">
+                <span class="floating-label">Total Seal</span>
+                <input
+                    type="text"
+                    id="totalSeal"
+                    class="output-field"
+                    readonly
+                    placeholder="0">
+            </div>
+        </div>
+    </div>
+
+    <!-- ASTM 53B / 54B -->
+    <div class="astm-title">ASTM 53B / 54B</div>
+    <div class="grid-section">
+        <div class="input-group">
+            <span class="floating-label">Temperature</span>
+            <input type="number" id="temp" class="input-field" step="any" oninput="calcASTM()">
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Observe Density</span>
+            <input type="number" id="obsDensity" class="input-field" step="any" oninput="calcASTM()">
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Density 15</span>
+            <input type="text" id="den15" class="output-field" readonly>
+        </div>
+        <div class="input-group">
+            <span class="floating-label">VCF</span>
+            <input type="text" id="vcf" class="output-field" readonly>
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Volume</span>
+            <input type="number" id="volume" class="input-field" step="any" oninput="onManualVolumeChange()">
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Net Volume</span>
+            <input type="text" id="netVolume" class="output-field" readonly>
+        </div>
+        <div class="input-group">
+            <span class="floating-label">WCF</span>
+            <input type="text" id="wcf" class="output-field" readonly>
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Liter</span>
+            <input type="text" id="liter" class="output-field" readonly>
+        </div>
+        <div class="input-group">
+            <span class="floating-label">M.T</span>
+            <input type="text" id="mt" class="output-field" readonly>
+        </div>
+        <div class="input-group">
+            <span class="floating-label">Barrels</span>
+            <input type="text" id="barrels" class="output-field" readonly>
+        </div>
     </div>
 
     <!-- SCREENSHOT BUTTON -->
@@ -491,6 +721,16 @@ button:active {
     var OFFLINE_CACHE_KEY = 'sntt_all_tank_final_cache';
 
     var literTableData = null;
+    var isManualVolume = false;
+
+    var gA = function(dn) {
+        return (dn < 770
+            ? 341.0957
+            : dn <= 788
+                ? 594.5418
+                : 186.9696 + 0.48618 * dn
+        ) / (dn * dn);
+    };
 
     function $(id) {
         return document.getElementById(id);
@@ -657,9 +897,6 @@ button:active {
         }
 
         var tankCode = getTankCode();
-        var openDipVal = $('openingDip').value.trim();
-        var closeDipVal = $('closingDip').value.trim();
-
         var openLiters = null;
         var closeLiters = null;
 
@@ -690,56 +927,204 @@ button:active {
             if (openLiters !== null && closeLiters !== null) {
                 var dropLiters = Math.round(openLiters - closeLiters);
                 $('totalDropLiter').value = dropLiters;
+                if (!isManualVolume) {
+                    var volEl = $('volume');
+                    if (volEl) volEl.value = dropLiters > 0 ? dropLiters : '';
+                }
             } else {
                 $('totalDropLiter').value = '';
+                if (!isManualVolume) {
+                    var volEl = $('volume');
+                    if (volEl) volEl.value = '';
+                }
             }
         } else {
             $('totalDrop').value = '';
             $('totalDropLiter').value = '';
+            if (!isManualVolume) {
+                var volEl = $('volume');
+                if (volEl) volEl.value = '';
+            }
         }
 
+        calcASTM();
         saveState();
     };
 
-    // Save state to localStorage
+    // Calculate Intertek Seals (End - Start + 1)
+    function calculateSeals() {
+        var startEl = $('startSeal');
+        var endEl = $('endSeal');
+        var totalEl = $('totalSeal');
+        if (!startEl || !endEl || !totalEl) return;
+
+        var start = startEl.value.trim();
+        var end = endEl.value.trim();
+
+        if (start === '' || end === '') {
+            totalEl.value = '';
+            saveState();
+            return;
+        }
+
+        var startNo = Number(start);
+        var endNo = Number(end);
+
+        if (!Number.isFinite(startNo) || !Number.isFinite(endNo) || endNo < startNo) {
+            totalEl.value = '';
+            saveState();
+            return;
+        }
+
+        totalEl.value = (endNo - startNo + 1);
+        saveState();
+    }
+    window.calculateSeals = calculateSeals;
+
+    // Manual volume override
+    window.onManualVolumeChange = function() {
+        isManualVolume = true;
+        calcASTM();
+    };
+
+    // ASTM 53B / 54B calculation
+    function calcASTM() {
+        var tempEl = $('temp');
+        var obsDensityEl = $('obsDensity');
+        var volumeEl = $('volume');
+        if (!tempEl || !obsDensityEl || !volumeEl) return;
+
+        var temp = parseFloat(tempEl.value);
+        var observedDensity = parseFloat(obsDensityEl.value);
+        var volume = parseFloat(volumeEl.value);
+
+        var clearASTMOutputs = function() {
+            ['den15', 'vcf', 'netVolume', 'wcf', 'liter', 'mt', 'barrels'].forEach(function(id) {
+                var el = $(id);
+                if (el) el.value = '';
+            });
+        };
+
+        if (!Number.isFinite(temp) || !Number.isFinite(observedDensity)) {
+            clearASTMOutputs();
+            saveState();
+            return;
+        }
+
+        var deltaTemp = temp - 15;
+        var remainder = observedDensity % 1;
+
+        var obsD = Math.abs(remainder - 0.25) < 0.001
+            ? Math.floor(observedDensity)
+            : Math.abs(remainder - 0.75) < 0.001
+                ? Math.ceil(observedDensity)
+                : Math.round(observedDensity * 2) / 2;
+
+        var alphaGlass = 0.000023;
+        var betaGlass = 0.000000002;
+
+        var hydD = obsD * (
+            1 - alphaGlass * deltaTemp - betaGlass * deltaTemp * deltaTemp
+        );
+
+        var density15 = hydD;
+
+        for (var i = 0; i < 25; i++) {
+            var alpha = gA(density15);
+            var iterVCF = Math.exp(
+                -alpha * deltaTemp * (1 + 0.8 * alpha * deltaTemp)
+            );
+            density15 = hydD / iterVCF;
+        }
+
+        var roundedDensity15 = Math.round(density15 * 10) / 10;
+        var finalAlpha = gA(roundedDensity15);
+
+        var rawVCF = Math.exp(
+            -finalAlpha * deltaTemp * (1 + 0.8 * finalAlpha * deltaTemp)
+        );
+
+        if (!Number.isFinite(rawVCF) || rawVCF <= 0) {
+            clearASTMOutputs();
+            saveState();
+            return;
+        }
+
+        var vcf = parseFloat(rawVCF.toFixed(4));
+
+        if ($('den15')) $('den15').value = roundedDensity15.toFixed(1);
+        if ($('vcf')) $('vcf').value = vcf.toFixed(4);
+
+        if (Number.isFinite(volume)) {
+            var netV = volume * vcf;
+            var wcf = roundedDensity15 - 1.1;
+            var liter = netV * (wcf / 1000);
+
+            if ($('netVolume')) $('netVolume').value = netV.toFixed(2);
+            if ($('wcf')) $('wcf').value = wcf.toFixed(1);
+            if ($('liter')) $('liter').value = liter.toFixed(2);
+            if ($('mt')) $('mt').value = (liter / 1000).toFixed(3);
+            if ($('barrels')) $('barrels').value = (netV / 158.987459).toFixed(2);
+        } else {
+            ['netVolume', 'wcf', 'liter', 'mt', 'barrels'].forEach(function(id) {
+                var el = $(id);
+                if (el) el.value = '';
+            });
+        }
+
+        saveState();
+    }
+    window.calcASTM = calcASTM;
+
+    // Save state to localStorage & TinyDB
     function saveState() {
         try {
             var state = {
-                tank: $('tankSelector').value,
-                openingDip: $('openingDip').value,
-                closingDip: $('closingDip').value
+                tank: $('tankSelector') ? $('tankSelector').value : 'Tank 04',
+                openingDip: $('openingDip') ? $('openingDip').value : '',
+                closingDip: $('closingDip') ? $('closingDip').value : '',
+                startSeal: $('startSeal') ? $('startSeal').value : '',
+                endSeal: $('endSeal') ? $('endSeal').value : '',
+                temp: $('temp') ? $('temp').value : '',
+                obsDensity: $('obsDensity') ? $('obsDensity').value : '',
+                volume: $('volume') ? $('volume').value : '',
+                isManualVolume: isManualVolume
             };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {}
-    }
-
-    // Restore state from localStorage
-    function restoreState() {
-        try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
-            var state = JSON.parse(raw);
-            if (state) {
-                if (state.tank) $('tankSelector').value = state.tank;
-                if (state.openingDip !== undefined) $('openingDip').value = state.openingDip;
-                if (state.closingDip !== undefined) $('closingDip').value = state.closingDip;
+            var serialized = JSON.stringify(state);
+            localStorage.setItem(STORAGE_KEY, serialized);
+            var bridge = window.Android || window.TinyDB;
+            if (bridge && typeof bridge.storeValue === 'function') {
+                bridge.storeValue(STORAGE_KEY, serialized);
             }
         } catch (e) {}
     }
 
-    // Reset form
-    window.resetForm = function() {
-        $('tankSelector').value = 'Tank 04';
-        $('openingDip').value = '';
-        $('closingDip').value = '';
-        $('totalDrop').value = '';
-        $('openingLiter').value = '';
-        $('closingLiter').value = '';
-        $('totalDropLiter').value = '';
+    // Restore state from TinyDB or localStorage
+    function restoreState() {
         try {
-            localStorage.removeItem(STORAGE_KEY);
+            var raw = null;
+            var bridge = window.Android || window.TinyDB;
+            if (bridge && typeof bridge.getValue === 'function') {
+                raw = bridge.getValue(STORAGE_KEY, '');
+            }
+            if (!raw) {
+                raw = localStorage.getItem(STORAGE_KEY);
+            }
+            if (!raw) return;
+            var state = JSON.parse(raw);
+            if (state) {
+                if (state.tank && $('tankSelector')) $('tankSelector').value = state.tank;
+                if (state.openingDip !== undefined && $('openingDip')) $('openingDip').value = state.openingDip;
+                if (state.closingDip !== undefined && $('closingDip')) $('closingDip').value = state.closingDip;
+                if (state.startSeal !== undefined && $('startSeal')) $('startSeal').value = state.startSeal;
+                if (state.endSeal !== undefined && $('endSeal')) $('endSeal').value = state.endSeal;
+                if (state.temp !== undefined && $('temp')) $('temp').value = state.temp;
+                if (state.obsDensity !== undefined && $('obsDensity')) $('obsDensity').value = state.obsDensity;
+                if (state.volume !== undefined && $('volume')) $('volume').value = state.volume;
+                if (state.isManualVolume !== undefined) isManualVolume = Boolean(state.isManualVolume);
+            }
         } catch (e) {}
-    };
+    }
 
     // Event listeners for auto-calculation
     $('tankSelector').addEventListener('change', function() {
@@ -994,9 +1379,12 @@ button:active {
 
     // Initialize: restore state and load data
     restoreState();
+    calculateSeals();
     loadTankData(function(data) {
         if (data) {
             window.calculateAll();
+        } else {
+            calcASTM();
         }
     });
 
