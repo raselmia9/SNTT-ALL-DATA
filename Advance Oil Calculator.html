@@ -327,10 +327,11 @@ input,select{padding:5px 4px;font-size:10.5px;height:32px}
 'use strict';
 const SCRIPT_NAME = 'Advance Oil Calculator.html';
 const STORAGE_KEY = SCRIPT_NAME + '_state_v1';
-const LITER_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20FINAL.txt';
-const CORRECTION_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20CORRECTION.txt';
-const LITER_CACHE_KEY = 'sntt_all_tank_liter_cache_v1';
-const CORRECTION_CACHE_KEY = 'sntt_all_tank_correction_cache_v1';
+const TINYDB_TANK_TAG = 'SNTT All Tank';
+const LITER_CACHE_KEY = 'sntt_all_tank_liter_cache_v2';
+const LEGACY_CACHE_KEY = 'sntt_all_tank_liter_cache_v1';
+const FALLBACK_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20FINAL.txt';
+
 let literTableData = null;
 let correctionTableData = null;
 let literDataLoading = false;
@@ -346,6 +347,7 @@ let timerInterval = null;
 let clockInterval = null;
 let isRestoring = false;
 let calculationReady = false;
+
 function $(id) {
     return document.getElementById(id);
 }
@@ -363,103 +365,162 @@ function getTankCode() {
     const match = el.value.match(/^Tank\s+0?([1-5])$/i);
     return match ? 'T' + match[1] : null;
 }
+
+function parseTankData(raw) {
+    if (!raw || typeof raw !== 'string') return null;
+    try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed['SNTT ALL TANK']) {
+            return parsed;
+        }
+    } catch (e) {
+        console.warn('Tank data JSON parse error:', e);
+    }
+    return null;
+}
+
+function readTankDataFromTinyDB() {
+    try {
+        if (window.TinyDB && typeof window.TinyDB.getValue === 'function') {
+            const raw = window.TinyDB.getValue(TINYDB_TANK_TAG);
+            const parsed = parseTankData(raw);
+            if (parsed) {
+                try {
+                    localStorage.setItem(LITER_CACHE_KEY, raw);
+                } catch (e) {}
+                return parsed;
+            }
+        }
+    } catch (e) {
+        console.warn('TinyDB read failed:', e);
+    }
+    return null;
+}
+
 function readJsonCache(key) {
     try {
         const raw = localStorage.getItem(key);
         if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object' && parsed['SNTT ALL TANK']) return parsed;
+        return parseTankData(raw);
     } catch (error) {
         console.warn('Could not read data cache:', error);
     }
     return null;
 }
-async function fetchTankData(url, cacheKey) {
-    try {
-        const response = await fetch(url, { cache: 'no-cache' });
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
-        if (!data || !data['SNTT ALL TANK']) throw new Error('Unexpected tank data format');
-        try {
-            localStorage.setItem(cacheKey, JSON.stringify(data));
-        } catch (error) {
-            console.warn('Could not save data cache:', error);
-        }
-        return data;
-    } catch (error) {
-        console.warn('Remote tank data fetch failed:', error);
-        const cached = readJsonCache(cacheKey);
-        if (cached) return cached;
-        throw error;
-    }
-}
+
 async function loadTankData() {
     const status = $('literDataStatus');
-    literTableData = readJsonCache(LITER_CACHE_KEY);
-    correctionTableData = readJsonCache(CORRECTION_CACHE_KEY);
-    if (literTableData && correctionTableData) {
-        status.textContent = 'ক্যাশ করা লিটার ডেটা ব্যবহার হচ্ছে';
+
+    // 1. First priority: Direct offline read from TinyDB
+    let data = readTankDataFromTinyDB();
+    if (data) {
+        literTableData = data;
+        correctionTableData = (data['SNTT ALL TANK'] && data['SNTT ALL TANK']['CORRECTION']) ? data : null;
+        if (status) status.textContent = 'TinyDB থেকে অফলাইন লিটার ডেটা লোড হয়েছে';
+        updateLiterValues();
+        return;
+    }
+
+    // 2. Second priority: Local storage cache (offline fallback)
+    data = readJsonCache(LITER_CACHE_KEY) || readJsonCache(LEGACY_CACHE_KEY);
+    if (data) {
+        literTableData = data;
+        correctionTableData = (data['SNTT ALL TANK'] && data['SNTT ALL TANK']['CORRECTION']) ? data : null;
+        if (status) status.textContent = 'ক্যাশ করা অফলাইন লিটার ডেটা ব্যবহার হচ্ছে';
         updateLiterValues();
     } else {
-        status.textContent = 'লিটার ডেটা লোড হচ্ছে...';
+        if (status) status.textContent = 'লিটার ডেটা লোড হচ্ছে...';
     }
+
+    // 3. Third priority: Background fallback from repository if online
     if (literDataLoading) return;
     literDataLoading = true;
     try {
-        const results = await Promise.all([
-            fetchTankData(LITER_DATA_URL, LITER_CACHE_KEY),
-            fetchTankData(CORRECTION_DATA_URL, CORRECTION_CACHE_KEY)
-        ]);
-        literTableData = results[0];
-        correctionTableData = results[1];
-        status.textContent = 'লিটার ডেটা আপডেট হয়েছে';
-        updateLiterValues();
-    } catch (error) {
-        if (literTableData && correctionTableData) {
-            status.textContent = 'অফলাইন: ক্যাশ করা ডেটা ব্যবহার হচ্ছে';
-            updateLiterValues();
-        } else {
-            status.textContent = 'লিটার ডেটা পাওয়া যায়নি — ইন্টারনেট সংযোগ পরীক্ষা করুন';
-            clearLiterValues();
+        const response = await fetch(FALLBACK_DATA_URL, { cache: 'no-cache' });
+        if (response.ok) {
+            const remoteData = await response.json();
+            if (remoteData && remoteData['SNTT ALL TANK']) {
+                literTableData = remoteData;
+                correctionTableData = (remoteData['SNTT ALL TANK'] && remoteData['SNTT ALL TANK']['CORRECTION']) ? remoteData : null;
+                try {
+                    localStorage.setItem(LITER_CACHE_KEY, JSON.stringify(remoteData));
+                } catch (e) {}
+                if (status) status.textContent = 'লিটার ডেটা আপডেট হয়েছে';
+                updateLiterValues();
+                return;
+            }
         }
+    } catch (error) {
+        console.warn('Fallback fetch failed:', error);
     } finally {
         literDataLoading = false;
     }
+
+    if (!literTableData) {
+        if (status) status.textContent = 'লিটার ডেটা পাওয়া যায়নি — হোম স্ক্রিন থেকে ডাউনলোড দিন';
+        clearLiterValues();
+    }
 }
+
 function getLitersForDip(dipValue) {
     const tankCode = getTankCode();
-    if (!tankCode || !literTableData || !correctionTableData) return null;
+    if (!tankCode || !literTableData) return null;
     if (dipValue === '' || dipValue === null || dipValue === undefined) return null;
     const dip = Number(dipValue);
     if (!Number.isFinite(dip) || dip < 0) return null;
+
     const wholeDip = Math.floor(dip + 1e-9);
     const baseDip = Math.floor(wholeDip / 10) * 10;
     const correctionDigit = wholeDip - baseDip;
-    const tankLiterData = literTableData['SNTT ALL TANK'][tankCode];
-    const tankCorrectionData = correctionTableData['SNTT ALL TANK'][tankCode];
-    if (!tankLiterData || !tankCorrectionData) return null;
+
+    const tankData = literTableData['SNTT ALL TANK'] ? literTableData['SNTT ALL TANK'][tankCode] : null;
+    if (!tankData) return null;
+
     const baseKey = tankCode + '=' + baseDip;
-    if (!Object.prototype.hasOwnProperty.call(tankLiterData, baseKey)) return null;
-    const baseLiters = Number(tankLiterData[baseKey]);
+    if (!Object.prototype.hasOwnProperty.call(tankData, baseKey)) return null;
+    const baseLiters = Number(tankData[baseKey]);
     if (!Number.isFinite(baseLiters)) return null;
+
     let correctionLiters = 0;
     if (correctionDigit > 0) {
         const correctionKey = tankCode + '=C' + correctionDigit;
-        if (!Object.prototype.hasOwnProperty.call(tankCorrectionData, correctionKey)) return null;
-        correctionLiters = Number(tankCorrectionData[correctionKey]);
+        // 1. Direct check in merged tank data
+        if (Object.prototype.hasOwnProperty.call(tankData, correctionKey)) {
+            correctionLiters = Number(tankData[correctionKey]);
+        }
+        // 2. Check CORRECTION block inside SNTT ALL TANK
+        else if (literTableData['SNTT ALL TANK']['CORRECTION'] &&
+                 literTableData['SNTT ALL TANK']['CORRECTION'][tankCode] &&
+                 Object.prototype.hasOwnProperty.call(literTableData['SNTT ALL TANK']['CORRECTION'][tankCode], correctionKey)) {
+            correctionLiters = Number(literTableData['SNTT ALL TANK']['CORRECTION'][tankCode][correctionKey]);
+        }
+        // 3. Check legacy correctionTableData
+        else if (correctionTableData &&
+                 correctionTableData['SNTT ALL TANK'] &&
+                 correctionTableData['SNTT ALL TANK'][tankCode] &&
+                 Object.prototype.hasOwnProperty.call(correctionTableData['SNTT ALL TANK'][tankCode], correctionKey)) {
+            correctionLiters = Number(correctionTableData['SNTT ALL TANK'][tankCode][correctionKey]);
+        }
+        else {
+            return null;
+        }
+
         if (!Number.isFinite(correctionLiters)) return null;
     }
     return baseLiters + correctionLiters;
 }
+
 function formatLiters(value) {
     if (!Number.isFinite(value)) return '--';
     return String(Math.round(value));
 }
+
 function formatNumberWithoutExtraZeros(value, maxDecimals) {
     if (maxDecimals === undefined) maxDecimals = 2;
     if (!Number.isFinite(value)) return '';
     return value.toFixed(maxDecimals).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
 }
+
 function clearLiterValues() {
     safeSetValue('openingLiter', '--');
     safeSetValue('closingLiter', '--');
@@ -469,13 +530,14 @@ function clearLiterValues() {
         updateLiterProgress();
     }
 }
+
 function updateLiterValues() {
     const openingInput = $('openingDip');
     const closingInput = $('closingDip');
     const openingOutput = $('openingLiter');
     const closingOutput = $('closingLiter');
     const differenceOutput = $('differenceLiter');
-    if (!literTableData || !correctionTableData) {
+    if (!literTableData) {
         openingOutput.value = 'Loading...';
         closingOutput.value = 'Loading...';
         differenceOutput.value = 'Loading...';
