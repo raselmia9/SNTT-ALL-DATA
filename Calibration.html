@@ -1203,9 +1203,7 @@ function showScreenshotModal(dataUrl, fileName, canvas) {
     if (bridge && typeof bridge.setModalOpen === 'function') {
         try { bridge.setModalOpen(true); } catch(e) {}
     }
-    try {
-        window.history.pushState({ screenshotModal: true }, '');
-    } catch(e) {}
+    // Android hardware back is handled directly via bridge and evaluateJavascript
 
     var dlBtn = overlay.querySelector('#screenshotDownloadBtn');
     if (dlBtn) {
@@ -1224,7 +1222,12 @@ function showScreenshotModal(dataUrl, fileName, canvas) {
 
 window.closeScreenshotModal = function() {
     var overlay = gVal('screenshotModalOverlay');
-    if (overlay) overlay.style.display = 'none';
+    if (overlay) {
+        overlay.style.display = 'none';
+        if (overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    }
 
     var bridge = window.Android || window.TinyDB;
     if (bridge && typeof bridge.setModalOpen === 'function') {
