@@ -263,53 +263,6 @@ button:active {
 }
 
 
-/* 3D Intertek seal card */
-.seal-card {
-    width: 100%;
-    min-width: 0;
-    padding: 10px 8px 12px;
-    margin: 12px 0 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: linear-gradient(
-        145deg,
-        rgba(255, 255, 255, 0.15),
-        rgba(255, 255, 255, 0.05) 55%,
-        rgba(15, 23, 42, 0.5)
-    );
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-    box-sizing: border-box;
-}
-
-.seal-title {
-    text-align: center;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 0.8px;
-    padding: 7px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    background: linear-gradient(145deg, #3b82f6, #1d4ed8);
-    box-shadow: 0 3px 0 #1e3a8a, 0 5px 8px rgba(0, 0, 0, 0.25);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-.seal-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    align-items: center;
-}
-
-.seal-grid .input-group {
-    min-width: 0;
-    margin-top: 6px;
-}
-
 /* ASTM title banner */
 .astm-title {
     position: relative;
@@ -595,42 +548,6 @@ button:active {
         </div>
     </div>
 
-    <!-- INTERTEK SEAL CARD -->
-    <div class="seal-card">
-        <div class="seal-title">INTERTEK SEAL</div>
-        <div class="seal-grid">
-            <div class="input-group">
-                <span class="floating-label">Start Seal Number</span>
-                <input
-                    type="number"
-                    id="startSeal"
-                    class="input-field"
-                    inputmode="numeric"
-                    step="1"
-                    placeholder="0"
-                    oninput="calculateSeals()">
-            </div>
-            <div class="input-group">
-                <span class="floating-label">End Seal Number</span>
-                <input
-                    type="number"
-                    id="endSeal"
-                    class="input-field"
-                    inputmode="numeric"
-                    step="1"
-                    placeholder="0"
-                    oninput="calculateSeals()">
-            </div>
-            <div class="input-group">
-                <span class="floating-label">Total Seal</span>
-                <input
-                    type="text"
-                    id="totalSeal"
-                    class="output-field"
-                    readonly
-                    placeholder="0">
-            </div>
-        </div>
     </div>
 
     <!-- ASTM 53B / 54B -->
@@ -951,36 +868,6 @@ button:active {
         saveState();
     };
 
-    // Calculate Intertek Seals (End - Start + 1)
-    function calculateSeals() {
-        var startEl = $('startSeal');
-        var endEl = $('endSeal');
-        var totalEl = $('totalSeal');
-        if (!startEl || !endEl || !totalEl) return;
-
-        var start = startEl.value.trim();
-        var end = endEl.value.trim();
-
-        if (start === '' || end === '') {
-            totalEl.value = '';
-            saveState();
-            return;
-        }
-
-        var startNo = Number(start);
-        var endNo = Number(end);
-
-        if (!Number.isFinite(startNo) || !Number.isFinite(endNo) || endNo < startNo) {
-            totalEl.value = '';
-            saveState();
-            return;
-        }
-
-        totalEl.value = (endNo - startNo + 1);
-        saveState();
-    }
-    window.calculateSeals = calculateSeals;
-
     // Manual volume override
     window.onManualVolumeChange = function() {
         isManualVolume = true;
@@ -1083,8 +970,6 @@ button:active {
                 tank: $('tankSelector') ? $('tankSelector').value : 'Tank 04',
                 openingDip: $('openingDip') ? $('openingDip').value : '',
                 closingDip: $('closingDip') ? $('closingDip').value : '',
-                startSeal: $('startSeal') ? $('startSeal').value : '',
-                endSeal: $('endSeal') ? $('endSeal').value : '',
                 temp: $('temp') ? $('temp').value : '',
                 obsDensity: $('obsDensity') ? $('obsDensity').value : '',
                 volume: $('volume') ? $('volume').value : '',
@@ -1096,8 +981,11 @@ button:active {
             if (bridge && typeof bridge.storeValue === 'function') {
                 bridge.storeValue(STORAGE_KEY, serialized);
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn('saveState note:', e);
+        }
     }
+    window.saveState = saveState;
 
     // Restore state from TinyDB or localStorage
     function restoreState() {
@@ -1116,28 +1004,36 @@ button:active {
                 if (state.tank && $('tankSelector')) $('tankSelector').value = state.tank;
                 if (state.openingDip !== undefined && $('openingDip')) $('openingDip').value = state.openingDip;
                 if (state.closingDip !== undefined && $('closingDip')) $('closingDip').value = state.closingDip;
-                if (state.startSeal !== undefined && $('startSeal')) $('startSeal').value = state.startSeal;
-                if (state.endSeal !== undefined && $('endSeal')) $('endSeal').value = state.endSeal;
                 if (state.temp !== undefined && $('temp')) $('temp').value = state.temp;
                 if (state.obsDensity !== undefined && $('obsDensity')) $('obsDensity').value = state.obsDensity;
                 if (state.volume !== undefined && $('volume')) $('volume').value = state.volume;
                 if (state.isManualVolume !== undefined) isManualVolume = Boolean(state.isManualVolume);
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn('restoreState note:', e);
+        }
     }
 
-    // Event listeners for auto-calculation
-    $('tankSelector').addEventListener('change', function() {
-        window.calculateAll();
-    });
-    $('openingDip').addEventListener('input', function() {
-        window.calculateAll();
-    });
-    $('closingDip').addEventListener('input', function() {
-        window.calculateAll();
+    // Event listeners for auto-calculation & instantaneous localStorage save on every keystroke
+    var allInputIds = ['tankSelector', 'openingDip', 'closingDip', 'temp', 'obsDensity', 'volume'];
+    allInputIds.forEach(function(id) {
+        var el = $(id);
+        if (!el) return;
+        var handler = function() {
+            if (id === 'tankSelector' || id === 'openingDip' || id === 'closingDip') {
+                window.calculateAll();
+            } else if (id === 'volume') {
+                window.onManualVolumeChange();
+            } else {
+                window.calcASTM();
+            }
+            saveState();
+        };
+        el.addEventListener('input', handler);
+        el.addEventListener('change', handler);
     });
 
-    // Screenshot feature with html2canvas and native Android bridge
+    // Screenshot feature with html2canvas, crystal-clear text colors, and native Android back-button popup support
     window.takeScreenshot = function() {
         var btn = $('screenshotBtn');
         var screenshotRow = $('screenshotRow');
@@ -1181,7 +1077,7 @@ button:active {
                     scale: window.devicePixelRatio && window.devicePixelRatio > 1 ? Math.min(window.devicePixelRatio, 2.5) : 2,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#050b14',
+                    backgroundColor: '#0b1324',
                     logging: false,
                     scrollX: 0,
                     scrollY: 0,
@@ -1192,11 +1088,36 @@ button:active {
                             c.style.boxShadow = 'none';
                             c.style.outline = 'none';
                             c.style.borderRadius = '0';
+                            c.style.backgroundColor = '#0b1324';
+                            c.style.color = '#ffffff';
                         }
                         var sRow = clonedDoc.getElementById('screenshotRow');
                         if (sRow) sRow.style.display = 'none';
 
-                        // Convert all input and select elements to styled div blocks so text never squishes or clips
+                        // Ensure all headings, labels, floating-labels, clocks and text have explicit bright contrast colors
+                        var allLabels = clonedDoc.querySelectorAll('label, .floating-label');
+                        for (var l = 0; l < allLabels.length; l++) {
+                            allLabels[l].style.color = '#38bdf8';
+                            if (allLabels[l].classList.contains('floating-label')) {
+                                allLabels[l].style.backgroundColor = '#0b1324';
+                                allLabels[l].style.borderColor = 'rgba(56, 189, 248, 0.4)';
+                            }
+                        }
+                        var titles = clonedDoc.querySelectorAll('h2, .app-header h2, .astm-title');
+                        for (var t = 0; t < titles.length; t++) {
+                            titles[t].style.color = '#ffffff';
+                        }
+                        var clockEl = clonedDoc.getElementById('headerClock');
+                        if (clockEl) clockEl.style.color = '#facc15';
+
+                        var sig = clonedDoc.querySelector('.app-signature');
+                        if (sig) {
+                            sig.style.color = '#94a3b8';
+                            var sigSpan = sig.querySelector('span');
+                            if (sigSpan) sigSpan.style.color = '#38bdf8';
+                        }
+
+                        // Convert all input and select elements to styled div blocks with solid backgrounds and crystal-clear text colors!
                         try {
                             var clonedInputs = clonedDoc.querySelectorAll('input, select');
                             var liveInputs = document.querySelectorAll('input, select');
@@ -1218,26 +1139,51 @@ button:active {
                                     text = (liveEl ? liveEl.value : el.value) || '';
                                 }
 
+                                var isOutput = el.classList.contains('output-field') || el.hasAttribute('readonly');
+                                var id = el.id || '';
+
                                 var div = clonedDoc.createElement('div');
                                 div.textContent = text;
                                 div.style.display = 'flex';
                                 div.style.alignItems = 'center';
-                                div.style.justifyContent = (computed && computed.textAlign === 'center') ? 'center' : 'flex-start';
+                                div.style.justifyContent = 'center';
                                 div.style.boxSizing = 'border-box';
                                 div.style.width = '100%';
                                 div.style.height = (computed ? computed.height : '38px');
-                                div.style.padding = (computed ? computed.padding : '6px 8px');
-                                div.style.background = (computed ? computed.backgroundColor : '#020617');
-                                div.style.border = (computed ? computed.border : '1.5px solid rgba(56,189,248,0.3)');
-                                div.style.borderRadius = (computed ? computed.borderRadius : '6px');
-                                div.style.color = (computed ? computed.color : '#ffffff');
-                                div.style.fontFamily = (computed ? computed.fontFamily : 'inherit');
-                                div.style.fontSize = (computed ? computed.fontSize : '12px');
-                                div.style.fontWeight = (computed ? computed.fontWeight : '800');
+                                div.style.padding = '6px 8px';
+                                div.style.borderRadius = '7px';
+                                div.style.fontFamily = 'Arial, sans-serif';
+                                div.style.fontSize = '12px';
+                                div.style.fontWeight = '800';
                                 div.style.overflow = 'hidden';
                                 div.style.whiteSpace = 'nowrap';
                                 div.style.textOverflow = 'ellipsis';
                                 div.style.lineHeight = '1';
+
+                                // Guaranteed sharp, high-contrast colors preventing any black or invisible text
+                                if (id === 'totalDrop' || id === 'totalDropLiter') {
+                                    div.style.backgroundColor = '#022c22';
+                                    div.style.color = '#34d399';
+                                    div.style.border = '1.5px solid #34d399';
+                                } else if (id === 'openingLiter' || id === 'closingLiter') {
+                                    div.style.backgroundColor = '#082f49';
+                                    div.style.color = '#7dd3fc';
+                                    div.style.border = '1.5px solid #38bdf8';
+                                } else if (isOutput) {
+                                    div.style.backgroundColor = '#d1fae5';
+                                    div.style.backgroundImage = 'linear-gradient(145deg, #d1fae5, #a7f3d0)';
+                                    div.style.color = '#064e3b';
+                                    div.style.border = '1.5px solid #6ee7b7';
+                                } else if (el.classList.contains('input-field')) {
+                                    div.style.backgroundColor = '#ffffff';
+                                    div.style.backgroundImage = 'linear-gradient(145deg, #ffffff, #e2e8f0)';
+                                    div.style.color = '#0f172a';
+                                    div.style.border = '1.5px solid #93c5fd';
+                                } else {
+                                    div.style.backgroundColor = '#020617';
+                                    div.style.color = '#ffffff';
+                                    div.style.border = '1.5px solid rgba(56, 189, 248, 0.4)';
+                                }
 
                                 if (el.parentNode) {
                                     el.parentNode.replaceChild(div, el);
@@ -1251,7 +1197,7 @@ button:active {
                     restoreStyles();
                     var dataUrl = canvas.toDataURL('image/png');
                     var dateStr = new Date().toISOString().slice(0, 10);
-                    var tankName = $('tankSelector').value.replace(/\s+/g, '_');
+                    var tankName = $('tankSelector') ? $('tankSelector').value.replace(/\s+/g, '_') : 'Tank';
                     var fileName = 'All_Tank_Calibration_' + tankName + '_' + dateStr + '.png';
                     showScreenshotModal(dataUrl, fileName, canvas);
                 }).catch(function(err) {
@@ -1293,6 +1239,15 @@ button:active {
             '</div>';
         overlay.style.display = 'flex';
 
+        // Notify Android bridge and push state so pressing Back closes this popup
+        var bridge = window.Android || window.TinyDB;
+        if (bridge && typeof bridge.setModalOpen === 'function') {
+            try { bridge.setModalOpen(true); } catch(e) {}
+        }
+        try {
+            window.history.pushState({ screenshotModal: true }, '');
+        } catch(e) {}
+
         var dlBtn = overlay.querySelector('#screenshotDownloadBtn');
         if (dlBtn) {
             dlBtn.onclick = function() {
@@ -1311,7 +1266,20 @@ button:active {
     window.closeScreenshotModal = function() {
         var overlay = $('screenshotModalOverlay');
         if (overlay) overlay.style.display = 'none';
+
+        var bridge = window.Android || window.TinyDB;
+        if (bridge && typeof bridge.setModalOpen === 'function') {
+            try { bridge.setModalOpen(false); } catch(e) {}
+        }
     };
+
+    // Close modal on browser back / popstate
+    window.addEventListener('popstate', function(e) {
+        var overlay = $('screenshotModalOverlay');
+        if (overlay && overlay.style.display !== 'none') {
+            closeScreenshotModal();
+        }
+    });
 
     function getScreenshotBase64(dataUrl) {
         return String(dataUrl || '').replace(/^data:image\/png;base64,/, '');
@@ -1379,8 +1347,7 @@ button:active {
 
     // Initialize: restore state and load data
     restoreState();
-    calculateSeals();
-    loadTankData(function(data) {
+        loadTankData(function(data) {
         if (data) {
             window.calculateAll();
         } else {
