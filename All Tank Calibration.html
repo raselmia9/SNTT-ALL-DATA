@@ -488,8 +488,7 @@ button:active {
     var SCRIPT_NAME = 'All Tank Calibration.html';
     var STORAGE_KEY = 'All Tank Calibration.html_state_v1';
     var TINYDB_TANK_TAG = 'SNTT All Tank';
-    var FALLBACK_CACHE_KEY = 'sntt_all_tank_final_cache';
-    var FALLBACK_DATA_URL = 'https://raw.githubusercontent.com/raselmia9/SNTT-ALL-DATA/refs/heads/main/SNTT%20ALL%20TANK%20FINAL.txt';
+    var OFFLINE_CACHE_KEY = 'sntt_all_tank_final_cache';
 
     var literTableData = null;
 
@@ -554,27 +553,51 @@ button:active {
         return null;
     }
 
-    // Load tank calibration data
+    // Toast notification helper (Android bridge + web toast)
+    function showToast(msg) {
+        var bridge = window.Android || window.TinyDB;
+        if (bridge && typeof bridge.showToast === 'function') {
+            try {
+                bridge.showToast(msg);
+                return;
+            } catch (e) {}
+        }
+        var toast = $('webToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'webToast';
+            toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#f8fafc;padding:10px 18px;border-radius:24px;font-size:12px;font-weight:600;z-index:99999;box-shadow:0 6px 18px rgba(0,0,0,0.35);text-align:center;max-width:90%;transition:opacity 0.25s;pointer-events:none;';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(function() {
+            toast.style.opacity = '0';
+        }, 3200);
+    }
+
+    // Load tank calibration data strictly offline (from TinyDB or local cache)
     function loadTankData(callback) {
         if (literTableData) {
             if (callback) callback(literTableData);
             return;
         }
 
-        // 1. TinyDB
+        // 1. Direct read from TinyDB
         var fromTinyDB = readTankDataFromTinyDB();
         if (fromTinyDB) {
             literTableData = fromTinyDB;
             try {
-                localStorage.setItem(FALLBACK_CACHE_KEY, JSON.stringify(fromTinyDB));
+                localStorage.setItem(OFFLINE_CACHE_KEY, JSON.stringify(fromTinyDB));
             } catch (e) {}
             if (callback) callback(literTableData);
             return;
         }
 
-        // 2. LocalStorage cache
+        // 2. Offline LocalStorage cache (if previously loaded)
         try {
-            var cached = localStorage.getItem(FALLBACK_CACHE_KEY);
+            var cached = localStorage.getItem(OFFLINE_CACHE_KEY);
             if (cached) {
                 var parsedCache = parseTankData(cached);
                 if (parsedCache) {
@@ -585,26 +608,7 @@ button:active {
             }
         } catch (e) {}
 
-        // 3. Fallback Remote fetch
-        fetch(FALLBACK_DATA_URL)
-            .then(function(res) {
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.text();
-            })
-            .then(function(text) {
-                var parsed = parseTankData(text);
-                if (parsed) {
-                    literTableData = parsed;
-                    try {
-                        localStorage.setItem(FALLBACK_CACHE_KEY, JSON.stringify(parsed));
-                    } catch (e) {}
-                    if (callback) callback(literTableData);
-                }
-            })
-            .catch(function(err) {
-                console.warn('Remote tank data fetch error:', err);
-                if (callback) callback(null);
-            });
+        if (callback) callback(null);
     }
 
     // Get liters for a given dip (with 1-9 mm correction)
@@ -641,6 +645,17 @@ button:active {
 
     // Calculate all values
     window.calculateAll = function() {
+        if (!literTableData) {
+            loadTankData();
+        }
+
+        var openDipVal = $('openingDip').value.trim();
+        var closeDipVal = $('closingDip').value.trim();
+
+        if ((openDipVal !== '' || closeDipVal !== '') && !literTableData) {
+            showToast('ট্যাংক ক্যালিব্রেশন ডাটা পাওয়া যায়নি! অ্যাপের Home থেকে "SNTT All Tank" ডাউনলোড করুন।');
+        }
+
         var tankCode = getTankCode();
         var openDipVal = $('openingDip').value.trim();
         var closeDipVal = $('closingDip').value.trim();
