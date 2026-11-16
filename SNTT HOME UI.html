@@ -654,6 +654,18 @@ const shipTrack=document.getElementById("shipTrack");
 const shipDots=document.getElementById("shipDots");
 
 function sendShip(s){
+ if(s && (s[0] === "SNTT All Tank" || s[0] === "All Tank Calibration.html")){
+  try{
+   if(window.Android&&typeof window.Android.openTool==="function"){
+    window.Android.openTool("All Tank Calibration.html");
+    return;
+   }
+   if(window.TinyDB&&typeof window.TinyDB.openTool==="function"){
+    window.TinyDB.openTool("All Tank Calibration.html");
+    return;
+   }
+  }catch(e){}
+ }
  const data=JSON.stringify({"Ship Name":s[0],"Tank C":s[1],"C Link":s[2]});
  window.lastSelectedShip=data;
  try{
