@@ -938,7 +938,9 @@ function buildMatchCard(match) {
         dateStr = dateObj.toLocaleDateString("en-GB");
     }
 
-    card.onclick = function() { sendData(match.streamLink); };
+    const liveTeams = [match.team1Title, match.team2Title].filter(Boolean).join(" vs ");
+    const liveTitle = [match.eventTitle, liveTeams].filter(Boolean).join(" - ");
+    card.onclick = function() { sendMedia(liveTitle, "", match.streamLink); };
     card.innerHTML = `
         ${match.isHot ? '<div class="hot-badge">HOT 🔥</div>' : ""}
         <div class="league-header" title="${match.eventTitle}">${match.eventTitle}</div>         
@@ -1208,7 +1210,7 @@ function renderLfeCategories() {
 
     const card = document.createElement('div');
     card.className = 'card';
-    card.onclick = () => sendData(ch.url);
+    card.onclick = () => sendMedia(ch.name || "", "", ch.url);
     card.innerHTML = `
         <div class="lfe-logo-box">
             <div style="position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
@@ -1413,6 +1415,21 @@ function sendData(url) {
     if (window.AppInventor) window.AppInventor.setWebViewString(url); 
     else if (window.CustomWebView) window.CustomWebView.setWebViewString(url); 
     else window.WebViewString = url; 
+}
+
+// Live events and channels: send the title with the link so the player can show it.
+// Multi-link strings go in "links"; a single link goes in "videoUrl". Playlist> stays plain.
+function sendMedia(title, thumbnail, url) {
+    const raw = String(url || "").trim();
+    if (!raw) return;
+    if (raw.indexOf("Playlist>") !== -1) { sendData(raw); return; }
+    const payload = { title: String(title || "").trim(), thumbnail: String(thumbnail || "").trim() };
+    if (raw.indexOf(",,") !== -1) payload.links = raw;
+    else payload.videoUrl = raw;
+    const output = JSON.stringify(payload);
+    if (window.AppInventor) window.AppInventor.setWebViewString(output);
+    else if (window.CustomWebView) window.CustomWebView.setWebViewString(output);
+    else window.WebViewString = output;
 }
 </script>
 
