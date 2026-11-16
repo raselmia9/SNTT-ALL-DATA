@@ -32,82 +32,7 @@ body{
     display:flex;
     justify-content:center;
     align-items:flex-start;
-    background:linear-gradient(135deg,#101447,#254b86,#087eaa,#35216b);
-    background-size:400% 400%;
-    animation:gradientBG 16s ease infinite;
-}
-
-@keyframes gradientBG{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-
-/* Animated 3D background bubbles */
-.bubbles{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    pointer-events:none;
-    z-index:-1;
-}
-
-.bubble{
-    position:absolute;
-    bottom:-100px;
-    border-radius:50%;
-    border:1px solid rgba(255,255,255,.45);
-    background:radial-gradient(
-        circle at 30% 25%,
-        rgba(255,255,255,.65),
-        rgba(255,255,255,.08) 42%,
-        rgba(80,210,255,.12) 72%,
-        rgba(255,255,255,.02)
-    );
-    box-shadow:
-        inset -4px -5px 12px rgba(255,255,255,.08),
-        inset 3px 3px 9px rgba(255,255,255,.22),
-        0 0 12px rgba(120,220,255,.12);
-    animation:rise linear infinite;
-}
-
-.bubble:nth-child(1){
-    left:5%;width:34px;height:34px;animation-duration:15s;
-}
-.bubble:nth-child(2){
-    left:19%;width:18px;height:18px;animation-duration:11s;animation-delay:2s;
-}
-.bubble:nth-child(3){
-    left:34%;width:48px;height:48px;animation-duration:19s;animation-delay:4s;
-}
-.bubble:nth-child(4){
-    left:53%;width:24px;height:24px;animation-duration:13s;animation-delay:1s;
-}
-.bubble:nth-child(5){
-    left:70%;width:40px;height:40px;animation-duration:17s;animation-delay:5s;
-}
-.bubble:nth-child(6){
-    left:86%;width:22px;height:22px;animation-duration:12s;animation-delay:3s;
-}
-.bubble:nth-child(7){
-    left:44%;width:15px;height:15px;animation-duration:10s;animation-delay:6s;
-}
-.bubble:nth-child(8){
-    left:94%;width:52px;height:52px;animation-duration:21s;animation-delay:2s;
-}
-
-@keyframes rise{
-    0%{
-        transform:translate3d(0,0,0) scale(.8);
-        opacity:0;
-    }
-    10%{opacity:.65}
-    50%{transform:translate3d(18px,-50vh,0) scale(1)}
-    90%{opacity:.45}
-    100%{
-        transform:translate3d(-15px,-115vh,0) scale(1.15);
-        opacity:0;
-    }
+    background:linear-gradient(135deg,#0a0f24,#111e42 50%,#0a2540);
 }
 
 .container{
@@ -117,7 +42,8 @@ body{
     max-width:480px;
     min-width:0;
     padding:3px;
-    padding-bottom:250px;
+    padding-bottom:16px;
+    box-sizing:border-box;
 }
 
 /* 3D main title */
@@ -366,7 +292,7 @@ body{
 
 @media(prefers-reduced-motion:reduce){
     body{animation:none}
-    .bubble{animation-duration:30s}
+    
 }
 
 /* Screenshot button styles */
@@ -526,16 +452,7 @@ body{
 
 <body>
 
-<div class="bubbles" aria-hidden="true">
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-</div>
+
 
 <div class="container">
 
@@ -1043,17 +960,20 @@ window.takeScreenshot = function() {
     var origBoxShadow = container.style.boxShadow;
     var origOutline = container.style.outline;
     var origBorderRadius = container.style.borderRadius;
+    var origPaddingBottom = container.style.paddingBottom;
 
     container.style.border = 'none';
     container.style.boxShadow = 'none';
     container.style.outline = 'none';
     container.style.borderRadius = '0';
+    container.style.paddingBottom = '12px';
 
     var restoreStyles = function() {
         container.style.border = origBorder;
         container.style.boxShadow = origBoxShadow;
         container.style.outline = origOutline;
         container.style.borderRadius = origBorderRadius;
+        container.style.paddingBottom = origPaddingBottom;
         if (screenshotRow) screenshotRow.style.display = '';
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -1076,11 +996,16 @@ window.takeScreenshot = function() {
                         c.style.boxShadow = 'none';
                         c.style.outline = 'none';
                         c.style.borderRadius = '0';
+                        c.style.paddingBottom = '12px';
+                        c.style.marginBottom = '0';
                         c.style.backgroundColor = '#0c1938';
                         c.style.color = '#ffffff';
                     }
                     var sRow = clonedDoc.getElementById('screenshotRow');
-                    if (sRow) sRow.style.display = 'none';
+                    if (sRow) {
+                        sRow.style.display = 'none';
+                        if (sRow.parentNode) sRow.parentNode.removeChild(sRow);
+                    }
 
                     // Ensure labels and titles have sharp, explicit colors
                     var allLabels = clonedDoc.querySelectorAll('label, .floating-label');
