@@ -1398,6 +1398,10 @@ function showScreenshotModal(dataUrl, fileName, canvas) {
             if (e.target === overlay) closeScreenshotModal();
         };
     }
+    var bridge = window.Android || window.TinyDB;
+    if (bridge && typeof bridge.setModalOpen === 'function') {
+        try { bridge.setModalOpen(true); } catch(e) {}
+    }
     overlay.innerHTML = 
         '<div class="screenshot-modal">' +
             '<div class="screenshot-modal-header">' +
@@ -1432,7 +1436,16 @@ function showScreenshotModal(dataUrl, fileName, canvas) {
 
 function closeScreenshotModal() {
     var overlay = $('screenshotModalOverlay');
-    if (overlay) overlay.style.display = 'none';
+    if (overlay) {
+        overlay.style.display = 'none';
+        if (overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    }
+    var bridge = window.Android || window.TinyDB;
+    if (bridge && typeof bridge.setModalOpen === 'function') {
+        try { bridge.setModalOpen(false); } catch(e) {}
+    }
 }
 
 function getScreenshotBase64(dataUrl) {
