@@ -176,8 +176,10 @@
             div.className = 'card';
             div.innerHTML = `<img src="${ch.logo || 'https://via.placeholder.com/60'}"><div class="name">${ch.name}</div>`;
             div.onclick = () => {
-                if (window.AppInventor) window.AppInventor.setWebViewString(ch.url);
-                else if (window.CustomWebView) window.CustomWebView.setWebViewString(ch.url);
+                // Title is sent with the link so the app can show it on top of the video
+                const payload = JSON.stringify({ title: ch.name, videoUrl: ch.url });
+                if (window.AppInventor) window.AppInventor.setWebViewString(payload);
+                else if (window.CustomWebView) window.CustomWebView.setWebViewString(payload);
                 else alert("আউটপুট: " + ch.url);
             };
             main.appendChild(div);
