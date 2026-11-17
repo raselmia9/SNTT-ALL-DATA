@@ -86,7 +86,80 @@ input:focus{border-color:#38bdf8;box-shadow:0 0 0 3px #38bdf833,0 3px 0 #64748b}
   ids.forEach(id=>byId(id).addEventListener('input',calculate));
   function openModal(dataUrl){let old=document.getElementById('screenshotModalOverlay');if(old)old.remove();const overlay=document.createElement('div');overlay.id='screenshotModalOverlay';overlay.className='overlay';overlay.innerHTML='<div class="modal"><div class="modal-head"><h2>Screenshot preview</h2><button type="button" class="action secondary close">✕ Close</button></div><img class="preview" alt="ASTM calculator screenshot"><div class="modal-actions"><button type="button" class="download">Download</button><button type="button" class="share">Share</button></div></div>';overlay.querySelector('img').src=dataUrl;overlay.querySelector('.close').onclick=closeModal;overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal()});overlay.querySelector('.download').onclick=()=>{const b=bridge();if(b&&typeof b.saveImage==='function'){try{b.saveImage(dataUrl.replace(/^data:image\/png;base64,/,''),'ASTM_53B_54B.png');return}catch(e){}}const a=document.createElement('a');a.href=dataUrl;a.download='ASTM_53B_54B.png';a.click()};overlay.querySelector('.share').onclick=async()=>{try{const blob=await(await fetch(dataUrl)).blob();const file=new File([blob],'ASTM_53B_54B.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'ASTM 53B / 54B'});else overlay.querySelector('.download').click()}catch(e){overlay.querySelector('.download').click()}};document.body.appendChild(overlay);const b=bridge();if(b&&typeof b.setModalOpen==='function')try{b.setModalOpen(true)}catch(e){}}
   function closeModal(){const overlay=document.getElementById('screenshotModalOverlay');if(overlay)overlay.remove();const b=bridge();if(b&&typeof b.setModalOpen==='function')try{b.setModalOpen(false)}catch(e){}}
-  byId('screenshotBtn').addEventListener('click',async function(){const b=this;this.disabled=true;this.textContent='Creating screenshot…';try{const canvas=await html2canvas(byId('captureArea'),{scale:Math.min(window.devicePixelRatio||2,2.5),backgroundColor:'#0b1220',logging:false});openModal(canvas.toDataURL('image/png'))}catch(e){alert('Screenshot could not be created. Please try again.')}finally{b.disabled=false;b.textContent='📷 Screenshot'}});
+  byId('screenshotBtn').addEventListener('click', async function() {
+    const b = this;
+    this.disabled = true;
+    this.textContent = 'Creating screenshot…';
+    try {
+      const canvas = await html2canvas(byId('captureArea'), {
+        scale: Math.min(window.devicePixelRatio || 2, 2.5),
+        backgroundColor: '#090d16',
+        logging: false,
+        onclone: function(clonedDoc) {
+          // Hide action buttons from screenshot
+          const act = clonedDoc.querySelector('.actions');
+          if (act) {
+            act.style.display = 'none';
+            if (act.parentNode) act.parentNode.removeChild(act);
+          }
+          // True Visual Mirroring for inputs
+          try {
+            const clonedInputs = clonedDoc.querySelectorAll('input');
+            const liveInputs = document.querySelectorAll('input');
+            for (let i = 0; i < clonedInputs.length; i++) {
+              const el = clonedInputs[i];
+              const liveEl = (el.id ? document.getElementById(el.id) : null) || liveInputs[i];
+              if (!liveEl) continue;
+              const cs = window.getComputedStyle(liveEl);
+              const valText = (liveEl.value !== undefined ? liveEl.value : el.value) || '';
+
+              const div = clonedDoc.createElement('div');
+              div.className = liveEl.className;
+              div.textContent = valText;
+
+              div.style.display = 'flex';
+              div.style.alignItems = 'center';
+              div.style.justifyContent = 'center';
+              div.style.textAlign = cs.textAlign || 'center';
+              div.style.boxSizing = cs.boxSizing || 'border-box';
+              div.style.width = '100%';
+              div.style.height = cs.height;
+              div.style.minHeight = cs.minHeight;
+              div.style.padding = cs.padding;
+              div.style.margin = cs.margin;
+              div.style.border = cs.border;
+              div.style.borderRadius = cs.borderRadius;
+              div.style.background = cs.background;
+              div.style.backgroundColor = cs.backgroundColor;
+              div.style.backgroundImage = cs.backgroundImage;
+              div.style.boxShadow = cs.boxShadow;
+              div.style.color = cs.color;
+              div.style.fontFamily = cs.fontFamily;
+              div.style.fontSize = cs.fontSize;
+              div.style.fontWeight = cs.fontWeight;
+              div.style.lineHeight = '1';
+              div.style.letterSpacing = cs.letterSpacing;
+              div.style.overflow = 'hidden';
+              div.style.whiteSpace = 'nowrap';
+              div.style.textOverflow = 'ellipsis';
+
+              if (el.parentNode) {
+                el.parentNode.replaceChild(div, el);
+              }
+            }
+          } catch(err) {
+            console.warn('ASTM input clone transform warning:', err);
+          }
+        }
+      });
+      openModal(canvas.toDataURL('image/png'));
+    } catch(e) {
+      alert('Screenshot could not be created. Please try again.');
+    } finally {
+      b.disabled = false;
+      b.textContent = '📷 Screenshot';
+    }
+  });
   byId('clearBtn').addEventListener('click',()=>{ids.forEach(id=>byId(id).value='');try{localStorage.removeItem(storageKey)}catch(e){}calculate()});
   restore();calculate();
 })();
