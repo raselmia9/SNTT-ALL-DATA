@@ -278,7 +278,7 @@ body{
 
 @media(max-width:360px){
     body{padding:3px}
-    .container{padding:2px;padding-bottom:250px}
+    .container{padding:2px;padding-bottom:16px}
     .tank-grid,.grid-section{padding-left:5px;padding-right:5px}
     .tank-grid{gap:6px 4px}
     .grid-section{gap:6px}
@@ -956,24 +956,7 @@ window.takeScreenshot = function() {
 
     if (screenshotRow) screenshotRow.style.display = 'none';
 
-    var origBorder = container.style.border;
-    var origBoxShadow = container.style.boxShadow;
-    var origOutline = container.style.outline;
-    var origBorderRadius = container.style.borderRadius;
-    var origPaddingBottom = container.style.paddingBottom;
-
-    container.style.border = 'none';
-    container.style.boxShadow = 'none';
-    container.style.outline = 'none';
-    container.style.borderRadius = '0';
-    container.style.paddingBottom = '12px';
-
     var restoreStyles = function() {
-        container.style.border = origBorder;
-        container.style.boxShadow = origBoxShadow;
-        container.style.outline = origOutline;
-        container.style.borderRadius = origBorderRadius;
-        container.style.paddingBottom = origPaddingBottom;
         if (screenshotRow) screenshotRow.style.display = '';
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -985,90 +968,73 @@ window.takeScreenshot = function() {
                 scale: window.devicePixelRatio && window.devicePixelRatio > 1 ? Math.min(window.devicePixelRatio, 2.5) : 2,
                 useCORS: true,
                 allowTaint: true,
-                backgroundColor: '#0c1938',
+                backgroundColor: '#0a0f24',
                 logging: false,
                 scrollX: 0,
                 scrollY: 0,
                 onclone: function(clonedDoc) {
-                    var c = clonedDoc.querySelector('.container');
-                    if (c) {
-                        c.style.border = 'none';
-                        c.style.boxShadow = 'none';
-                        c.style.outline = 'none';
-                        c.style.borderRadius = '0';
-                        c.style.paddingBottom = '12px';
-                        c.style.marginBottom = '0';
-                        c.style.backgroundColor = '#0c1938';
-                        c.style.color = '#ffffff';
-                    }
                     var sRow = clonedDoc.getElementById('screenshotRow');
                     if (sRow) {
                         sRow.style.display = 'none';
                         if (sRow.parentNode) sRow.parentNode.removeChild(sRow);
                     }
-
-                    // Ensure labels and titles have sharp, explicit colors
-                    var allLabels = clonedDoc.querySelectorAll('label, .floating-label');
-                    for (var l = 0; l < allLabels.length; l++) {
-                        allLabels[l].style.color = '#38bdf8';
-                        if (allLabels[l].classList.contains('floating-label')) {
-                            allLabels[l].style.backgroundColor = '#0b1a38';
-                            allLabels[l].style.borderColor = 'rgba(255, 255, 255, 0.4)';
-                        }
-                    }
-                    var titles = clonedDoc.querySelectorAll('h2, .main-title, .astm-title, .seal-title');
-                    for (var ti = 0; ti < titles.length; ti++) {
-                        titles[ti].style.color = '#ffffff';
+                    var c = clonedDoc.querySelector('.container');
+                    if (c) {
+                        c.style.paddingBottom = '12px';
+                        c.style.marginBottom = '0';
                     }
 
-                    // Convert all inputs to styled divs to guarantee crystal clear text colors and prevent black text
+                    // True Visual Mirroring: preserve 100% original design and input styling
                     try {
-                        var clonedInputs = clonedDoc.querySelectorAll('input, select');
-                        var liveInputs = document.querySelectorAll('input, select');
+                        var clonedInputs = clonedDoc.querySelectorAll('input, select, textarea');
+                        var liveInputs = document.querySelectorAll('input, select, textarea');
                         for (var i = 0; i < clonedInputs.length; i++) {
                             var el = clonedInputs[i];
                             var liveEl = (el.id ? document.getElementById(el.id) : null) || liveInputs[i];
-                            var computed = (liveEl && window.getComputedStyle) ? window.getComputedStyle(liveEl) : null;
-                            var valText = (liveEl ? liveEl.value : el.value) || '';
+                            if (!liveEl) continue;
 
-                            var isOutput = el.classList.contains('output-field') || el.hasAttribute('readonly');
-                            var id = el.id || '';
+                            var cs = window.getComputedStyle(liveEl);
+                            var valText = '';
+                            if (el.tagName && el.tagName.toLowerCase() === 'select') {
+                                if (liveEl.selectedIndex >= 0 && liveEl.options && liveEl.options[liveEl.selectedIndex]) {
+                                    valText = liveEl.options[liveEl.selectedIndex].text;
+                                } else {
+                                    valText = el.value || '';
+                                }
+                            } else {
+                                valText = (liveEl.value !== undefined ? liveEl.value : el.value) || '';
+                            }
 
                             var div = clonedDoc.createElement('div');
+                            div.className = liveEl.className;
                             div.textContent = valText;
+
                             div.style.display = 'flex';
                             div.style.alignItems = 'center';
-                            div.style.justifyContent = 'center';
-                            div.style.boxSizing = 'border-box';
+                            div.style.justifyContent = (cs.textAlign === 'left' || cs.textAlign === 'start') ? 'flex-start' : 
+                                                       (cs.textAlign === 'right' || cs.textAlign === 'end') ? 'flex-end' : 'center';
+                            div.style.textAlign = cs.textAlign || 'center';
+                            div.style.boxSizing = cs.boxSizing || 'border-box';
                             div.style.width = '100%';
-                            div.style.height = (computed ? computed.height : '38px');
-                            div.style.padding = '6px 8px';
-                            div.style.borderRadius = '7px';
-                            div.style.fontFamily = 'Arial, sans-serif';
-                            div.style.fontSize = '12px';
-                            div.style.fontWeight = '800';
+                            div.style.height = cs.height;
+                            div.style.minHeight = cs.minHeight;
+                            div.style.padding = cs.padding;
+                            div.style.margin = cs.margin;
+                            div.style.border = cs.border;
+                            div.style.borderRadius = cs.borderRadius;
+                            div.style.background = cs.background;
+                            div.style.backgroundColor = cs.backgroundColor;
+                            div.style.backgroundImage = cs.backgroundImage;
+                            div.style.boxShadow = cs.boxShadow;
+                            div.style.color = cs.color;
+                            div.style.fontFamily = cs.fontFamily;
+                            div.style.fontSize = cs.fontSize;
+                            div.style.fontWeight = cs.fontWeight;
+                            div.style.lineHeight = '1';
+                            div.style.letterSpacing = cs.letterSpacing;
                             div.style.overflow = 'hidden';
                             div.style.whiteSpace = 'nowrap';
                             div.style.textOverflow = 'ellipsis';
-                            div.style.lineHeight = '1';
-
-                            if (id === 'total_dip' || id === 'total_liter') {
-                                div.style.backgroundColor = '#022c22';
-                                div.style.color = '#34d399';
-                                div.style.border = '1.5px solid #34d399';
-                            } else if (isOutput) {
-                                // Green output card style
-                                div.style.backgroundColor = '#d1fae5';
-                                div.style.backgroundImage = 'linear-gradient(145deg, #d1fae5, #a7f3d0)';
-                                div.style.color = '#064e3b';
-                                div.style.border = '1.5px solid #6ee7b7';
-                            } else {
-                                // Input field style
-                                div.style.backgroundColor = '#ffffff';
-                                div.style.backgroundImage = 'linear-gradient(145deg, #ffffff, #e2e8f0)';
-                                div.style.color = '#0f172a';
-                                div.style.border = '1.5px solid #93c5fd';
-                            }
 
                             if (el.parentNode) {
                                 el.parentNode.replaceChild(div, el);
