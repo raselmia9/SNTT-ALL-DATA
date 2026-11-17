@@ -559,13 +559,18 @@ const tools = [
   {
     name: "Advance Oil Calculator",
     label: "TOOL 01",
-    tag: "Advance Oil Calculator.html"
+    tag: "Advance Oil Calculator"
   },
   {
     name: "ASTM 53B / 54B",
     label: "TOOL 02",
-    tag: "ASTM 53B -54B.html"
-  }
+    tag: "ASTM 53B -54B"
+  },
+ {
+    name: "Dhaka Narayongonj Trian Schedule",
+    label: "TOOL 02",
+    tag: "Dhaka Narayongonj Trian Schedule"
+ }
 ];
 
 const toolView = document.getElementById("toolView");
@@ -662,11 +667,11 @@ function sendShip(s){
  if(s && (s[0] === "SNTT All Tank" || s[0] === "All Tank Calibration.html")){
   try{
    if(window.Android&&typeof window.Android.openTool==="function"){
-    window.Android.openTool("All Tank Calibration.html");
+    window.Android.openTool("All Tank Calibration");
     return;
    }
    if(window.TinyDB&&typeof window.TinyDB.openTool==="function"){
-    window.TinyDB.openTool("All Tank Calibration.html");
+    window.TinyDB.openTool("All Tank Calibration");
     return;
    }
   }catch(e){}
