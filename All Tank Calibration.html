@@ -1050,21 +1050,7 @@ button:active {
 
         if (screenshotRow) screenshotRow.style.display = 'none';
 
-        var origBorder = container.style.border;
-        var origBoxShadow = container.style.boxShadow;
-        var origOutline = container.style.outline;
-        var origBorderRadius = container.style.borderRadius;
-
-        container.style.border = 'none';
-        container.style.boxShadow = 'none';
-        container.style.outline = 'none';
-        container.style.borderRadius = '0';
-
         var restoreStyles = function() {
-            container.style.border = origBorder;
-            container.style.boxShadow = origBoxShadow;
-            container.style.outline = origOutline;
-            container.style.borderRadius = origBorderRadius;
             if (screenshotRow) screenshotRow.style.display = '';
             btn.innerHTML = originalText;
             btn.disabled = false;
@@ -1076,58 +1062,30 @@ button:active {
                     scale: window.devicePixelRatio && window.devicePixelRatio > 1 ? Math.min(window.devicePixelRatio, 2.5) : 2,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#0b1324',
+                    backgroundColor: '#090d16',
                     logging: false,
                     scrollX: 0,
                     scrollY: 0,
                     onclone: function(clonedDoc) {
-                        var c = clonedDoc.querySelector('.container');
-                        if (c) {
-                            c.style.border = 'none';
-                            c.style.boxShadow = 'none';
-                            c.style.outline = 'none';
-                            c.style.borderRadius = '0';
-                            c.style.backgroundColor = '#0b1324';
-                            c.style.color = '#ffffff';
-                        }
                         var sRow = clonedDoc.getElementById('screenshotRow');
-                        if (sRow) sRow.style.display = 'none';
-
-                        // Ensure all headings, labels, floating-labels, clocks and text have explicit bright contrast colors
-                        var allLabels = clonedDoc.querySelectorAll('label, .floating-label');
-                        for (var l = 0; l < allLabels.length; l++) {
-                            allLabels[l].style.color = '#38bdf8';
-                            if (allLabels[l].classList.contains('floating-label')) {
-                                allLabels[l].style.backgroundColor = '#0b1324';
-                                allLabels[l].style.borderColor = 'rgba(56, 189, 248, 0.4)';
-                            }
-                        }
-                        var titles = clonedDoc.querySelectorAll('h2, .app-header h2, .astm-title');
-                        for (var t = 0; t < titles.length; t++) {
-                            titles[t].style.color = '#ffffff';
-                        }
-                        var clockEl = clonedDoc.getElementById('headerClock');
-                        if (clockEl) clockEl.style.color = '#facc15';
-
-                        var sig = clonedDoc.querySelector('.app-signature');
-                        if (sig) {
-                            sig.style.color = '#94a3b8';
-                            var sigSpan = sig.querySelector('span');
-                            if (sigSpan) sigSpan.style.color = '#38bdf8';
+                        if (sRow) {
+                            sRow.style.display = 'none';
+                            if (sRow.parentNode) sRow.parentNode.removeChild(sRow);
                         }
 
-                        // Convert all input and select elements to styled div blocks with solid backgrounds and crystal-clear text colors!
+                        // True Visual Mirroring: preserve 100% original card, borders, shadows and input designs
                         try {
-                            var clonedInputs = clonedDoc.querySelectorAll('input, select');
-                            var liveInputs = document.querySelectorAll('input, select');
+                            var clonedInputs = clonedDoc.querySelectorAll('input, select, textarea');
+                            var liveInputs = document.querySelectorAll('input, select, textarea');
                             for (var i = 0; i < clonedInputs.length; i++) {
                                 var el = clonedInputs[i];
                                 var liveEl = (el.id ? document.getElementById(el.id) : null) || liveInputs[i];
-                                var computed = (liveEl && window.getComputedStyle) ? window.getComputedStyle(liveEl) : null;
-                                
+                                if (!liveEl) continue;
+
+                                var cs = window.getComputedStyle(liveEl);
                                 var text = '';
                                 if (el.tagName && el.tagName.toLowerCase() === 'select') {
-                                    if (liveEl && liveEl.selectedIndex >= 0 && liveEl.options && liveEl.options[liveEl.selectedIndex]) {
+                                    if (liveEl.selectedIndex >= 0 && liveEl.options && liveEl.options[liveEl.selectedIndex]) {
                                         text = liveEl.options[liveEl.selectedIndex].text;
                                     } else if (el.selectedIndex >= 0 && el.options && el.options[el.selectedIndex]) {
                                         text = el.options[el.selectedIndex].text;
@@ -1135,54 +1093,39 @@ button:active {
                                         text = el.value || '';
                                     }
                                 } else {
-                                    text = (liveEl ? liveEl.value : el.value) || '';
+                                    text = (liveEl.value !== undefined ? liveEl.value : el.value) || '';
                                 }
 
-                                var isOutput = el.classList.contains('output-field') || el.hasAttribute('readonly');
-                                var id = el.id || '';
-
                                 var div = clonedDoc.createElement('div');
+                                div.className = liveEl.className;
                                 div.textContent = text;
+
                                 div.style.display = 'flex';
                                 div.style.alignItems = 'center';
-                                div.style.justifyContent = 'center';
-                                div.style.boxSizing = 'border-box';
+                                div.style.justifyContent = (cs.textAlign === 'left' || cs.textAlign === 'start') ? 'flex-start' : 
+                                                           (cs.textAlign === 'right' || cs.textAlign === 'end') ? 'flex-end' : 'center';
+                                div.style.textAlign = cs.textAlign || 'center';
+                                div.style.boxSizing = cs.boxSizing || 'border-box';
                                 div.style.width = '100%';
-                                div.style.height = (computed ? computed.height : '38px');
-                                div.style.padding = '6px 8px';
-                                div.style.borderRadius = '7px';
-                                div.style.fontFamily = 'Arial, sans-serif';
-                                div.style.fontSize = '12px';
-                                div.style.fontWeight = '800';
+                                div.style.height = cs.height;
+                                div.style.minHeight = cs.minHeight;
+                                div.style.padding = cs.padding;
+                                div.style.margin = cs.margin;
+                                div.style.border = cs.border;
+                                div.style.borderRadius = cs.borderRadius;
+                                div.style.background = cs.background;
+                                div.style.backgroundColor = cs.backgroundColor;
+                                div.style.backgroundImage = cs.backgroundImage;
+                                div.style.boxShadow = cs.boxShadow;
+                                div.style.color = cs.color;
+                                div.style.fontFamily = cs.fontFamily;
+                                div.style.fontSize = cs.fontSize;
+                                div.style.fontWeight = cs.fontWeight;
+                                div.style.lineHeight = '1';
+                                div.style.letterSpacing = cs.letterSpacing;
                                 div.style.overflow = 'hidden';
                                 div.style.whiteSpace = 'nowrap';
                                 div.style.textOverflow = 'ellipsis';
-                                div.style.lineHeight = '1';
-
-                                // Guaranteed sharp, high-contrast colors preventing any black or invisible text
-                                if (id === 'totalDrop' || id === 'totalDropLiter') {
-                                    div.style.backgroundColor = '#022c22';
-                                    div.style.color = '#34d399';
-                                    div.style.border = '1.5px solid #34d399';
-                                } else if (id === 'openingLiter' || id === 'closingLiter') {
-                                    div.style.backgroundColor = '#082f49';
-                                    div.style.color = '#7dd3fc';
-                                    div.style.border = '1.5px solid #38bdf8';
-                                } else if (isOutput) {
-                                    div.style.backgroundColor = '#d1fae5';
-                                    div.style.backgroundImage = 'linear-gradient(145deg, #d1fae5, #a7f3d0)';
-                                    div.style.color = '#064e3b';
-                                    div.style.border = '1.5px solid #6ee7b7';
-                                } else if (el.classList.contains('input-field')) {
-                                    div.style.backgroundColor = '#ffffff';
-                                    div.style.backgroundImage = 'linear-gradient(145deg, #ffffff, #e2e8f0)';
-                                    div.style.color = '#0f172a';
-                                    div.style.border = '1.5px solid #93c5fd';
-                                } else {
-                                    div.style.backgroundColor = '#020617';
-                                    div.style.color = '#ffffff';
-                                    div.style.border = '1.5px solid rgba(56, 189, 248, 0.4)';
-                                }
 
                                 if (el.parentNode) {
                                     el.parentNode.replaceChild(div, el);
