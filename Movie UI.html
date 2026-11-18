@@ -700,6 +700,46 @@
   font-weight:bold;
 }
 
+
+/* ===== LIVE TV CHANNELS (new, self-contained) ===== */
+.ltv-wrapper { margin-bottom: 15px; }
+.ltv-slider-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    padding: 5px 0 10px 0;
+    box-sizing: border-box;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.ltv-slider-container::-webkit-scrollbar { display: none; }
+.ltv-card {
+    flex: 0 0 96px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1.5px solid transparent;
+    background: linear-gradient(#ffffff, #ffffff) padding-box,
+                linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #f43f5e 100%) border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    transition: transform 0.15s ease;
+}
+.ltv-card:active { transform: scale(0.96); }
+.ltv-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    padding: 3px;
+    box-sizing: border-box;
+}
+.ltv-card img.ltv-fallback { background: #1e293b; padding: 12px; }
+
 </style>
 </head>
 <body>
@@ -763,6 +803,18 @@
     <div class="cat-card" onclick="sendData('https://Playlist>raw.githubusercontent.com/DrSujonPaul/Sujon/6dc6a1d4eaa20a9239ae27d8e0f00182b60eeb47/iptv')">
         <div class="cat-icon"><img src="https://cdn-icons-png.flaticon.com/512/651/651717.png"></div><div class="cat-name">Musics</div>
     </div>
+</div>
+
+<!-- LIVE TV CHANNELS (new) -->
+<div class="ltv-wrapper" id="ltvWrapper">
+    <div class="lfe-header-row">
+        <span class="lfe-header-title">LIVE TV CHANNELS</span>
+        <div class="lfe-live-indicator">
+            <span class="lfe-dot"></span>
+            <span class="lfe-live-text">LIVE</span>
+        </div>
+    </div>
+    <div class="ltv-slider-container" id="ltvSliderContainer"></div>
 </div>
 
 <div class="content">
@@ -1820,6 +1872,228 @@ window.MovieHub = {
   getVideoLinks: (index) => movies[index] ? parseVideoLinks(movies[index].link) : []
 };
 
+</script>
+<script>
+/* ===== LIVE TV CHANNELS (new) =====
+   Runs in its own block and its own scope, so nothing here can stop
+   the page loader or the other sections if a logo or link is bad. */
+(function () {
+    "use strict";
+    try {
+        var LTV_CHANNELS = [
+ {
+  "title": "Willow HD",
+  "logo": "https://mgpindia.com/wp-content/uploads/2021/10/willow-logo.jpg",
+  "link": "https://tvsen7.aynaott.com/Sports1/index.m3u8"
+ },
+ {
+  "title": "T Sports",
+  "logo": "https://www.tsports.com.bd/assets/upload/cover/cover_1606127688.jpg",
+  "link": "https://playztv-apps.pages.dev/ptv-sports/index.m3u8"
+ },
+ {
+  "title": "A Sports",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/0/0c/A_Sports_Logo.png/250px-A_Sports_Logo.png",
+  "link": "https://playztv-apps.pages.dev/a-sports/index.m3u8"
+ },
+ {
+  "title": "Willow HD 2",
+  "logo": "https://mgpindia.com/wp-content/uploads/2021/10/willow-logo.jpg",
+  "link": "https://playztv-apps.pages.dev/unite8-sports-2/index.m3u8"
+ },
+ {
+  "title": "Ananda TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Logo_of_Ananda_TV.svg/250px-Logo_of_Ananda_TV.svg.png",
+  "link": "https://playztv-apps.pages.dev/ananda-tv/index.m3u8"
+ },
+ {
+  "title": "Asian TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/fb/Asian_TV_Logo.svg/120px-Asian_TV_Logo.svg.png",
+  "link": "https://playztv-apps.pages.dev/asian-tv/index.m3u8"
+ },
+ {
+  "title": "ATN Bangla",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/ATN_Bangla_Logo_without_slogan.svg/250px-ATN_Bangla_Logo_without_slogan.svg.png",
+  "link": "https://playztv-apps.pages.dev/atn-bangla/index.m3u8"
+ },
+ {
+  "title": "ATN News",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/18/ATN_News_Logo_without_slogan.svg/250px-ATN_News_Logo_without_slogan.svg.png",
+  "link": "https://playztv-apps.pages.dev/atn-news/index.m3u8"
+ },
+ {
+  "title": "Bijoy TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Logo_of_Bijoy_TV.svg/250px-Logo_of_Bijoy_TV.svg.png",
+  "link": "https://playztv-apps.pages.dev/bijoy-tv/index.m3u8"
+ },
+ {
+  "title": "Boishakhi TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/c7/Boishakhi_TV_logo.svg/500px-Boishakhi_TV_logo.svg.png",
+  "link": "https://playztv-apps.pages.dev/boishakhi-tv/index.m3u8"
+ },
+ {
+  "title": "BTV World",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/%E0%A6%AC%E0%A6%BF%E0%A6%9F%E0%A6%BF%E0%A6%AD%E0%A6%BF_%E0%A6%93%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B0%E0%A7%8D%E0%A6%B2%E0%A7%8D%E0%A6%A1_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg/250px-%E0%A6%AC%E0%A6%BF%E0%A6%9F%E0%A6%BF%E0%A6%AD%E0%A6%BF_%E0%A6%93%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B0%E0%A7%8D%E0%A6%B2%E0%A7%8D%E0%A6%A1_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg.png",
+  "link": "https://playztv-apps.pages.dev/btv-world/index.m3u8"
+ },
+ {
+  "title": "BTV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/0/02/Bangladesh_Television_Logo.svg/250px-Bangladesh_Television_Logo.svg.png",
+  "link": "https://playztv-apps.pages.dev/btv/index.m3u8"
+ },
+ {
+  "title": "Channel 9",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/ff/Channel9_bd.svg/250px-Channel9_bd.svg.png",
+  "link": "https://playztv-apps.pages.dev/channel-9/index.m3u8"
+ },
+ {
+  "title": "Channel i",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/88/Channel-i.svg/250px-Channel-i.svg.png",
+  "link": "https://playztv-apps.pages.dev/channel-i/index.m3u8"
+ },
+ {
+  "title": "DBC News",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/%E0%A6%A1%E0%A6%BF%E0%A6%AC%E0%A6%BF%E0%A6%B8%E0%A6%BF_%E0%A6%A8%E0%A6%BF%E0%A6%89%E0%A6%9C%E2%80%93%E0%A6%8F%E0%A6%B0_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg/250px-%E0%A6%A1%E0%A6%BF%E0%A6%AC%E0%A6%BF%E0%A6%B8%E0%A6%BF_%E0%A6%A8%E0%A6%BF%E0%A6%89%E0%A6%9C%E2%80%93%E0%A6%8F%E0%A6%B0_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg.png",
+  "link": "https://playztv-apps.pages.dev/dbc-news/index.m3u8"
+ },
+ {
+  "title": "Desh TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Logo_of_Desh_TV.svg/250px-Logo_of_Desh_TV.svg.png",
+  "link": "https://playztv-apps.pages.dev/desh-tv/index.m3u8"
+ },
+ {
+  "title": "Duronto TV",
+  "logo": "https://upload.wikimedia.org/wikipedia/en/d/d7/Duronto_TV_Logo.png",
+  "link": "https://playztv-apps.pages.dev/duronto-tv/index.m3u8"
+ },
+ {
+  "title": "Ekattor TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/5/57/Ekattor_TV_logo.svg/250px-Ekattor_TV_logo.svg.png",
+  "link": "https://playztv-apps.pages.dev/ekattor-tv/index.m3u8"
+ },
+ {
+  "title": "Gazi TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f1/Logo_of_GTV_%28Bangladesh%29.svg/250px-Logo_of_GTV_%28Bangladesh%29.svg.png",
+  "link": "https://playztv-apps.pages.dev/gazi_tv/index.m3u8"
+ },
+ {
+  "title": "Jamuna TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Jamuna_TV_logo.svg/500px-Jamuna_TV_logo.svg.png",
+  "link": "https://playztv-apps.pages.dev/jamuna-tv/index.m3u8"
+ },
+ {
+  "title": "Maasranga TV",
+  "logo": "https://upload.wikimedia.org/wikipedia/en/3/39/Maasranga_Television_Logo.jpg",
+  "link": "https://playztv-apps.pages.dev/maasranga-tv/index.m3u8"
+ },
+ {
+  "title": "My TV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/8b/Logo_of_My_TV_%28Bangladesh%29.svg/330px-Logo_of_My_TV_%28Bangladesh%29.svg.png",
+  "link": "https://playztv-apps.pages.dev/my-tv/index.m3u8"
+ },
+ {
+  "title": "NTV",
+  "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/e/ef/NTV_%28Bangladesh%29_logo.svg/250px-NTV_%28Bangladesh%29_logo.svg.png",
+  "link": "https://playztv-apps.pages.dev/ntv/index.m3u8"
+ },
+ {
+  "title": "Zee Bangla",
+  "logo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/%E0%A6%9C%E0%A6%BF_%E0%A6%AC%E0%A6%BE%E0%A6%82%E0%A6%B2%E0%A6%BE_%E0%A7%A8%E0%A7%A6%E0%A7%A8%E0%A7%AB.svg/250px-%E0%A6%9C%E0%A6%BF_%E0%A6%AC%E0%A6%BE%E0%A6%82%E0%A6%B2%E0%A6%BE_%E0%A7%A8%E0%A7%A6%E0%A7%A8%E0%A7%AB.svg.png",
+  "link": "https://playztv-apps.pages.dev/zee-bangla/index.m3u8"
+ }
+];
+
+        var LTV_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='6' y='10' width='28' height='19' rx='3' fill='none' stroke='%2310b981' stroke-width='2.5'/%3E%3Cpath d='M15 33h10M16 5l4 5 4-5' stroke='%2310b981' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E";
+
+        function ltvBuildCard(ch) {
+            var card = document.createElement("div");
+            card.className = "ltv-card";
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-label", ch.title || "Live TV");
+
+            var img = document.createElement("img");
+            img.alt = "";
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.referrerPolicy = "no-referrer";
+            img.onerror = function () {
+                this.onerror = null;
+                this.className = "ltv-fallback";
+                this.src = LTV_FALLBACK;
+            };
+            img.src = ch.logo || LTV_FALLBACK;
+            card.appendChild(img);
+
+            card.addEventListener("click", function () {
+                if (typeof sendMedia === "function") { sendMedia(ch.title || "", "", ch.link || ""); return; }
+                // Same output as sendMedia, used only if the first script could not run
+                var out = JSON.stringify({ title: String(ch.title || "").trim(), thumbnail: "", videoUrl: String(ch.link || "").trim() });
+                if (window.AppInventor) window.AppInventor.setWebViewString(out);
+                else if (window.CustomWebView) window.CustomWebView.setWebViewString(out);
+                else window.WebViewString = out;
+            });
+            return card;
+        }
+
+        function ltvRender() {
+            var box = document.getElementById("ltvSliderContainer");
+            if (!box || box.getAttribute("data-ready") === "1") return;
+            var frag = document.createDocumentFragment();
+            for (var i = 0; i < LTV_CHANNELS.length; i++) {
+                if (LTV_CHANNELS[i] && LTV_CHANNELS[i].link) frag.appendChild(ltvBuildCard(LTV_CHANNELS[i]));
+            }
+            box.appendChild(frag);
+            box.setAttribute("data-ready", "1");
+        }
+
+        ltvRender();
+
+        // Hide this row during search, the same way the other rows hide.
+        var ltvOriginalFilter = window.filterMatches;
+        if (typeof ltvOriginalFilter === "function") {
+            window.filterMatches = function (input) {
+                var result = ltvOriginalFilter.apply(this, arguments);
+                try {
+                    var wrap = document.getElementById("ltvWrapper");
+                    var q = input ? String(input).toLowerCase().trim() : "";
+                    if (wrap) wrap.style.display = q !== "" ? "none" : "block";
+                } catch (e) {}
+                return result;
+            };
+        }
+    } catch (err) {
+        console.log("Live TV channels error:", err);
+    }
+})();
+
+/* ===== LOADER SAFETY (new, does not edit the original code) =====
+   The original start-up code (1.5s loader hide, live events, auto events,
+   timers) waits for DOMContentLoaded. Some app viewers insert the page after
+   that event has already happened, so it never fires and the loader stays.
+   In a normal page load this script runs while the page is still "loading",
+   so nothing below changes anything. */
+(function () {
+    try {
+        if (document.readyState !== "loading" && !window.__ltvStartFired) {
+            window.__ltvStartFired = true;
+            var ev;
+            try { ev = new Event("DOMContentLoaded", { bubbles: true }); }
+            catch (e) { ev = document.createEvent("Event"); ev.initEvent("DOMContentLoaded", true, false); }
+            document.dispatchEvent(ev);
+        }
+    } catch (e) {}
+
+    // Last resort: if the loader is still covering the page, hide it the same way hideLoader() does.
+    setTimeout(function () {
+        try {
+            var loader = document.getElementById("loader-container");
+            if (loader && loader.style.display !== "none") {
+                if (typeof hideLoader === "function") hideLoader();
+                else loader.style.display = "none";
+            }
+        } catch (e) {}
+    }, 2500);
+})();
 </script>
 </body> 
 </html>
