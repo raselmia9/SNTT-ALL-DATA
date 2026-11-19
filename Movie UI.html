@@ -748,6 +748,258 @@
     <div class="loader"></div>
 </div>
 
+<!-- ======================================================== -->
+<!-- 🧪 TEMPORARY TEST SECTION: IMAGE LOADING METHODS TEST     -->
+<!-- (To be removed later after testing)                      -->
+<!-- ======================================================== -->
+<div id="testImageSection" style="margin: 10px 0 20px 0; padding: 14px; background: #161b22; border: 2px solid #10b981; border-radius: 12px; box-sizing: border-box;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; flex-wrap:wrap; gap:8px;">
+    <div>
+      <h3 style="margin:0; font-size:15px; color:#10b981;">🧪 ইমেজ লোডিং টেস্ট (Thegidi 2014)</h3>
+      <p style="margin:3px 0 0 0; font-size:11px; color:#8b949e;">অ্যাপ্লিকেশন আপডেট ছাড়া কোন পদ্ধতিতে ইমেজ লোড হয় তা টেস্ট করার জন্য নিচে ৬টি ভিন্ন ভিন্ন মেথড সাজানো হয়েছে:</p>
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button onclick="runAllImageTests()" type="button" style="background:#10b981; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer;">পুনরায় টেস্ট চালান</button>
+      <button onclick="if(window.AppInventor)window.AppInventor.setWebViewString('ACTION>RETRY');else location.reload();" type="button" style="background:#21262d; border:1px solid #30363d; color:#c9d1d9; padding:6px 10px; border-radius:6px; font-size:11px; cursor:pointer;">ক্যাশ রিলোড</button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 12px;">
+    <!-- Method 1 -->
+    <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:8px; text-align:center;">
+      <div style="font-size:11px; font-weight:bold; color:#58a6ff; margin-bottom:6px;">১. ডিরেক্ট %20 URL</div>
+      <div style="width:100%; height:160px; background:#21262d; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative;">
+        <img id="testImg1" src="" alt="M1" style="width:100%; height:100%; object-fit:cover; display:none;" />
+        <span id="testSpin1" style="color:#8b949e; font-size:11px;">লোড হচ্ছে...</span>
+      </div>
+      <div id="testStatus1" style="font-size:10px; margin-top:6px; color:#f0883e; font-weight:bold;">টেস্ট শুরু...</div>
+    </div>
+
+    <!-- Method 2 -->
+    <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:8px; text-align:center;">
+      <div style="font-size:11px; font-weight:bold; color:#58a6ff; margin-bottom:6px;">২. cleanImageUrl()</div>
+      <div style="width:100%; height:160px; background:#21262d; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative;">
+        <img id="testImg2" src="" alt="M2" style="width:100%; height:100%; object-fit:cover; display:none;" />
+        <span id="testSpin2" style="color:#8b949e; font-size:11px;">লোড হচ্ছে...</span>
+      </div>
+      <div id="testStatus2" style="font-size:10px; margin-top:6px; color:#f0883e; font-weight:bold;">টেস্ট শুরু...</div>
+    </div>
+
+    <!-- Method 3 -->
+    <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:8px; text-align:center;">
+      <div style="font-size:11px; font-weight:bold; color:#58a6ff; margin-bottom:6px;">৩. JS Fetch (Blob)</div>
+      <div style="width:100%; height:160px; background:#21262d; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative;">
+        <img id="testImg3" src="" alt="M3" style="width:100%; height:100%; object-fit:cover; display:none;" />
+        <span id="testSpin3" style="color:#8b949e; font-size:11px;">লোড হচ্ছে...</span>
+      </div>
+      <div id="testStatus3" style="font-size:10px; margin-top:6px; color:#f0883e; font-weight:bold;">টেস্ট শুরু...</div>
+    </div>
+
+    <!-- Method 4 -->
+    <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:8px; text-align:center;">
+      <div style="font-size:11px; font-weight:bold; color:#58a6ff; margin-bottom:6px;">৪. XHR (Base64)</div>
+      <div style="width:100%; height:160px; background:#21262d; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative;">
+        <img id="testImg4" src="" alt="M4" style="width:100%; height:100%; object-fit:cover; display:none;" />
+        <span id="testSpin4" style="color:#8b949e; font-size:11px;">লোড হচ্ছে...</span>
+      </div>
+      <div id="testStatus4" style="font-size:10px; margin-top:6px; color:#f0883e; font-weight:bold;">টেস্ট শুরু...</div>
+    </div>
+
+    <!-- Method 5 -->
+    <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:8px; text-align:center;">
+      <div style="font-size:11px; font-weight:bold; color:#58a6ff; margin-bottom:6px;">৫. CSS Background</div>
+      <div id="testBg5" style="width:100%; height:160px; background:#21262d; border-radius:6px; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center;">
+        <span id="testSpin5" style="color:#8b949e; font-size:11px;">লোড হচ্ছে...</span>
+      </div>
+      <div id="testStatus5" style="font-size:10px; margin-top:6px; color:#f0883e; font-weight:bold;">টেস্ট শুরু...</div>
+    </div>
+
+    <!-- Method 6 -->
+    <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:8px; text-align:center;">
+      <div style="font-size:11px; font-weight:bold; color:#58a6ff; margin-bottom:6px;">৬. ক্যাশ বাস্টার (?t=..)</div>
+      <div style="width:100%; height:160px; background:#21262d; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative;">
+        <img id="testImg6" src="" alt="M6" style="width:100%; height:100%; object-fit:cover; display:none;" />
+        <span id="testSpin6" style="color:#8b949e; font-size:11px;">লোড হচ্ছে...</span>
+      </div>
+      <div id="testStatus6" style="font-size:10px; margin-top:6px; color:#f0883e; font-weight:bold;">টেস্ট শুরু...</div>
+    </div>
+  </div>
+
+  <div id="testConsoleLog" style="background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:8px; font-family:monospace; font-size:11px; color:#c9d1d9; max-height:100px; overflow-y:auto; line-height:1.4;">
+    [টেস্ট লগ শুরু হচ্ছে...]
+  </div>
+</div>
+
+<script>
+(function() {
+  const RAW_URL = "http://103.203.93.6/Kollywood (Tamil)/2014/Thegidi  2014  1CD  MSK  Xvid/4qgRM6XOk0cNVdeeNAHLbjhKdJ3.jpg";
+  const ENCODED_URL = "http://103.203.93.6/Kollywood%20(Tamil)/2014/Thegidi%20%202014%20%201CD%20%20MSK%20%20Xvid/4qgRM6XOk0cNVdeeNAHLbjhKdJ3.jpg";
+
+  function logMsg(msg) {
+    const box = document.getElementById("testConsoleLog");
+    if (!box) return;
+    const time = new Date().toLocaleTimeString();
+    box.innerHTML += '<div><span style="color:#8b949e;">[' + time + ']</span> ' + msg + '</div>';
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function setCardStatus(num, success, text) {
+    const spin = document.getElementById("testSpin" + num);
+    const status = document.getElementById("testStatus" + num);
+    if (spin) spin.style.display = "none";
+    if (status) {
+      status.style.color = success ? "#3fb950" : "#f85149";
+      status.innerText = (success ? "✅ " : "❌ ") + text;
+    }
+    logMsg("পদ্ধতি " + num + ": " + (success ? "সফল (" + text + ")" : "ব্যর্থ (" + text + ")"));
+  }
+
+  window.runAllImageTests = function() {
+    const box = document.getElementById("testConsoleLog");
+    if (box) box.innerHTML = "<b>[টেস্ট শুরু হচ্ছে...]</b>";
+
+    // 1. Direct %20 Encoded URL
+    const img1 = document.getElementById("testImg1");
+    if (img1) {
+      img1.style.display = "none";
+      const s1 = document.getElementById("testSpin1");
+      if (s1) s1.style.display = "inline";
+      img1.onload = function() {
+        img1.style.display = "block";
+        setCardStatus(1, true, "সফল (Direct %20)");
+      };
+      img1.onerror = function(e) {
+        setCardStatus(1, false, "ব্যর্থ (Load Error)");
+      };
+      img1.src = ENCODED_URL;
+    }
+
+    // 2. cleanImageUrl() Dynamic
+    const img2 = document.getElementById("testImg2");
+    if (img2) {
+      img2.style.display = "none";
+      const s2 = document.getElementById("testSpin2");
+      if (s2) s2.style.display = "inline";
+      img2.onload = function() {
+        img2.style.display = "block";
+        setCardStatus(2, true, "সফল (cleanImageUrl)");
+      };
+      img2.onerror = function(e) {
+        setCardStatus(2, false, "ব্যর্থ (Load Error)");
+      };
+      img2.src = (typeof cleanImageUrl === "function") ? cleanImageUrl(RAW_URL) : ENCODED_URL;
+    }
+
+    // 3. JS Fetch (Blob)
+    const img3 = document.getElementById("testImg3");
+    if (img3) {
+      img3.style.display = "none";
+      const s3 = document.getElementById("testSpin3");
+      if (s3) s3.style.display = "inline";
+      fetch(ENCODED_URL)
+        .then(function(res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.blob();
+        })
+        .then(function(blob) {
+          const blobUrl = URL.createObjectURL(blob);
+          img3.onload = function() {
+            img3.style.display = "block";
+            setCardStatus(3, true, "সফল (" + Math.round(blob.size/1024) + " KB)");
+          };
+          img3.onerror = function() {
+            setCardStatus(3, false, "Blob রেন্ডার ব্যর্থ");
+          };
+          img3.src = blobUrl;
+        })
+        .catch(function(err) {
+          setCardStatus(3, false, err.message || "Fetch Error");
+        });
+    }
+
+    // 4. XHR (Base64)
+    const img4 = document.getElementById("testImg4");
+    if (img4) {
+      img4.style.display = "none";
+      const s4 = document.getElementById("testSpin4");
+      if (s4) s4.style.display = "inline";
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", ENCODED_URL, true);
+        xhr.responseType = "arraybuffer";
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const bytes = new Uint8Array(xhr.response);
+            let binary = "";
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            const b64 = window.btoa(binary);
+            img4.onload = function() {
+              img4.style.display = "block";
+              setCardStatus(4, true, "সফল (" + Math.round(len/1024) + " KB)");
+            };
+            img4.onerror = function() {
+              setCardStatus(4, false, "Base64 রেন্ডার ব্যর্থ");
+            };
+            img4.src = "data:image/jpeg;base64," + b64;
+          } else {
+            setCardStatus(4, false, "HTTP " + xhr.status);
+          }
+        };
+        xhr.onerror = function() {
+          setCardStatus(4, false, "XHR Network Error");
+        };
+        xhr.send();
+      } catch (err) {
+        setCardStatus(4, false, err.message);
+      }
+    }
+
+    // 5. CSS Background
+    const bg5 = document.getElementById("testBg5");
+    if (bg5) {
+      const probe = new Image();
+      probe.onload = function() {
+        bg5.style.backgroundImage = 'url("' + ENCODED_URL + '")';
+        const s5 = document.getElementById("testSpin5");
+        if (s5) s5.style.display = "none";
+        setCardStatus(5, true, "সফল (CSS BG)");
+      };
+      probe.onerror = function() {
+        setCardStatus(5, false, "CSS লোড ব্যর্থ");
+      };
+      probe.src = ENCODED_URL;
+    }
+
+    // 6. Cache-buster (?v=...)
+    const img6 = document.getElementById("testImg6");
+    if (img6) {
+      img6.style.display = "none";
+      const s6 = document.getElementById("testSpin6");
+      if (s6) s6.style.display = "inline";
+      const bustUrl = ENCODED_URL + (ENCODED_URL.indexOf("?") !== -1 ? "&" : "?") + "t=" + Date.now();
+      img6.onload = function() {
+        img6.style.display = "block";
+        setCardStatus(6, true, "সফল (Cache-Bust)");
+      };
+      img6.onerror = function(e) {
+        setCardStatus(6, false, "ব্যর্থ (Load Error)");
+      };
+      img6.src = bustUrl;
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", runAllImageTests);
+  } else {
+    setTimeout(runAllImageTests, 300);
+  }
+})();
+</script>
+
+
 <div id="liveWrapper" style="margin-bottom: 15px;">
     <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px 5px; color: #10b981; text-transform: uppercase;">My Live Events</div>
     <div class="live-slider-container" id="liveSliderContainer"></div> 
