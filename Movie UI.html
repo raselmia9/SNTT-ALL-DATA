@@ -1533,6 +1533,14 @@ function unlockBodyScroll() {
   window.scrollTo(0, savedScrollPosition);
 }
 
+/* CLEAN / ENCODE IMAGE URL (HANDLES SPACES & WHITESPACE) */
+function cleanImageUrl(raw) {
+  if (!raw || typeof raw !== "string") return "";
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  return trimmed.replace(/[\s\u00A0]/g, "%20");
+}
+
 /* LOAD JSON */
 
 async function loadMovies() {
@@ -1547,7 +1555,10 @@ async function loadMovies() {
       typeof item.title === "string" &&
       typeof item.img === "string" &&
       typeof item.link === "string"
-    );
+    ).map(item => {
+      item.img = cleanImageUrl(item.img);
+      return item;
+    });
 
     allMovieItems = movies.slice();
     allMovieItems.forEach(m => {
@@ -1647,7 +1658,7 @@ function buildMovieCard(movie, originalIndex) {
   poster.className = "poster";
 
   const img = document.createElement("img");
-  img.src = movie.img;
+  img.src = cleanImageUrl(movie.img);
   img.alt = movie.title;
   img.loading = "lazy";
   img.onerror = function() { this.style.opacity = "0"; };
@@ -1763,7 +1774,7 @@ function openMovie(index) {
 
   const links = parseVideoLinks(movie.link);
 
-  document.getElementById("detailPoster").src = movie.img;
+  document.getElementById("detailPoster").src = cleanImageUrl(movie.img);
   document.getElementById("detailTitle").textContent = movie.title;
   document.getElementById("detailDate").textContent = movie.date || "";
   document.getElementById("detailLinkCount").textContent = links.length + " Available Option(s)";
@@ -1809,7 +1820,7 @@ function selectMovie(movie, selectedLink) {
 
   const payload = {
     title: finalTitle,
-    thumbnail: movie.img || "",
+    thumbnail: cleanImageUrl(movie.img),
     videoUrl: parsed.videoUrl
   };
 
